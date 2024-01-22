@@ -1,0 +1,893 @@
+raw `
+SootopolisCity_Gym_1F_MapScripts:: @ 8224E4C
+	map_script MAP_SCRIPT_ON_FRAME_TABLE, SootopolisCity_Gym_1F_OnFrame
+	map_script MAP_SCRIPT_ON_RESUME, SootopolisCity_Gym_1F_OnResume
+	map_script MAP_SCRIPT_ON_LOAD, SootopolisCity_Gym_1F_OnLoad
+	map_script MAP_SCRIPT_ON_TRANSITION, SootopolisCity_Gym_1F_OnTransition
+	.byte 0
+
+SootopolisCity_Gym_1F_OnTransition: @ 8224E61
+	call SootopolisCity_Gym_1F_EventScript_Set_Gym_Pokemon_Species
+	setvar VAR_ICE_STEP_COUNT, 1
+	end
+
+SootopolisCity_Gym_1F_OnResume: @ 8224E67
+	setstepcallback STEP_CB_SOOTOPOLIS_ICE
+	end
+
+SootopolisCity_Gym_1F_OnLoad: @ 8224E6A
+	call SootopolisCity_Gym_1F_EventScript_CheckSetStairMetatiles
+	special SetSootopolisGymCrackedIceMetatiles
+	end
+
+SootopolisCity_Gym_1F_EventScript_CheckSetStairMetatiles:: @ 8224E73
+	compare VAR_ICE_STEP_COUNT, 8
+	goto_if_lt SootopolisCity_Gym_1F_EventScript_StopCheckingStairs  @ All stairs ice
+	compare VAR_ICE_STEP_COUNT, 28
+	goto_if_lt SootopolisCity_Gym_1F_EventScript_OpenFirstStairs
+	compare VAR_ICE_STEP_COUNT, 67
+	goto_if_lt SootopolisCity_Gym_1F_EventScript_OpenFirstAndSecondStairs
+	setmetatile 8, 4, METATILE_SootopolisGym_Stairs, 0
+	setmetatile 8, 5, METATILE_SootopolisGym_Stairs, 0
+SootopolisCity_Gym_1F_EventScript_OpenFirstAndSecondStairs:: @ 8224EA6
+	setmetatile 8, 10, METATILE_SootopolisGym_Stairs, 0
+	setmetatile 8, 11, METATILE_SootopolisGym_Stairs, 0
+SootopolisCity_Gym_1F_EventScript_OpenFirstStairs:: @ 8224EB8
+	setmetatile 8, 15, METATILE_SootopolisGym_Stairs, 0
+	setmetatile 8, 16, METATILE_SootopolisGym_Stairs, 0
+SootopolisCity_Gym_1F_EventScript_StopCheckingStairs:: @ 8224ECA
+	return
+
+SootopolisCity_Gym_1F_OnFrame: @ 8224ECB
+	map_script_2 VAR_ICE_STEP_COUNT, 8, SootopolisCity_Gym_1F_EventScript_UnlockFirstStairs
+	map_script_2 VAR_ICE_STEP_COUNT, 28, SootopolisCity_Gym_1F_EventScript_UnlockSecondStairs
+	map_script_2 VAR_ICE_STEP_COUNT, 67, SootopolisCity_Gym_1F_EventScript_UnlockThirdStairs
+	map_script_2 VAR_ICE_STEP_COUNT, 0, SootopolisCity_Gym_1F_EventScript_FallThroughIce
+	.2byte 0
+
+SootopolisCity_Gym_1F_EventScript_UnlockFirstStairs:: @ 8224EED
+	addvar VAR_ICE_STEP_COUNT, 1
+	delay 40
+	playse SE_ICE_STAIRS
+	call SootopolisCity_Gym_1F_EventScript_CheckSetStairMetatiles
+	special DrawWholeMapView
+	end
+
+SootopolisCity_Gym_1F_EventScript_UnlockSecondStairs:: @ 8224F01
+	addvar VAR_ICE_STEP_COUNT, 1
+	delay 40
+	playse SE_ICE_STAIRS
+	call SootopolisCity_Gym_1F_EventScript_CheckSetStairMetatiles
+	special DrawWholeMapView
+	end
+
+SootopolisCity_Gym_1F_EventScript_UnlockThirdStairs:: @ 8224F15
+	addvar VAR_ICE_STEP_COUNT, 1
+	delay 40
+	playse SE_ICE_STAIRS
+	call SootopolisCity_Gym_1F_EventScript_CheckSetStairMetatiles
+	special DrawWholeMapView
+	end
+
+SootopolisCity_Gym_1F_EventScript_FallThroughIce:: @ 8224F29
+	lockall
+	delay 20
+	applymovement OBJ_EVENT_ID_PLAYER, SootopolisCity_Gym_1F_Movement_FallThroughIce
+	waitmovement 0
+	playse SE_FALL
+	delay 60
+	warphole MAP_SOOTOPOLIS_CITY_GYM_B1F
+	waitstate
+	end
+
+SootopolisCity_Gym_1F_Movement_FallThroughIce: @ 8224F42
+	set_invisible
+	step_end
+
+SootopolisCity_Gym_1F_EventScript_Juan:: @ 8224F44
+	lock
+	faceplayer
+	call_if_set FLAG_BADGE08_GET, SootopolisCity_Gym_1F_EventScript_JuanRematch
+	trainerbattle_single TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanIntro, SootopolisCity_Gym_1F_Text_JuanDefeat, SootopolisCity_Gym_1F_EventScript_JuanDefeated, NO_MUSIC
+	release
+	end
+
+SootopolisCity_Gym_1F_EventScript_JuanDefeated:: @ 8224F82
+	message SootopolisCity_Gym_1F_Text_ReceivedRainBadge
+	waitmessage
+	call Common_EventScript_PlayGymBadgeFanfare
+	msgbox SootopolisCity_Gym_1F_Text_ExplainRainBadgeTakeThis, MSGBOX_DEFAULT
+	setflag FLAG_DEFEATED_SOOTOPOLIS_GYM
+	setflag FLAG_BADGE08_GET
+	setvar VAR_0x8008, 8
+	call Common_EventScript_SetGymTrainers
+	call Special_Gym_EventScript_Give_Item
+	call SootopolisCity_Gym_1F_EventScript_GiveWaterPulse
+	closemessage
+	delay 30
+	playfanfare MUS_REGISTER_MATCH_CALL
+	msgbox SootopolisCity_Gym_1F_Text_RegisteredJuan, MSGBOX_DEFAULT
+	waitfanfare
+	closemessage
+	delay 30
+	setflag FLAG_ENABLE_JUAN_MATCH_CALL
+	call Gym_EventScript_Reset_Rematches
+	setflag FLAG_JUAN_REMATCH
+	call Common_EventScript_SetGymTrainers
+	release
+	end
+
+SootopolisCity_Gym_1F_EventScript_Juan_PostBattle::
+	msgbox SootopolisCity_Gym_1F_Text_JuanPostBattle, MSGBOX_DEFAULT
+	release
+	end
+	
+//Rematch	
+SootopolisCity_Gym_1F_EventScript_JuanRematch:: @ 8204DB3
+	goto_if_set FLAG_JUAN_REMATCH, SootopolisCity_Gym_1F_EventScript_Juan_PostBattle
+	msgbox SootopolisCity_Gym_1F_Text_JuanPreRematch, MSGBOX_DEFAULT
+	goto SootopolisCity_Gym_1F_EventScript_Start_Rematch_1
+	end
+	
+SootopolisCity_Gym_1F_EventScript_JuanRematchEnd::
+	msgbox SootopolisCity_Gym_1F_Text_JuanPostRematch, MSGBOX_AUTOCLOSE
+	call Gym_EventScript_Reset_Random_Rematch
+	setflag FLAG_JUAN_REMATCH
+	end
+	
+SootopolisCity_Gym_1F_EventScript_Start_Rematch_1::
+	checkitem ITEM_TM03_WATER_PULSE, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq SootopolisCity_Gym_1F_EventScript_Start_Rematch_2
+	trainerbattle_no_intro TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanRematchDefeat
+	msgbox SootopolisCity_Gym_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM03_WATER_PULSE
+	goto SootopolisCity_Gym_1F_EventScript_JuanRematchEnd
+	end
+	
+SootopolisCity_Gym_1F_EventScript_Start_Rematch_2::
+	goto_if_unset FLAG_RECEIVED_TM08 SootopolisCity_Gym_1F_EventScript_Start_Rematch_Party_1
+	checkitem ITEM_TM55_SCALD, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq SootopolisCity_Gym_1F_EventScript_Start_Rematch_3
+	trainerbattle_no_intro TRAINER_JUAN_2, SootopolisCity_Gym_1F_Text_JuanRematchDefeat
+	msgbox SootopolisCity_Gym_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM55_SCALD
+	goto SootopolisCity_Gym_1F_EventScript_JuanRematchEnd
+	end
+	
+SootopolisCity_Gym_1F_EventScript_Start_Rematch_3::
+	goto_if_unset FLAG_RECEIVED_TM42 SootopolisCity_Gym_1F_EventScript_Start_Rematch_Party_2
+	checkitem ITEM_TM94_SURF, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq SootopolisCity_Gym_1F_EventScript_Start_Rematch_4
+	trainerbattle_no_intro TRAINER_JUAN_3, SootopolisCity_Gym_1F_Text_JuanRematchDefeat
+	msgbox SootopolisCity_Gym_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM94_SURF
+	goto SootopolisCity_Gym_1F_EventScript_JuanRematchEnd
+	end
+	
+SootopolisCity_Gym_1F_EventScript_Start_Rematch_4::
+	goto_if_unset FLAG_RECEIVED_TM40 SootopolisCity_Gym_1F_EventScript_Start_Rematch_Party_3
+	checkitem ITEM_TM98_WATERFALL, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq SootopolisCity_Gym_1F_EventScript_Start_Rematch_5
+	trainerbattle_no_intro TRAINER_JUAN_4, SootopolisCity_Gym_1F_Text_JuanRematchDefeat
+	msgbox SootopolisCity_Gym_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM98_WATERFALL
+	goto SootopolisCity_Gym_1F_EventScript_JuanRematchEnd
+	end
+	
+SootopolisCity_Gym_1F_EventScript_Start_Rematch_5::
+	goto_if_unset FLAG_RECEIVED_TM04 SootopolisCity_Gym_1F_EventScript_Start_Rematch_Party_4
+	goto_if_set FLAG_GOT_GYARADOSITE SootopolisCity_Gym_1F_EventScript_Start_Rematch_6
+	trainerbattle_no_intro TRAINER_JUAN_4, SootopolisCity_Gym_1F_Text_JuanRematchDefeat
+	msgbox SootopolisCity_Gym_Text_GetMegaStone, MSGBOX_DEFAULT
+	giveitem ITEM_GYARADOSITE
+	setflag FLAG_GOT_GYARADOSITE
+	goto SootopolisCity_Gym_1F_EventScript_JuanRematchEnd
+	end
+	
+SootopolisCity_Gym_1F_EventScript_Start_Rematch_6::
+	goto_if_unset FLAG_RECEIVED_TM03 SootopolisCity_Gym_1F_EventScript_Start_Rematch_Party_4
+	checkitem ITEM_TM102_LIQUIDATION, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq SootopolisCity_Gym_1F_EventScript_Start_Rematch_Final
+	trainerbattle_no_intro TRAINER_JUAN_5, SootopolisCity_Gym_1F_Text_JuanRematchDefeat
+	msgbox SootopolisCity_Gym_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM102_LIQUIDATION
+	goto SootopolisCity_Gym_1F_EventScript_JuanRematchEnd
+	end
+	
+SootopolisCity_Gym_1F_EventScript_Start_Rematch_Final::
+	random 5
+	switch VAR_RESULT
+	case 0, SootopolisCity_Gym_1F_EventScript_Start_Rematch_Party_1
+	case 1, SootopolisCity_Gym_1F_EventScript_Start_Rematch_Party_2
+	case 2, SootopolisCity_Gym_1F_EventScript_Start_Rematch_Party_3
+	case 3, SootopolisCity_Gym_1F_EventScript_Start_Rematch_Party_4
+	case 4, SootopolisCity_Gym_1F_EventScript_Start_Rematch_Party_5
+	end
+	
+SootopolisCity_Gym_1F_EventScript_Start_Rematch_Party_1::
+	trainerbattle_no_intro TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, SootopolisCity_Gym_1F_EventScript_JuanRematchEnd
+	msgbox SootopolisCity_Gym_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_MODEST_MINT, 3
+	goto SootopolisCity_Gym_1F_EventScript_JuanRematchEnd
+	end
+	
+SootopolisCity_Gym_1F_EventScript_Start_Rematch_Party_2::
+	trainerbattle_no_intro TRAINER_JUAN_2, SootopolisCity_Gym_1F_Text_JuanRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, SootopolisCity_Gym_1F_EventScript_JuanRematchEnd
+	msgbox SootopolisCity_Gym_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_MILD_MINT, 3
+	goto SootopolisCity_Gym_1F_EventScript_JuanRematchEnd
+	end
+	
+SootopolisCity_Gym_1F_EventScript_Start_Rematch_Party_3::
+	trainerbattle_no_intro TRAINER_JUAN_3, SootopolisCity_Gym_1F_Text_JuanRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, SootopolisCity_Gym_1F_EventScript_JuanRematchEnd
+	msgbox SootopolisCity_Gym_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_RASH_MINT, 3
+	goto SootopolisCity_Gym_1F_EventScript_JuanRematchEnd
+	end
+	
+SootopolisCity_Gym_1F_EventScript_Start_Rematch_Party_4::
+	trainerbattle_no_intro TRAINER_JUAN_4, SootopolisCity_Gym_1F_Text_JuanRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, SootopolisCity_Gym_1F_EventScript_JuanRematchEnd
+	msgbox SootopolisCity_Gym_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_QUIET_MINT, 3
+	goto SootopolisCity_Gym_1F_EventScript_JuanRematchEnd
+	end
+	
+SootopolisCity_Gym_1F_EventScript_Start_Rematch_Party_5::
+	trainerbattle_no_intro TRAINER_JUAN_5, SootopolisCity_Gym_1F_Text_JuanRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, SootopolisCity_Gym_1F_EventScript_JuanRematchEnd
+	msgbox SootopolisCity_Gym_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_TIMID_MINT, 3
+	goto SootopolisCity_Gym_1F_EventScript_JuanRematchEnd
+	end
+	
+SootopolisCity_Gym_Text_GetTM:
+	.string "Juan: Please take this\n"
+	.string "Technical Machine.$"
+
+SootopolisCity_Gym_Text_GetMegaStone:
+	.string "Juan: Please take this\n"
+	.string "Mega Stone, with you.\p"
+	.string "Make an Gyarados hold it to\n"
+	.string "unleash its Hidden Potential.$"
+	
+SootopolisCity_Gym_Text_GetReward:
+	.string "Juan: Please take this\n"
+	.string "Item as a Reward.$"
+
+//rematches end
+
+SootopolisCity_Gym_1F_EventScript_GiveWaterPulse:: @ 8224FD4
+	giveitem ITEM_TM03
+	compare VAR_RESULT, FALSE
+	goto_if_eq Common_EventScript_BagIsFull
+	msgbox SootopolisCity_Gym_1F_Text_ExplainWaterPulse, MSGBOX_DEFAULT
+	return
+
+SootopolisCity_Gym_1F_EventScript_GiveWaterPulse2:: @ 8224FF7
+	giveitem ITEM_TM03
+	compare VAR_RESULT, FALSE
+	goto_if_eq Common_EventScript_ShowBagIsFull
+	msgbox SootopolisCity_Gym_1F_Text_ExplainWaterPulse, MSGBOX_DEFAULT
+	release
+	end
+
+SootopolisCity_Gym_1F_EventScript_GoGetFortreeBadge:: @ 822501B
+	msgbox SootopolisCity_Gym_1F_Text_GoGetFortreeBadge, MSGBOX_DEFAULT
+	release
+	end
+
+SootopolisCity_Gym_1F_EventScript_GymGuide:: @ 8225040
+	lock
+	faceplayer
+	goto_if_set FLAG_DEFEATED_SOOTOPOLIS_GYM, SootopolisCity_Gym_1F_EventScript_GymGuidePostVictory
+	msgbox SootopolisCity_Gym_1F_Text_GymGuideAdvice, MSGBOX_DEFAULT
+	release
+	end
+
+SootopolisCity_Gym_1F_EventScript_GymGuidePostVictory:: @ 8225055
+	msgbox SootopolisCity_Gym_1F_Text_GymGuidePostVictory, MSGBOX_DEFAULT
+	release
+	end
+
+SootopolisCity_Gym_1F_EventScript_LeftGymStatue:: @ 822505F
+	lockall
+	goto_if_set FLAG_BADGE08_GET, SootopolisCity_Gym_1F_EventScript_GymStatueCertified
+	goto SootopolisCity_Gym_1F_EventScript_GymStatue
+	end
+
+SootopolisCity_Gym_1F_EventScript_RightGymStatue:: @ 822506F
+	lockall
+	goto_if_set FLAG_BADGE08_GET, SootopolisCity_Gym_1F_EventScript_GymStatueCertified
+	goto SootopolisCity_Gym_1F_EventScript_GymStatue
+	end
+
+SootopolisCity_Gym_1F_EventScript_GymStatueCertified:: @ 822507F
+	msgbox SootopolisCity_Gym_1F_Text_GymStatueCertified, MSGBOX_DEFAULT
+	releaseall
+	end
+
+SootopolisCity_Gym_1F_EventScript_GymStatue:: @ 8225089
+	msgbox SootopolisCity_Gym_1F_Text_GymStatue, MSGBOX_DEFAULT
+	releaseall
+	end
+
+SootopolisCity_Gym_1F_Text_GymGuideAdvice: @ 8225093
+	.string "Yo! How's it going, Champion-\n"
+	.string "bound {PLAYER}?\p"
+	.string "Sootopolis's Gym Jaun is\n"
+	.string "a master of Water-type Pokémon.\p"
+	.string "And, to get to Juan, an icy floor\n"
+	.string "will hamper your progress…\p"
+	.string "Listen, I'm sorry, but that's all the\n"
+	.string "advice that I have for you.\p"
+	.string "The rest of the way, you have to\n"
+	.string "go for it yourself!$"
+
+SootopolisCity_Gym_1F_Text_GymGuidePostVictory: @ 82251AF
+	.string "Yow! You've beaten even Juan, who\n"
+	.string "was supposedly the best in all Hoenn!$"
+
+SootopolisCity_Gym_1F_Text_JuanIntro: @ 8225268
+	.string "Welcome Challenger my name is Juan,\n"
+	.string "The Gym leader of Sootopolis.\p"
+	.string "Once, I had given up my position as\n"
+	.string "the Gym Leader to my apprentice,\l"
+	.string "However, a compelling reason arose\l"
+	.string "for me to make a comeback.\p"
+	.string "Ah, but enough chatter. Let us,\n"
+	.string "begin our match, shall we?\p"
+	.string "Please, you shall bear witness to our\n"
+	.string "artistry.\l"
+	.string "A grand illusion of water sculpted\l"
+	.string "by Pokémon and myself!$"
+
+@ NOTE: This defeat text actually causes a buffer overflow. It's about 50 bytes too long for
+@ the gDisplayedStringBattle buffer that it's put into, and it stomps all over the gBattleTextBuffs
+@ after, as well as the otherwise unused array after that. One wonders if that's the reason for
+@ the existence of that unused array of ints.
+SootopolisCity_Gym_1F_Text_JuanDefeat: @ 8225432
+	.string "I see! Your elegance radiates\n"
+	.string "glitz and glamor.\p"
+	.string "It's only natural that you won.\n"
+	.string "I shall reward you with this,\n"
+	.string "the Rain Badge, Please accept it!$"
+
+SootopolisCity_Gym_1F_Text_ReceivedRainBadge: @ 8225598
+	.string "{PLAYER} received the Rain Badge\n"
+	.string "from Juan.$"
+
+SootopolisCity_Gym_1F_Text_ExplainRainBadgeTakeThis: @ 82255BE
+	.string "And, so that you never forget the\n"
+	.string "battle we shared, take this…$"
+
+SootopolisCity_Gym_1F_Text_ExplainWaterPulse: @ 82256C1
+	.string "The Technical Machine I handed you\n"
+	.string "contains Rain Dance.\p"
+	.string "When used, it will summon a heavy\n"
+	.string "rain that last 5 turns.\p"
+	.string "… … … … … …$"
+
+SootopolisCity_Gym_1F_Text_RegisteredJuan: @ 822574D
+	.string "Registered Gym Leader Juan\n"
+	.string "in the Pokenav.$"
+
+SootopolisCity_Gym_1F_Text_JuanPostBattle: @ 8225778
+	.string "The Trainers who have gathered all\n"
+	.string "the Gym Badges of Hoenn should make\l"
+	.string "way to the ultimate destination.\p"
+	.string "The Pokémon League.\p"
+	.string "Travel to the easternmost reaches\n"
+	.string "of Hoenn, to the island EVER GRANDE.\p"
+	.string "There, you shall find the Pokémon\n"
+	.string "League.$"
+
+SootopolisCity_Gym_1F_Text_GoGetFortreeBadge: @ 8225865
+	.string "There remains but one Badge to\n"
+	.string "obtain in Hoenn.\p"
+	.string "If you wish to challenge the Pokémon\n"
+	.string "League, you must obtain the last\l"
+	.string "Badge from the Gym in Fortree.$"
+
+SootopolisCity_Gym_1F_Text_GymStatue: @ 82258FA
+	.string "Sootopolis City Pokémon Gym$"
+
+SootopolisCity_Gym_1F_Text_GymStatueCertified: @ 8225916
+	.string "Sootopolis City Pokémon Gym\p"
+	.string "Juan'S Certified Trainers:\n"
+	.string "{PLAYER}$"
+
+SootopolisCity_Gym_1F_Text_JuanPreRematch: @ 8225950
+	.string "Juan: Ah, this Gym had returned to its\n"
+	.string "usual state of serenity…\p"
+	.string "But our young typhoon has returned\n"
+	.string "to put us to the test again!\p"
+	.string "Well, my friend, most certainly!\p"
+	.string "I shall be delighted to dance with you\n"
+	.string "as often as you wish!$"
+
+SootopolisCity_Gym_1F_Text_JuanRematchDefeat: @ 8225A2E
+	.string "Ahahaha, you are the winner!\n"
+	.string "You have defeated me again!$"
+
+SootopolisCity_Gym_1F_Text_JuanPostRematch: @ 8225A67
+	.string "Juan: If I told you to become my\n"
+	.string "apprentice, you will refuse, I am sure.\p"
+	.string "I would like to make a gift of my coat\n"
+	.string "to you.\p"
+	.string "But again, you will refuse.\n"
+	.string "I imagine that to be so.\p"
+	.string "And that, my friend, is a certain sign\n"
+	.string "of nobility!$"
+
+SootopolisCity_Gym_1F_Text_JuanRematchNeedTwoMons: @ 8225B48
+	.string "Juan: Ah, this Gym had returned to its\n"
+	.string "usual state of serenity…\p"
+	.string "But our young typhoon has returned\n"
+	.string "to put us to the test again!\p"
+	.string "Well, my friend, most certainly!\n"
+	.string "I shall be delighted to dance with you…\p"
+	.string "Ah, no, no, no.\n"
+	.string "You have with you but one Pokémon.\p"
+	.string "I wish that you would return with\n"
+	.string "two, perhaps more, Pokémon, please.$"
+
+`
+
+script SootopolisCity_Gym_1F_EventScript_Juan_New{
+	lock
+	faceplayer
+    if (flag(FLAG_BADGE08_GET) && !flag(FLAG_JUAN_REMATCH)){
+		//Rematch
+		//Intro
+		msgbox(SootopolisCity_Gym_1F_Text_JuanPreRematch, MSGBOX_NPC)
+		//Trainer Battle
+		call(SootopolisCity_Gym_1F_EventScript_Juan_Battle_New)
+
+        //Defeated Message and Reset Rematches for other Leaders
+		msgbox(SootopolisCity_Gym_1F_Text_JuanPostRematch, MSGBOX_NPC)
+		call(Gym_EventScript_Reset_Rematches)
+
+		//Give TMs or Items
+		msgbox(format("Please take these items with you."), MSGBOX_NPC)
+		call(SootopolisCity_Gym_1F_EventScript_Juan_Give_Gifts)
+
+		msgbox(format("Juan: Come back tomorrow so we can battle again."), MSGBOX_NPC)
+
+		//Set the Rematch Flag as False
+		setflag(FLAG_JUAN_REMATCH)
+    }
+	elif(flag(FLAG_BADGE08_GET) && flag(FLAG_JUAN_REMATCH)){
+		//You can challenge the other trainers an infinite number of times
+		msgbox(format("Juan: My Pokémon are tired for today, but the other trainers here need training, do you want to try battling them again?"), MSGBOX_YESNO)
+		if(var(VAR_RESULT) == 1){
+			cleartrainerflag(TRAINER_ANDREA)
+			cleartrainerflag(TRAINER_CRISSY)
+			cleartrainerflag(TRAINER_BRIANNA)
+			cleartrainerflag(TRAINER_CONNIE)
+			cleartrainerflag(TRAINER_BRIDGET)
+			cleartrainerflag(TRAINER_OLIVIA)
+			cleartrainerflag(TRAINER_TIFFANY)
+			cleartrainerflag(TRAINER_BETHANY)
+			cleartrainerflag(TRAINER_ANNIKA)
+			cleartrainerflag(TRAINER_DAPHNE)
+			msgbox(format("Juan: I will tell them to get ready, so take care on your way out."), MSGBOX_NPC)
+		}
+		else{
+			//Set all the trainers in the Gym as Defeated
+			setvar(VAR_0x8008, 8)
+			call(Common_EventScript_SetGymTrainers)
+			msgbox(format("Juan: Come back tomorrow so we can battle again."), MSGBOX_NPC)
+		}
+	}
+	elif((!defeated(TRAINER_ANDREA) || !defeated(TRAINER_CRISSY) || !defeated(TRAINER_BRIANNA) || !defeated(TRAINER_CONNIE) || !defeated(TRAINER_BRIDGET) ||
+	      !defeated(TRAINER_OLIVIA) || !defeated(TRAINER_TIFFANY) || !defeated(TRAINER_BETHANY) || !defeated(TRAINER_ANNIKA) || !defeated(TRAINER_DAPHNE))
+	      && flag(FLAG_HARD_MODE)){
+		msgbox(format("Juan: Sorry, but you need to defeat every trainer on this Gym before battling me"), MSGBOX_NPC)
+	}
+	else{
+		//First Battle
+		//Intro
+		msgbox(SootopolisCity_Gym_1F_Text_JuanIntro, MSGBOX_NPC)
+		//Trainer Battle
+		call(SootopolisCity_Gym_1F_EventScript_Juan_Battle_New)
+
+		//Get the Badge
+		message(SootopolisCity_Gym_1F_Text_ReceivedRainBadge)
+		waitmessage
+		call(Common_EventScript_PlayGymBadgeFanfare)
+		msgbox(format("Please take these items with you, too,"), MSGBOX_NPC)
+		setflag(FLAG_DEFEATED_SOOTOPOLIS_GYM)
+		setflag(FLAG_BADGE08_GET)
+
+		//Give Special Key Item
+		call(Special_Gym_EventScript_Give_Item)
+
+		//Give TM
+		giveitem(ITEM_TM03_WATER_PULSE)
+		msgbox(format("That Technical Machine contains the move Water Pulse.\p"
+                      "This move inflicts damage and has a chance of confusing the target.$"), MSGBOX_NPC)
+		waitfanfare
+		closemessage
+		setflag(FLAG_TEMP_9)
+
+		//Give TMs or Items
+		call(SootopolisCity_Gym_1F_EventScript_Juan_Give_Gifts)
+
+		//Set all the trainers in the Gym as Defeated
+		setvar(VAR_0x8008, 8)
+		call(Common_EventScript_SetGymTrainers)
+
+		//Register Trainer in your PokeNav
+		msgbox(SootopolisCity_Gym_1F_Text_RegisteredJuan, MSGBOX_DEFAULT)
+		playfanfare(MUS_REGISTER_MATCH_CALL)
+		setflag(FLAG_ENABLE_JUAN_MATCH_CALL)
+		waitfanfare
+		closemessage
+
+		//Defeated Message and Reset Rematches for other Leaders
+		msgbox(SootopolisCity_Gym_1F_Text_JuanPostBattle, MSGBOX_NPC)
+		call(Gym_EventScript_Reset_Rematches)
+
+		//Set the Rematch Flag as False
+		setflag(FLAG_JUAN_REMATCH)
+	}
+    release
+    end
+}
+
+script SootopolisCity_Gym_1F_EventScript_Juan_Battle_New{
+	if(flag(FLAG_BADGE08_GET)){
+		//Rematch
+		if(flag(FLAG_HARD_MODE)){
+			//Hard Mode
+			switch (var(VAR_NUM_BADGES)) {
+			case 0: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+			case 1: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+			case 2: trainerbattle_no_intro(TRAINER_JUAN_2, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+			case 3: trainerbattle_no_intro(TRAINER_JUAN_2, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+			case 4: trainerbattle_no_intro(TRAINER_JUAN_3, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+			case 5: trainerbattle_no_intro(TRAINER_JUAN_3, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+			case 6: trainerbattle_no_intro(TRAINER_JUAN_4, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+			case 7: trainerbattle_no_intro(TRAINER_JUAN_4, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+			default:
+				if(flag(FLAG_SYS_GAME_CLEAR)){
+					//When you beat the game you can get a random rematch each day
+					random(5)
+					switch (var(VAR_RESULT)) {
+						case 0: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+						case 1: trainerbattle_no_intro(TRAINER_JUAN_2, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+						case 2: trainerbattle_no_intro(TRAINER_JUAN_3, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+						case 3: trainerbattle_no_intro(TRAINER_JUAN_4, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+						case 4: trainerbattle_no_intro(TRAINER_JUAN_5, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+					}
+				}
+				else{
+					//If you have 8 badges you battle its final team
+					trainerbattle_no_intro(TRAINER_JUAN_5, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+				}
+			}
+		}
+		elif(flag(FLAG_NORMAL_MODE)){
+			//Normal Mode
+			switch (var(VAR_NUM_BADGES)) {
+				case 0: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+				case 1: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+				case 2: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+				case 3: trainerbattle_no_intro(TRAINER_JUAN_2, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+				case 4: trainerbattle_no_intro(TRAINER_JUAN_2, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+				case 5: trainerbattle_no_intro(TRAINER_JUAN_3, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+				case 6: trainerbattle_no_intro(TRAINER_JUAN_3, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+				case 7: trainerbattle_no_intro(TRAINER_JUAN_4, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+				default:
+					if(flag(FLAG_SYS_GAME_CLEAR)){
+						//When you beat the game you can get a random rematch each day
+						random(5)
+						switch (var(VAR_RESULT)) {
+							case 0: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+							case 1: trainerbattle_no_intro(TRAINER_JUAN_2, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+							case 2: trainerbattle_no_intro(TRAINER_JUAN_3, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+							case 3: trainerbattle_no_intro(TRAINER_JUAN_4, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+							case 4: trainerbattle_no_intro(TRAINER_JUAN_5, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+						}
+					}
+					else{
+						//If you have 8 badges you battle its final team
+						trainerbattle_no_intro(TRAINER_JUAN_5, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+					}
+			}
+		}
+		else{
+			//Easy Mode
+			switch (var(VAR_NUM_BADGES)) {
+				case 0: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+				case 1: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+				case 2: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+				case 3: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+				case 4: trainerbattle_no_intro(TRAINER_JUAN_2, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+				case 5: trainerbattle_no_intro(TRAINER_JUAN_2, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+				case 6: trainerbattle_no_intro(TRAINER_JUAN_3, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+				case 7: trainerbattle_no_intro(TRAINER_JUAN_3, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+				default:
+					if(flag(FLAG_SYS_GAME_CLEAR)){
+						//When you beat the game you can get a random rematch each day
+						random(5)
+						switch (var(VAR_RESULT)) {
+							case 0: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+							case 1: trainerbattle_no_intro(TRAINER_JUAN_2, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+							case 2: trainerbattle_no_intro(TRAINER_JUAN_3, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+							case 3: trainerbattle_no_intro(TRAINER_JUAN_4, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+							case 4: trainerbattle_no_intro(TRAINER_JUAN_5, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+						}
+					}
+					else{
+						//If you have 8 badges you battle its final team
+						trainerbattle_no_intro(TRAINER_JUAN_4, SootopolisCity_Gym_1F_Text_JuanRematchDefeat)
+					}
+			}
+		}
+	}
+	else{
+		//First Battle
+		if(flag(FLAG_HARD_MODE)){
+			//Hard Mode
+			switch (var(VAR_NUM_BADGES)) {
+			case 0: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanDefeat)
+			case 1: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanDefeat)
+			case 2: trainerbattle_no_intro(TRAINER_JUAN_2, SootopolisCity_Gym_1F_Text_JuanDefeat)
+			case 3: trainerbattle_no_intro(TRAINER_JUAN_2, SootopolisCity_Gym_1F_Text_JuanDefeat)
+			case 4: trainerbattle_no_intro(TRAINER_JUAN_3, SootopolisCity_Gym_1F_Text_JuanDefeat)
+			case 5: trainerbattle_no_intro(TRAINER_JUAN_3, SootopolisCity_Gym_1F_Text_JuanDefeat)
+			case 6: trainerbattle_no_intro(TRAINER_JUAN_4, SootopolisCity_Gym_1F_Text_JuanDefeat)
+			case 7: trainerbattle_no_intro(TRAINER_JUAN_4, SootopolisCity_Gym_1F_Text_JuanDefeat)
+			default:
+				if(flag(FLAG_SYS_GAME_CLEAR)){
+					//When you beat the game you can get a random rematch each day
+					random(5)
+					switch (var(VAR_RESULT)) {
+						case 0: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanDefeat)
+						case 1: trainerbattle_no_intro(TRAINER_JUAN_2, SootopolisCity_Gym_1F_Text_JuanDefeat)
+						case 2: trainerbattle_no_intro(TRAINER_JUAN_3, SootopolisCity_Gym_1F_Text_JuanDefeat)
+						case 3: trainerbattle_no_intro(TRAINER_JUAN_4, SootopolisCity_Gym_1F_Text_JuanDefeat)
+						case 4: trainerbattle_no_intro(TRAINER_JUAN_5, SootopolisCity_Gym_1F_Text_JuanDefeat)
+					}
+				}
+				else{
+					//If you have 8 badges you battle its final team
+					trainerbattle_no_intro(TRAINER_JUAN_5, SootopolisCity_Gym_1F_Text_JuanDefeat)
+				}
+			}
+		}
+		elif(flag(FLAG_NORMAL_MODE)){
+			//Normal Mode
+			switch (var(VAR_NUM_BADGES)) {
+				case 0: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanDefeat)
+				case 1: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanDefeat)
+				case 2: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanDefeat)
+				case 3: trainerbattle_no_intro(TRAINER_JUAN_2, SootopolisCity_Gym_1F_Text_JuanDefeat)
+				case 4: trainerbattle_no_intro(TRAINER_JUAN_2, SootopolisCity_Gym_1F_Text_JuanDefeat)
+				case 5: trainerbattle_no_intro(TRAINER_JUAN_3, SootopolisCity_Gym_1F_Text_JuanDefeat)
+				case 6: trainerbattle_no_intro(TRAINER_JUAN_3, SootopolisCity_Gym_1F_Text_JuanDefeat)
+				case 7: trainerbattle_no_intro(TRAINER_JUAN_4, SootopolisCity_Gym_1F_Text_JuanDefeat)
+				default:
+					if(flag(FLAG_SYS_GAME_CLEAR)){
+						//When you beat the game you can get a random rematch each day
+						random(5)
+						switch (var(VAR_RESULT)) {
+							case 0: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanDefeat)
+							case 1: trainerbattle_no_intro(TRAINER_JUAN_2, SootopolisCity_Gym_1F_Text_JuanDefeat)
+							case 2: trainerbattle_no_intro(TRAINER_JUAN_3, SootopolisCity_Gym_1F_Text_JuanDefeat)
+							case 3: trainerbattle_no_intro(TRAINER_JUAN_4, SootopolisCity_Gym_1F_Text_JuanDefeat)
+							case 4: trainerbattle_no_intro(TRAINER_JUAN_5, SootopolisCity_Gym_1F_Text_JuanDefeat)
+						}
+					}
+					else{
+						//If you have 8 badges you battle its final team
+						trainerbattle_no_intro(TRAINER_JUAN_5, SootopolisCity_Gym_1F_Text_JuanDefeat)
+					}
+			}
+		}
+		else{
+			//Easy Mode
+			switch (var(VAR_NUM_BADGES)){
+				case 0: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanDefeat)
+				case 1: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanDefeat)
+				case 2: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanDefeat)
+				case 3: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanDefeat)
+				case 4: trainerbattle_no_intro(TRAINER_JUAN_2, SootopolisCity_Gym_1F_Text_JuanDefeat)
+				case 5: trainerbattle_no_intro(TRAINER_JUAN_2, SootopolisCity_Gym_1F_Text_JuanDefeat)
+				case 6: trainerbattle_no_intro(TRAINER_JUAN_3, SootopolisCity_Gym_1F_Text_JuanDefeat)
+				case 7: trainerbattle_no_intro(TRAINER_JUAN_3, SootopolisCity_Gym_1F_Text_JuanDefeat)
+				default:
+					if(flag(FLAG_SYS_GAME_CLEAR)){
+						//When you beat the game you can get a random rematch each day
+						random(5)
+						switch (var(VAR_RESULT)) {
+							case 0: trainerbattle_no_intro(TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanDefeat)
+							case 1: trainerbattle_no_intro(TRAINER_JUAN_2, SootopolisCity_Gym_1F_Text_JuanDefeat)
+							case 2: trainerbattle_no_intro(TRAINER_JUAN_3, SootopolisCity_Gym_1F_Text_JuanDefeat)
+							case 3: trainerbattle_no_intro(TRAINER_JUAN_4, SootopolisCity_Gym_1F_Text_JuanDefeat)
+							case 4: trainerbattle_no_intro(TRAINER_JUAN_5, SootopolisCity_Gym_1F_Text_JuanDefeat)
+						}
+					}
+					else{
+						//If you have 8 badges you battle its final team
+						trainerbattle_no_intro(TRAINER_JUAN_4, SootopolisCity_Gym_1F_Text_JuanDefeat)
+					}
+			}
+		}
+	}
+	return
+}
+
+script SootopolisCity_Gym_1F_EventScript_Juan_Give_Gifts{
+	//Give Rock Polish
+	checkitem(ITEM_TM55_SCALD, 1)
+	if(var(VAR_NUM_BADGES) >= 4 && var(VAR_RESULT) == FALSE){
+		giveitem(ITEM_TM55_SCALD)
+		msgbox(format("Juan: This move inflicts damage and has a high chance of burning the target."), MSGBOX_NPC)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+
+	//Give Stealth Rock
+	checkitem(ITEM_TM94_SURF, 1)
+	if(var(VAR_NUM_BADGES) >= 6 && var(VAR_RESULT) == FALSE){
+		giveitem(ITEM_TM94_SURF)
+		msgbox(format("Juan: This move does damages everything on the field even your allies."), MSGBOX_NPC)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+
+	//Give Power Gem
+	checkitem(ITEM_TM98_WATERFALL, 1)
+	if(var(VAR_NUM_BADGES) >= 7 && var(VAR_RESULT) == FALSE){
+		giveitem(ITEM_TM98_WATERFALL)
+		msgbox(format("Juan: This is a Physical oriented Water-type move, it can flinch the target."), MSGBOX_NPC)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+
+	//Give Power Gem
+	checkitem(ITEM_TM102_LIQUIDATION, 1)
+	if(var(VAR_NUM_BADGES) >= 8 && var(VAR_RESULT) == FALSE){
+		giveitem(ITEM_TM102_LIQUIDATION)
+		msgbox(format("Juan: This is one of the best physical Water-type moves it has a chance of lowering the target defense."), MSGBOX_NPC)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+
+	//Give Megastone
+	if(var(VAR_NUM_BADGES) >= 7 && !flag(FLAG_GOT_GYARADOSITE)){
+		msgbox(format("Juan: Take this as an special gift from me, it's an Gyarados."), MSGBOX_NPC)
+		giveitem(ITEM_GYARADOSITE)
+		msgbox(format("Make an Gyarados hold it to unleash its real potential."), MSGBOX_NPC)
+		setflag(FLAG_GOT_GYARADOSITE)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+	elif(!flag(FLAG_TEMP_9)){
+		//Get 2 random items for beating him
+		random(7)
+		switch (var(VAR_RESULT)) {
+			case 0: giveitem(ITEM_WATER_GEM, 2)
+			case 1: giveitem(ITEM_WATER_STONE, 2)
+			case 2: giveitem(ITEM_LURE_BALL_SEAL, 2)
+			case 3: giveitem(ITEM_DRAGON_SCALE, 2)
+			case 4: giveitem(ITEM_PRISM_SCALE, 2)
+			case 5: giveitem(ITEM_DAMP_ROCK, 2)
+			case 6: giveitem(ITEM_LUSTROUS_ORB, 2)
+		}
+	}
+	return
+}
+
+script SootopolisCity_Gym_1F_EventScript_GymGuide_New{
+	lock
+	faceplayer
+	if(flag(FLAG_DEFEATED_SOOTOPOLIS_GYM)){
+		if(!flag(FLAG_JUAN_REMATCH)){
+			msgbox(format("Guide: Hello {PLAYER}, I see you came to this Gym again, do you want me to take you to the Leader?"), MSGBOX_YESNO)
+			if(var(VAR_RESULT) == 1){
+				msgbox(format("Let me tell the leader that you are here."), MSGBOX_NPC)
+				warp(MAP_SOOTOPOLIS_CITY_GYM_1F, 255, 8, 3)
+			}
+			else{
+				msgbox(format("I see, you can also go throught the Gym if you want."), MSGBOX_NPC)
+			}
+		}
+		else{
+			msgbox(SootopolisCity_Gym_1F_Text_GymGuidePostVictory, MSGBOX_NPC)
+		}
+	}
+	else{
+		msgbox(SootopolisCity_Gym_1F_Text_GymGuideAdvice, MSGBOX_NPC)
+	}
+	release
+	end
+}
+
+script SootopolisCity_Gym_1F_EventScript_Gym_Horsea{
+	lock
+	faceplayer
+	switch(var(VAR_GYM_POKEMON_SPECIES)){
+		case SPECIES_HORSEA:
+			if (flag(FLAG_BADGE08_GET) && !flag(FLAG_JUAN_REMATCH)){
+				//Ready for a rematch
+				msgbox(format("Horsea: sea!"), MSGBOX_NPC)
+				msgbox(format("The Pokémon seems like it wants a rematch with You, it looks really excited."), MSGBOX_SIGN)
+				waitmessage
+			}
+			elif(flag(FLAG_BADGE08_GET) && flag(FLAG_JUAN_REMATCH)){
+				//After a rematch
+				msgbox(format("Horsea: sea..."), MSGBOX_NPC)
+				msgbox(format("The Pokémon seems tired after today's battle, its better to let it rest."), MSGBOX_SIGN)
+				waitmessage
+			}
+			else{
+				msgbox(format("Horsea: sea?"), MSGBOX_NPC)
+				msgbox(format("The Pokémon is currently looking shooting ink from its mouth."), MSGBOX_SIGN)
+				waitmessage
+			}
+		case SPECIES_SEADRA:
+			if (flag(FLAG_BADGE08_GET) && !flag(FLAG_JUAN_REMATCH)){
+				//Ready for a rematch
+				msgbox(format("Seadra: dra!"), MSGBOX_NPC)
+				msgbox(format("The Pokémon seems like it wants a rematch with You, it looks really excited."), MSGBOX_SIGN)
+				waitmessage
+			}
+			elif(flag(FLAG_BADGE08_GET) && flag(FLAG_JUAN_REMATCH)){
+				msgbox(format("Seadra: dra..."), MSGBOX_NPC)
+				msgbox(format("The Pokémon seems tired after today's battle, its better to let it rest."), MSGBOX_SIGN)
+				waitmessage
+			}
+			else{
+				msgbox(format("Seadra: dra?"), MSGBOX_NPC)
+				msgbox(format("The Pokémon is currently looking at some ring targets."), MSGBOX_SIGN)
+				waitmessage
+			}
+		case SPECIES_KINGDRA:
+			if (flag(FLAG_BADGE08_GET) && !flag(FLAG_JUAN_REMATCH)){
+				//Ready for a rematch
+				msgbox(format("Seaking: ron!"), MSGBOX_NPC)
+				msgbox(format("The Pokémon seems like it wants a rematch with You, its skin look's really tought."), MSGBOX_SIGN)
+				waitmessage
+			}
+			elif(flag(FLAG_BADGE08_GET) && flag(FLAG_JUAN_REMATCH)){
+				//Defeated
+				msgbox(format("Seaking: king..."), MSGBOX_NPC)
+				msgbox(format("The Pokémon seems tired after today's battle, its better to let it rest."), MSGBOX_SIGN)
+				waitmessage
+			}
+			else{
+				//First time
+				msgbox(format("Seaking: king?"), MSGBOX_NPC)
+				msgbox(format("The Pokémon is currently shooting some ring targets."), MSGBOX_SIGN)
+				waitmessage
+			}
+	}
+	release
+	end
+}
+
+script SootopolisCity_Gym_1F_EventScript_Set_Gym_Pokemon_Species{
+	switch (var(VAR_NUM_BADGES)) {
+		case 0: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_HORSEA) setvar(VAR_GYM_POKEMON_SPECIES,  SPECIES_HORSEA)  //Level 13 
+		case 1: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_HORSEA) setvar(VAR_GYM_POKEMON_SPECIES,  SPECIES_HORSEA)  //Level 19
+		case 2: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_HORSEA) setvar(VAR_GYM_POKEMON_SPECIES,  SPECIES_HORSEA)  //Level 25
+		case 3: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_SEADRA) setvar(VAR_GYM_POKEMON_SPECIES,  SPECIES_SEADRA)  //Level 31
+		case 4: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_SEADRA) setvar(VAR_GYM_POKEMON_SPECIES,  SPECIES_SEADRA)  //Level 38
+		case 5: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_KINGDRA) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_KINGDRA) //Level 45
+		case 6: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_KINGDRA) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_KINGDRA) //Level 51
+		case 7: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_KINGDRA) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_KINGDRA) //Level 62
+		case 8: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_KINGDRA) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_KINGDRA) //Level 70
+	}
+
+	if(flag(FLAG_NO_EVOLUTION_MODE)){
+		setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_HORSEA) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_HORSEA)
+	}
+	return
+}

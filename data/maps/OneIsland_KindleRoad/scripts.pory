@@ -1,0 +1,253 @@
+raw `
+OneIsland_KindleRoad_MapScripts::
+	.byte 0
+
+OneIsland_KindleRoad_EventScript_RouteSign:: @ 8168759
+	msgbox OneIsland_KindleRoad_Text_RouteSign, MSGBOX_SIGN
+	end
+
+OneIsland_KindleRoad_EventScript_EmberSpaSign:: @ 8168762
+	msgbox OneIsland_KindleRoad_Text_EmberSpaSign, MSGBOX_SIGN
+	end
+	
+OneIsland_KindleRoad_EventScript_EmberSpaClosed:: @ 81ABBF1
+	lock
+	faceplayer
+	msgbox OneIsland_KindleRoad_Text_EmberSpaClosed, MSGBOX_NPC
+	release
+	end
+	
+OneIsland_KindleRoad_EventScript_Maria:: @ 81ABBF1
+	trainerbattle_single TRAINER_SWIMMER_FEMALE_MARIA, OneIsland_KindleRoad_Text_MariaIntro, OneIsland_KindleRoad_Text_MariaDefeat
+	msgbox OneIsland_KindleRoad_Text_MariaPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+OneIsland_KindleRoad_EventScript_Abigail:: @ 81ABC2F
+	trainerbattle_single TRAINER_SWIMMER_FEMALE_ABIGAIL, OneIsland_KindleRoad_Text_AbigailIntro, OneIsland_KindleRoad_Text_AbigailDefeat
+	msgbox OneIsland_KindleRoad_Text_AbigailPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+OneIsland_KindleRoad_EventScript_Finn:: @ 81ABC6D
+	trainerbattle_single TRAINER_SWIMMER_MALE_FINN, OneIsland_KindleRoad_Text_FinnIntro, OneIsland_KindleRoad_Text_FinnDefeat
+	msgbox OneIsland_KindleRoad_Text_FinnPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+OneIsland_KindleRoad_EventScript_Garrett:: @ 81ABCAB
+	trainerbattle_single TRAINER_SWIMMER_MALE_GARRETT, OneIsland_KindleRoad_Text_GarrettIntro, OneIsland_KindleRoad_Text_GarrettDefeat
+	msgbox OneIsland_KindleRoad_Text_GarrettPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+OneIsland_KindleRoad_EventScript_Tommy:: @ 81ABCE9
+	trainerbattle_single TRAINER_FISHERMAN_TOMMY, OneIsland_KindleRoad_Text_TommyIntro, OneIsland_KindleRoad_Text_TommyDefeat
+	msgbox OneIsland_KindleRoad_Text_TommyPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+OneIsland_KindleRoad_EventScript_Sharon:: @ 81ABD27
+	trainerbattle_single TRAINER_CRUSH_GIRL_SHARON, OneIsland_KindleRoad_Text_SharonIntro, OneIsland_KindleRoad_Text_SharonDefeat
+	msgbox OneIsland_KindleRoad_Text_SharonPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+OneIsland_KindleRoad_EventScript_Tanya:: @ 81ABD65
+	trainerbattle_single TRAINER_CRUSH_GIRL_TANYA, OneIsland_KindleRoad_Text_TanyaIntro, OneIsland_KindleRoad_Text_TanyaDefeat
+	msgbox OneIsland_KindleRoad_Text_TanyaPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+OneIsland_KindleRoad_EventScript_Shea:: @ 81ABDA3
+	trainerbattle_single TRAINER_BLACK_BELT_SHEA, OneIsland_KindleRoad_Text_SheaIntro, OneIsland_KindleRoad_Text_SheaDefeat
+	msgbox OneIsland_KindleRoad_Text_SheaPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+OneIsland_KindleRoad_EventScript_Hugh:: @ 81ABDE1
+	trainerbattle_single TRAINER_BLACK_BELT_HUGH, OneIsland_KindleRoad_Text_HughIntro, OneIsland_KindleRoad_Text_HughDefeat
+	msgbox OneIsland_KindleRoad_Text_HughPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+OneIsland_KindleRoad_EventScript_Bryce:: @ 81ABE1F
+	trainerbattle_single TRAINER_CAMPER_BRYCE, OneIsland_KindleRoad_Text_BryceIntro, OneIsland_KindleRoad_Text_BryceDefeat
+	msgbox OneIsland_KindleRoad_Text_BrycePostBattle, MSGBOX_AUTOCLOSE
+	end
+
+OneIsland_KindleRoad_EventScript_Claire:: @ 81ABE5D
+	trainerbattle_single TRAINER_PICNICKER_CLAIRE, OneIsland_KindleRoad_Text_ClaireIntro, OneIsland_KindleRoad_Text_ClaireDefeat
+	msgbox OneIsland_KindleRoad_Text_ClairePostBattle, MSGBOX_AUTOCLOSE
+	end
+
+OneIsland_KindleRoad_EventScript_Kia:: @ 81ABE9B
+	trainerbattle_double TRAINER_CRUSH_KIN_MIK_KIA, OneIsland_KindleRoad_Text_KiaIntro, OneIsland_KindleRoad_Text_KiaDefeat, OneIsland_KindleRoad_Text_KiaNotEnoughMons
+	msgbox OneIsland_KindleRoad_Text_KiaPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+OneIsland_KindleRoad_EventScript_Mik:: @ 81ABEE1
+	trainerbattle_double TRAINER_CRUSH_KIN_MIK_KIA, OneIsland_KindleRoad_Text_MikIntro, OneIsland_KindleRoad_Text_MikDefeat, OneIsland_KindleRoad_Text_MikNotEnoughMons
+	msgbox OneIsland_KindleRoad_Text_MikPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+OneIsland_KindleRoad_Text_MariaIntro:: @ 818961F
+    .string "The weather's gorgeous!\n"
+    .string "Perfect for a battle!$"
+
+OneIsland_KindleRoad_Text_MariaDefeat:: @ 818964D
+    .string "Aiyeeeeh!$"
+
+OneIsland_KindleRoad_Text_MariaPostBattle:: @ 8189657
+    .string "Please don't splash my face!\n"
+    .string "You'll ruin the makeup.$"
+
+OneIsland_KindleRoad_Text_AbigailIntro:: @ 818968C
+    .string "I'm beginning to get a sunburn…$"
+
+OneIsland_KindleRoad_Text_AbigailDefeat:: @ 81896AC
+    .string "Oh, you're so awful.$"
+
+OneIsland_KindleRoad_Text_AbigailPostBattle:: @ 81896C1
+    .string "I like that cap you have.\n"
+    .string "Maybe I should wear one, too…$"
+
+OneIsland_KindleRoad_Text_FinnIntro:: @ 81896F9
+    .string "Seen from here, Mt. Ember towers\n"
+    .string "into the sky.$"
+
+OneIsland_KindleRoad_Text_FinnDefeat:: @ 8189728
+    .string "Well, aren't you tough?$"
+
+OneIsland_KindleRoad_Text_FinnPostBattle:: @ 8189740
+    .string "The sky is immense around these\n"
+    .string "parts.$"
+
+OneIsland_KindleRoad_Text_GarrettIntro:: @ 8189767
+    .string "I took a break from swimming,\n"
+    .string "only to have you challenge me?$"
+
+OneIsland_KindleRoad_Text_GarrettDefeat:: @ 81897A4
+    .string "Hey, what the…\n"
+    .string "You're good, you!$"
+
+OneIsland_KindleRoad_Text_GarrettPostBattle:: @ 81897C5
+    .string "Instead of using Surf all the time,\n"
+    .string "you should swim some.$"
+
+OneIsland_KindleRoad_Text_TommyIntro:: @ 81897FF
+    .string "Wait! Wait a second!\n"
+    .string "I think I've hooked a big one!$"
+
+OneIsland_KindleRoad_Text_TommyDefeat:: @ 8189833
+    .string "I've lost it all again…$"
+
+OneIsland_KindleRoad_Text_TommyPostBattle:: @ 818984B
+    .string "Not only did I lose, the big one\n"
+    .string "got away from me, too!$"
+
+OneIsland_KindleRoad_Text_SharonIntro:: @ 8189883
+    .string "Could you help me out with my\n"
+    .string "training?$"
+
+OneIsland_KindleRoad_Text_SharonDefeat:: @ 81898AB
+    .string "You were a cut above me.$"
+
+OneIsland_KindleRoad_Text_SharonPostBattle:: @ 81898C4
+    .string "It's clear that you're skilled.\n"
+    .string "I like you!$"
+
+OneIsland_KindleRoad_Text_TanyaIntro:: @ 81898F0
+    .string "There isn't a day in which we don't\n"
+    .string "train!$"
+
+OneIsland_KindleRoad_Text_TanyaDefeat:: @ 818991B
+    .string "I'm such a fool!$"
+
+OneIsland_KindleRoad_Text_TanyaPostBattle:: @ 818992C
+    .string "I'll train even harder from now on!$"
+
+OneIsland_KindleRoad_Text_SheaIntro:: @ 8189950
+    .string "Every morning, before breakfast,\n"
+    .string "I swim around this island.$"
+
+OneIsland_KindleRoad_Text_SheaDefeat:: @ 818998C
+    .string "Gasp…\n"
+    .string "Gasp…$"
+
+OneIsland_KindleRoad_Text_SheaPostBattle:: @ 8189998
+    .string "I lost because I'm pooped from all\n"
+    .string "the running I did…$"
+
+OneIsland_KindleRoad_Text_HughIntro:: @ 81899CE
+    .string "Dress appropriately for battle!\n"
+    .string "Lose that frivolous outfit!$"
+
+OneIsland_KindleRoad_Text_HughDefeat:: @ 8189A0A
+    .string "Why me?!$"
+
+OneIsland_KindleRoad_Text_HughPostBattle:: @ 8189A13
+    .string "Even martial artists are becoming\n"
+    .string "fashion conscious these days…$"
+
+OneIsland_KindleRoad_Text_BryceIntro:: @ 8189A53
+    .string "You know, everything tastes great\n"
+    .string "when you're out in the wild.$"
+
+OneIsland_KindleRoad_Text_BryceDefeat:: @ 8189A92
+    .string "Awww, blown!$"
+
+OneIsland_KindleRoad_Text_BrycePostBattle:: @ 8189A9F
+    .string "The water in volcanic regions is\n"
+    .string "delicious.$"
+
+OneIsland_KindleRoad_Text_ClaireIntro:: @ 8189ACB
+    .string "My lunch filled us up, so will you\n"
+    .string "battle us for some exercise?$"
+
+OneIsland_KindleRoad_Text_ClaireDefeat:: @ 8189B0B
+    .string "That made me all sweaty.$"
+
+OneIsland_KindleRoad_Text_ClairePostBattle:: @ 8189B24
+    .string "What should I do?\n"
+    .string "I feel famished again.$"
+
+OneIsland_KindleRoad_Text_KiaIntro:: @ 8189B4D
+    .string "Kia: My big brother and I make\n"
+    .string "an awesome combination!$"
+
+OneIsland_KindleRoad_Text_KiaDefeat:: @ 8189B84
+    .string "Kia: Huh?!\n"
+    .string "I can't believe it!$"
+
+OneIsland_KindleRoad_Text_KiaPostBattle:: @ 8189BA3
+    .string "Kia: How could there be anyone\n"
+    .string "better than my big brother?$"
+
+OneIsland_KindleRoad_Text_KiaNotEnoughMons:: @ 8189BDE
+    .string "Kia: If you want to battle with\n"
+    .string "us, you have to bring at least two\l"
+    .string "Pokémon with you.$"
+
+OneIsland_KindleRoad_Text_MikIntro:: @ 8189C33
+    .string "MIK: Together with KIA, I'm afraid\n"
+    .string "of nothing!$"
+
+OneIsland_KindleRoad_Text_MikDefeat:: @ 8189C62
+    .string "Mik: Whoa!\n"
+    .string "That's too much!$"
+
+OneIsland_KindleRoad_Text_MikPostBattle:: @ 8189C7E
+    .string "Mik: How could my combination\n"
+    .string "with Kia fail?$"
+
+OneIsland_KindleRoad_Text_MikNotEnoughMons:: @ 8189CAB
+    .string "Mik: Hey, do you want to battle\n"
+    .string "with us two?\p"
+    .string "Bring two or more Pokémon with\n"
+    .string "you, then.$"
+
+OneIsland_KindleRoad_Text_RouteSign:: @ 8189D02
+    .string "This is Kindle Road.\p"
+    .string "Go straight for Mt. Ember.$"
+
+OneIsland_KindleRoad_Text_EmberSpaSign:: @ 8189D32
+    .string "Light the Fire in Your Heart!\n"
+    .string "Ember Spa$"
+	
+OneIsland_KindleRoad_Text_EmberSpaClosed:: @ 8189D32
+    .string "I'm sorry but the Ember Spa\n"
+    .string "is currently closed$"
+
+`

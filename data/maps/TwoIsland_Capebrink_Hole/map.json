@@ -1,0 +1,41 @@
+{
+  "id": "MAP_TWO_ISLAND_CAPEBRINK_HOLE",
+  "name": "TwoIsland_Capebrink_Hole",
+  "layout": "LAYOUT_TWO_ISLAND_CAPEBRINK_HOLE",
+  "music": "MUS_PETALBURG_WOODS",
+  "region_map_section": "MAPSEC_CAPE_BRINK",
+  "requires_flash": true,
+  "weather": "WEATHER_NONE",
+  "map_type": "MAP_TYPE_UNDERGROUND",
+  "allow_cycling": false,
+  "allow_escaping": false,
+  "allow_running": false,
+  "show_map_name": false,
+  "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
+  "connections": 0,
+  "object_events": [
+
+  ],
+  "warp_events": [
+    {
+      "x": 11,
+      "y": 1,
+      "elevation": 0,
+      "dest_map": "MAP_TWO_ISLAND_CAPE_BRINK2",
+      "dest_warp_id": 1
+    },
+    {
+      "x": 2,
+      "y": 11,
+      "elevation": 0,
+      "dest_map": "MAP_TWO_ISLAND_CAPE_BRINK2",
+      "dest_warp_id": 2
+    }
+  ],
+  "coord_events": [
+
+  ],
+  "bg_events": [
+
+  ]
+}

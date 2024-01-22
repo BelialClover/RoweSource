@@ -1,0 +1,8 @@
+raw `
+ShoalCave_LowTideIceRoom_MapScripts:: @ 82396A1
+	map_script MAP_SCRIPT_ON_LOAD, ShoalCave_LowTideIceRoom_OnLoad
+	.byte 0
+	
+ShoalCave_LowTideIceRoom_OnLoad: @ 8236F16
+	end
+`

@@ -1,0 +1,13 @@
+raw `
+TwoIsland_Capebrink_Hole_MapScripts::
+	map_script MAP_SCRIPT_ON_LOAD, TwoIsland_Capebrink_Hole_OnLoad
+	.byte 0
+	
+TwoIsland_Capebrink_Hole_OnLoad: @ 8236F16
+	goto_if_set FLAG_DEFEATED_RAYQUAZA, TwoIsland_Capebrink_Hole_EventScript_OpenAzelfCave
+	end
+	
+TwoIsland_Capebrink_Hole_EventScript_OpenAzelfCave:
+	setmetatile 10, 3, METATILE_RockTunnel_Escalator, 0
+	end
+`

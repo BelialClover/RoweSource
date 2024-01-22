@@ -1,0 +1,1012 @@
+raw `
+RustboroCity_Gym_MapScripts:: @ 8212F30
+	map_script MAP_SCRIPT_ON_LOAD, RustboroCity_Gym_EventScript_Set_Gym_Pokemon_Species
+
+//First Team
+RustboroCity_Gym_EventScript_Roxanne:: @ 8212F31
+	lock
+	faceplayer
+	goto_if_set FLAG_BADGE01_GET, RustboroCity_Gym_EventScript_Roxanne_PostBattle
+	//goto_if_set FLAG_HARD_MODE, RustboroCity_Gym_EventScript_Roxanne_Battle1
+	//goto_if_set FLAG_NORMAL_MODE, RustboroCity_Gym_EventScript_Roxanne_Battle1
+	trainerbattle_single TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneIntro, RustboroCity_Gym_Text_RoxanneDefeat, RustboroCity_Gym_EventScript_RoxanneDefeated, NO_MUSIC
+	msgbox RustboroCity_Gym_Text_RoxannePostBattle, MSGBOX_DEFAULT
+	end
+	
+RustboroCity_Gym_EventScript_Roxanne_Battle1::
+	goto_if_set FLAG_RECEIVED_BADGE_08, RustboroCity_Gym_EventScript_Roxanne_Battle5
+	goto_if_set FLAG_RECEIVED_BADGE_07, RustboroCity_Gym_EventScript_Roxanne_Battle4
+	goto_if_set FLAG_RECEIVED_BADGE_06, RustboroCity_Gym_EventScript_Roxanne_Battle4
+	goto_if_set FLAG_RECEIVED_BADGE_05, RustboroCity_Gym_EventScript_Roxanne_Battle3
+	goto_if_set FLAG_RECEIVED_BADGE_04, RustboroCity_Gym_EventScript_Roxanne_Battle3
+	goto_if_set FLAG_RECEIVED_BADGE_03, RustboroCity_Gym_EventScript_Roxanne_Battle2
+	goto_if_set FLAG_RECEIVED_BADGE_02, RustboroCity_Gym_EventScript_Roxanne_Battle2
+	trainerbattle_single TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneIntro, RustboroCity_Gym_Text_RoxanneDefeat, RustboroCity_Gym_EventScript_RoxanneDefeated, NO_MUSIC
+	msgbox RustboroCity_Gym_Text_RoxannePostBattle, MSGBOX_DEFAULT
+	end
+	
+	
+//Second Team
+RustboroCity_Gym_EventScript_Roxanne_Battle2::
+	trainerbattle_single TRAINER_ROXANNE_2, RustboroCity_Gym_Text_RoxanneIntro, RustboroCity_Gym_Text_RoxanneDefeat, RustboroCity_Gym_EventScript_RoxanneDefeated, NO_MUSIC
+	msgbox RustboroCity_Gym_Text_RoxannePostBattle, MSGBOX_DEFAULT
+	end
+	
+//Third Team
+RustboroCity_Gym_EventScript_Roxanne_Battle3::
+	trainerbattle_single TRAINER_ROXANNE_3, RustboroCity_Gym_Text_RoxanneIntro, RustboroCity_Gym_Text_RoxanneDefeat, RustboroCity_Gym_EventScript_RoxanneDefeated, NO_MUSIC
+	msgbox RustboroCity_Gym_Text_RoxannePostBattle, MSGBOX_DEFAULT
+	end
+	
+//Fourth Team
+RustboroCity_Gym_EventScript_Roxanne_Battle4::
+	trainerbattle_single TRAINER_ROXANNE_4, RustboroCity_Gym_Text_RoxanneIntro, RustboroCity_Gym_Text_RoxanneDefeat, RustboroCity_Gym_EventScript_RoxanneDefeated, NO_MUSIC
+	msgbox RustboroCity_Gym_Text_RoxannePostBattle, MSGBOX_DEFAULT
+	end
+	
+//Fifth Team
+RustboroCity_Gym_EventScript_Roxanne_Battle5::
+	trainerbattle_single TRAINER_ROXANNE_5, RustboroCity_Gym_Text_RoxanneIntro, RustboroCity_Gym_Text_RoxanneDefeat, RustboroCity_Gym_EventScript_RoxanneDefeated, NO_MUSIC
+	msgbox RustboroCity_Gym_Text_RoxannePostBattle, MSGBOX_DEFAULT
+	end
+
+	
+RustboroCity_Gym_EventScript_Roxanne_PostBattle::
+	goto_if_unset FLAG_ROXANNE_REMATCH, RustboroCity_Gym_EventScript_RoxanneRematch
+	msgbox RustboroCity_Gym_Text_RoxannePostRematch, MSGBOX_DEFAULT
+	release
+	end
+	
+RustboroCity_Gym_EventScript_RoxanneRematch:: @ 8212FC8
+	msgbox RustboroCity_Gym_Text_RoxannePreRematch, MSGBOX_DEFAULT
+	goto RustboroCity_Gym_EventScript_Start_Rematch_1
+	end
+	
+RustboroCity_Gym_EventScript_RoxanneRematchEnd::
+	msgbox RustboroCity_Gym_Text_RoxannePostRematch, MSGBOX_AUTOCLOSE
+	call Gym_EventScript_Reset_Random_Rematch
+	setflag FLAG_ROXANNE_REMATCH
+	end
+	
+RustboroCity_Gym_EventScript_Start_Rematch_1::
+	checkitem ITEM_TM39_ROCK_TOMB, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq RustboroCity_Gym_EventScript_Start_Rematch_2
+	trainerbattle_no_intro TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneRematchDefeat
+	msgbox RustboroCity_Gym_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM39_ROCK_TOMB
+	goto RustboroCity_Gym_EventScript_RoxanneRematchEnd
+	end
+	
+RustboroCity_Gym_EventScript_Start_Rematch_2::
+	goto_if_unset FLAG_RECEIVED_TM08 RustboroCity_Gym_EventScript_Start_Rematch_Party_1
+	checkitem ITEM_TM69_ROCK_POLISH, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq RustboroCity_Gym_EventScript_Start_Rematch_3
+	trainerbattle_no_intro TRAINER_ROXANNE_2, RustboroCity_Gym_Text_RoxanneRematchDefeat
+	msgbox RustboroCity_Gym_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM69_ROCK_POLISH
+	goto RustboroCity_Gym_EventScript_RoxanneRematchEnd
+	end
+	
+RustboroCity_Gym_EventScript_Start_Rematch_3::
+	goto_if_unset FLAG_RECEIVED_TM42 RustboroCity_Gym_EventScript_Start_Rematch_Party_2
+	checkitem ITEM_TM110_STEALTH_ROCK, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq RustboroCity_Gym_EventScript_Start_Rematch_4
+	trainerbattle_no_intro TRAINER_ROXANNE_3, RustboroCity_Gym_Text_RoxanneRematchDefeat
+	msgbox RustboroCity_Gym_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM110_STEALTH_ROCK
+	goto RustboroCity_Gym_EventScript_RoxanneRematchEnd
+	end
+	
+RustboroCity_Gym_EventScript_Start_Rematch_4::
+	goto_if_unset FLAG_RECEIVED_TM40 RustboroCity_Gym_EventScript_Start_Rematch_Party_3
+	checkitem ITEM_TM107_POWER_GEM, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq RustboroCity_Gym_EventScript_Start_Rematch_5
+	trainerbattle_no_intro TRAINER_ROXANNE_4, RustboroCity_Gym_Text_RoxanneRematchDefeat
+	msgbox RustboroCity_Gym_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM107_POWER_GEM
+	goto RustboroCity_Gym_EventScript_RoxanneRematchEnd
+	end
+	
+RustboroCity_Gym_EventScript_Start_Rematch_5::
+	goto_if_unset FLAG_RECEIVED_TM04 RustboroCity_Gym_EventScript_Start_Rematch_Party_4
+	goto_if_set FLAG_GOT_AGGRONITE RustboroCity_Gym_EventScript_Start_Rematch_6
+	trainerbattle_no_intro TRAINER_ROXANNE_4, RustboroCity_Gym_Text_RoxanneRematchDefeat
+	msgbox RustboroCity_Gym_Text_GetMegaStone, MSGBOX_DEFAULT
+	giveitem ITEM_AGGRONITE
+	setflag FLAG_GOT_AGGRONITE
+	goto RustboroCity_Gym_EventScript_RoxanneRematchEnd
+	end
+	
+RustboroCity_Gym_EventScript_Start_Rematch_6::
+	goto_if_unset FLAG_RECEIVED_TM03 RustboroCity_Gym_EventScript_Start_Rematch_Party_4
+	checkitem ITEM_TM71_STONE_EDGE, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq RustboroCity_Gym_EventScript_Start_Rematch_Final
+	trainerbattle_no_intro TRAINER_ROXANNE_5, RustboroCity_Gym_Text_RoxanneRematchDefeat
+	msgbox RustboroCity_Gym_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM71_STONE_EDGE
+	goto RustboroCity_Gym_EventScript_RoxanneRematchEnd
+	end
+	
+RustboroCity_Gym_EventScript_Start_Rematch_Final::
+	random 5
+	switch VAR_RESULT
+	case 0, RustboroCity_Gym_EventScript_Start_Rematch_Party_1
+	case 1, RustboroCity_Gym_EventScript_Start_Rematch_Party_2
+	case 2, RustboroCity_Gym_EventScript_Start_Rematch_Party_3
+	case 3, RustboroCity_Gym_EventScript_Start_Rematch_Party_4
+	case 4, RustboroCity_Gym_EventScript_Start_Rematch_Party_5
+	end
+	
+RustboroCity_Gym_EventScript_Start_Rematch_Party_1::
+	trainerbattle_no_intro TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, RustboroCity_Gym_EventScript_RoxanneRematchEnd
+	msgbox RustboroCity_Gym_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_BOLD_MINT, 3
+	goto RustboroCity_Gym_EventScript_RoxanneRematchEnd
+	end
+	
+RustboroCity_Gym_EventScript_Start_Rematch_Party_2::
+	trainerbattle_no_intro TRAINER_ROXANNE_2, RustboroCity_Gym_Text_RoxanneRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, RustboroCity_Gym_EventScript_RoxanneRematchEnd
+	msgbox RustboroCity_Gym_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_IMPISH_MINT, 3
+	goto RustboroCity_Gym_EventScript_RoxanneRematchEnd
+	end
+	
+RustboroCity_Gym_EventScript_Start_Rematch_Party_3::
+	trainerbattle_no_intro TRAINER_ROXANNE_3, RustboroCity_Gym_Text_RoxanneRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, RustboroCity_Gym_EventScript_RoxanneRematchEnd
+	msgbox RustboroCity_Gym_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_LAX_MINT, 3
+	goto RustboroCity_Gym_EventScript_RoxanneRematchEnd
+	end
+	
+RustboroCity_Gym_EventScript_Start_Rematch_Party_4::
+	trainerbattle_no_intro TRAINER_ROXANNE_4, RustboroCity_Gym_Text_RoxanneRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, RustboroCity_Gym_EventScript_RoxanneRematchEnd
+	msgbox RustboroCity_Gym_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_RELAXED_MINT, 3
+	goto RustboroCity_Gym_EventScript_RoxanneRematchEnd
+	end
+	
+RustboroCity_Gym_EventScript_Start_Rematch_Party_5::
+	trainerbattle_no_intro TRAINER_ROXANNE_5, RustboroCity_Gym_Text_RoxanneRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, RustboroCity_Gym_EventScript_RoxanneRematchEnd
+	msgbox RustboroCity_Gym_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_ADAMANT_MINT, 3
+	goto RustboroCity_Gym_EventScript_RoxanneRematchEnd
+	end
+
+RustboroCity_Gym_EventScript_RoxanneDefeated:: @ 8212F66
+	message RustboroCity_Gym_Text_ReceivedStoneBadge
+	waitmessage
+	call Common_EventScript_PlayGymBadgeFanfare
+	msgbox RustboroCity_Gym_Text_StoneBadgeInfoTakeThis, MSGBOX_DEFAULT
+	setflag FLAG_DEFEATED_RUSTBORO_GYM
+	setflag FLAG_BADGE01_GET
+	call Special_Gym_EventScript_Give_Item
+	call RustboroCity_Gym_EventScript_GiveRockTomb
+	closemessage
+	delay 30
+	setvar VAR_0x8008, 1
+	call Common_EventScript_SetGymTrainers
+	waitfanfare
+	closemessage
+	delay 30
+	playfanfare MUS_REGISTER_MATCH_CALL
+	msgbox RustboroCity_Gym_Text_RegisteredRoxanne, MSGBOX_DEFAULT
+	waitfanfare
+	closemessage
+	delay 30
+	setflag FLAG_ENABLE_ROXANNE_MATCH_CALL
+	call Gym_EventScript_Reset_Rematches
+	setflag FLAG_ROXANNE_REMATCH
+	release
+	end
+
+RustboroCity_Gym_EventScript_GiveRockTomb:: @ 8212FA4
+	msgbox Gym_Text_Takethis2, MSGBOX_DEFAULT
+	giveitem ITEM_TM39
+	msgbox RustboroCity_Gym_Text_ExplainRockTomb, MSGBOX_DEFAULT
+	return
+
+RustboroCity_Gym_EventScript_Josh:: @ 8212FE3
+	trainerbattle_single TRAINER_JOSH, RustboroCity_Gym_Text_JoshIntro, RustboroCity_Gym_Text_JoshDefeat
+	msgbox RustboroCity_Gym_Text_JoshPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+RustboroCity_Gym_EventScript_Tommy:: @ 8212FFA
+	trainerbattle_single TRAINER_TOMMY, RustboroCity_Gym_Text_TommyIntro, RustboroCity_Gym_Text_TommyDefeat
+	msgbox RustboroCity_Gym_Text_TommyPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+RustboroCity_Gym_EventScript_Marc:: @ 8213011
+	trainerbattle_single TRAINER_MARC, RustboroCity_Gym_Text_MarcIntro, RustboroCity_Gym_Text_MarcDefeat
+	msgbox RustboroCity_Gym_Text_MarcPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+RustboroCity_Gym_EventScript_GymGuide:: @ 8213028
+	lock
+	faceplayer
+	goto_if_set FLAG_DEFEATED_RUSTBORO_GYM, RustboroCity_Gym_EventScript_GymGuidePostVictory
+	msgbox RustboroCity_Gym_Text_GymGuideAdvice, MSGBOX_DEFAULT
+	release
+	end
+
+RustboroCity_Gym_EventScript_GymGuidePostVictory:: @ 821303D
+	msgbox RustboroCity_Gym_Text_GymGuidePostVictory, MSGBOX_DEFAULT
+	release
+	end
+
+RustboroCity_Gym_EventScript_LeftGymStatue:: @ 8213047
+	lockall
+	goto_if_set FLAG_BADGE01_GET, RustboroCity_Gym_EventScript_GymStatueCertified
+	goto RustboroCity_Gym_EventScript_GymStatue
+	end
+
+RustboroCity_Gym_EventScript_RightGymStatue:: @ 8213057
+	lockall
+	goto_if_set FLAG_BADGE01_GET, RustboroCity_Gym_EventScript_GymStatueCertified
+	goto RustboroCity_Gym_EventScript_GymStatue
+	end
+
+RustboroCity_Gym_EventScript_GymStatueCertified:: @ 8213067
+	msgbox RustboroCity_Gym_Text_GymStatueCertified, MSGBOX_DEFAULT
+	releaseall
+	end
+
+RustboroCity_Gym_EventScript_GymStatue:: @ 8213071
+	msgbox RustboroCity_Gym_Text_GymStatue, MSGBOX_DEFAULT
+	releaseall
+	end
+
+RustboroCity_Gym_EventScript_RegisterRoxanne:: @ 821307B
+	lockall
+	pokenavcall RustboroCity_Gym_Text_RoxanneRegisterCall
+	waitmessage
+	delay 30
+	playfanfare MUS_REGISTER_MATCH_CALL
+	msgbox RustboroCity_Gym_Text_RegisteredRoxanne, MSGBOX_DEFAULT
+	waitfanfare
+	closemessage
+	delay 30
+	setflag FLAG_ENABLE_ROXANNE_MATCH_CALL
+	clearflag FLAG_ENABLE_ROXANNE_FIRST_CALL
+	releaseall
+	end
+
+RustboroCity_Gym_Text_GymGuideAdvice: @ 821309D
+	.string "Yo, how's it going?\p"
+	.string "Listen, my friend!\n"
+	.string "Would you like to become the Champion?\p"
+	.string "I'm no Trainer, not me, but I can\n"
+	.string "sure give you winning advice.\p"
+	.string "That's settled, then! We'll aim for the\n"
+	.string "Pokémon Championship together!\p"
+	.string "It's your job as a Trainer to collect\n"
+	.string "Gym Badges, am I right?\p"
+	.string "But Gym Leaders aren't pushovers!\p"
+	.string "And that's where I come in!\n"
+	.string "I'm here to provide expert advice!\p"
+	.string "Roxanne, the Gym Leader, is a user\n"
+	.string "of Rock-type Pokémon.\p"
+	.string "The Rock type is very durable, but\n"
+	.string "it can't stand Water-type and\l"
+	.string "Grass-type moves.\p"
+	.string "Come see me afterwards, if you beat\n"
+	.string "the Gym Leader.\p"
+	.string "Well, go for it!$"
+
+RustboroCity_Gym_Text_GymGuidePostVictory: @ 82132E2
+	.string "Whoa! What a breathtaking victory!\n"
+	.string "My cheering must've worked!\p"
+	.string "Great!\n"
+	.string "Check your Trainer card.\p"
+	.string "The Stone Badge you got should be\n"
+	.string "properly recorded on it.\p"
+	.string "In other words…\p"
+	.string "You've climbed the first step on\n"
+	.string "the stairs to the Championship!\p"
+	.string "That's got to feel awesome!$"
+
+RustboroCity_Gym_Text_JoshIntro: @ 82133E9
+	.string "Don't take us Gym Trainers lightly!\n"
+	.string "I'll show you why we're better!$"
+
+RustboroCity_Gym_Text_JoshDefeat: @ 821342D
+	.string "You were too good for me…$"
+
+RustboroCity_Gym_Text_JoshPostBattle: @ 8213447
+	.string "You haven't seen anything of the Rock\n"
+	.string "type's terrifying power!$"
+
+RustboroCity_Gym_Text_TommyIntro: @ 8213486
+	.string "If you can't beat me, you won't stand\n"
+	.string "a chance against Roxanne!$"
+
+RustboroCity_Gym_Text_TommyDefeat: @ 82134C6
+	.string "Wow! You've got some potential!$"
+
+RustboroCity_Gym_Text_TommyPostBattle: @ 82134E6
+	.string "Roxanne is stronger than me by\n"
+	.string "several times.\p"
+	.string "You'd better be on your guard!$"
+
+RustboroCity_Gym_Text_MarcIntro: @ 8213533
+	.string "We might be in the middle of town,\n"
+	.string "but so what?\p"
+	.string "My Rock Pokémon need room to\n"
+	.string "rampage!$"
+
+RustboroCity_Gym_Text_MarcDefeat: @ 8213589
+	.string "Oh, man oh man!\n"
+	.string "Our challenger is one feisty customer!$"
+
+RustboroCity_Gym_Text_MarcPostBattle: @ 82135C0
+	.string "I have to hand it to our Leader.\p"
+	.string "It took smarts and sense for her to\n"
+	.string "pick the Rock type at her young age.$"
+
+RustboroCity_Gym_Text_RoxanneIntro: @ 821362A
+	.string "Hello, I am Roxanne, the Rustboro\n"
+	.string "Pokémon Gym Leader.\p"
+	.string "I became a Gym Leader so that I might\n"
+	.string "apply what I learned at the Pokémon\l"
+	.string "Trainer's School in battle.\p"
+	.string "Would you kindly demonstrate how you\n"
+	.string "battle, and with which Pokémon?$"
+
+RustboroCity_Gym_Text_RoxanneDefeat: @ 821370B
+	.string "So…\n"
+	.string "I lost…\p"
+	.string "It seems that I still have much more\n"
+	.string "to learn…\p"
+	.string "I understand.\p"
+	.string "The Pokémon League's rules state\n"
+	.string "that Trainers are to be given this\l"
+	.string "if they defeat a Gym Leader.\p"
+	.string "Please accept the official Pokémon\n"
+	.string "League Stone Badge.$"
+
+RustboroCity_Gym_Text_ReceivedStoneBadge: @ 82137EC
+	.string "{PLAYER} received the Stone Badge\n"
+	.string "from Roxanne.$"
+
+RustboroCity_Gym_Text_StoneBadgeInfoTakeThis: @ 8213816
+	.string "Please take this with you, too.$"
+
+RustboroCity_Gym_Text_ExplainRockTomb: @ 82138B1
+	.string "That Technical Machina, TM39,\n"
+	.string "contains Rock Tomb.\p"
+	.string "It not only inflicts damage by dropping\n"
+	.string "rocks, it also lowers Speed.\p"
+	.string "If you use a TM, it instantly teaches\n"
+	.string "the move to a Pokémon.\p"
+	.string "A TM can be used indefinitely, so use\n"
+	.string "it without thinking it twice.$"
+
+RustboroCity_Gym_Text_RoxannePostBattle: @ 82139A7
+	.string "Since you are so strong, you should\n"
+	.string "challenge other Gym Leaders.\p"
+	.string "By battling many Trainers, you should\n"
+	.string "learn many things.$"
+
+RustboroCity_Gym_Text_GymStatue: @ 8213A21
+	.string "Rustboro City Pokémon Gym$"
+
+RustboroCity_Gym_Text_GymStatueCertified: @ 8213A3B
+	.string "Rustboro City Pokémon Gym\p"
+	.string "Roxanne's Certified TrainerS:\n"
+	.string "{PLAYER}$"
+
+RustboroCity_Gym_Text_RoxanneRegisterCall: @ 8213A76
+	.string "… … … … … …\n"
+	.string "… … … … … Beep!\p"
+	.string "Roxanne: Oh, hello, {PLAYER}?\n"
+	.string "This is Roxanne of Rustboro City.\p"
+	.string "I heard from Brawly that you're\n"
+	.string "moving up through the ranks of\l"
+	.string "TrainerS at an incredible clip.\p"
+	.string "Well, I'd rather not think that\n"
+	.string "I can't beat you.\p"
+	.string "I promise, I will shape up my Gym\n"
+	.string "so that you may challenge us again.\p"
+	.string "I hope you'll be looking forward to\n"
+	.string "that occasion as much as me!\p"
+	.string "… … … … … …\n"
+	.string "… … … … … Click!$"
+
+RustboroCity_Gym_Text_RegisteredRoxanne: @ 8213C01
+	.string "Registered Gym Leader Roxanne\n"
+	.string "in the Pokénav.$"
+
+RustboroCity_Gym_Text_RoxannePreRematch: @ 8213C2F
+	.string "Roxanne: I'm so glad to see you again.\n"
+	.string "I'm Roxanne, the Gym Leader here.\p"
+	.string "I'm sure we've both experienced many\n"
+	.string "battles since we last met.\p"
+	.string "I would like to see how much better\n"
+	.string "we've become. Let us battle!$"
+
+RustboroCity_Gym_Text_RoxanneRematchDefeat: @ 8213CF9
+	.string "Grr…\n"
+	.string "Again, I have lost…$"
+
+RustboroCity_Gym_Text_RoxannePostRematch: @ 8213D12
+	.string "Roxanne: I still have much to learn\n"
+	.string "when it comes to battling Pokémon.\p"
+	.string "That awareness makes me love battling\n"
+	.string "all that much more!$"
+
+RustboroCity_Gym_Text_RoxanneRematchNeedTwoMons: @ 8213D93
+	.string "Roxanne: I'm so glad to see you again.\n"
+	.string "I'm Roxanne, the Gym Leader here.\p"
+	.string "I'm sure we've both experienced many\n"
+	.string "battles since we last met.\p"
+	.string "I would like to see how much better\n"
+	.string "we've become…\p"
+	.string "Oh, no…\n"
+	.string "You only have one Pokémon with you?\p"
+	.string "Please return with at least one more\n"
+	.string "Pokémon.$"
+
+RustboroCity_Gym_Text_GetTM:
+	.string "Roxanne: Please take this\n"
+	.string "Technical Machine.$"
+
+RustboroCity_Gym_Text_GetMegaStone:
+	.string "Roxanne: Please take this\n"
+	.string "Mega Stone, with you.\p"
+	.string "Make an Aggron hold it to\n"
+	.string "unleash its Hidden Potential.$"
+	
+RustboroCity_Gym_Text_GetReward:
+	.string "Roxanne: Please take this\n"
+	.string "Item as a Reward.$"
+	
+Gym_EventScript_Reset_Rematches::
+	clearflag FLAG_ROXANNE_REMATCH
+	clearflag FLAG_BRAWLY_REMATCH
+	clearflag FLAG_WATTSON_REMATCH
+	clearflag FLAG_FLANNERY_REMATCH
+	clearflag FLAG_NORMAN_REMATCH
+	clearflag FLAG_WINONA_REMATCH
+	clearflag FLAG_TATE_AND_LIZA_REMATCH
+	clearflag FLAG_JUAN_REMATCH
+	clearflag FLAG_DAILY_ABILITY_PATCH	
+	return
+	
+Gym_EventScript_Reset_Random_Rematch::
+	random 9
+	switch VAR_RESULT
+	case 0, Gym_EventScript_Reset_Roxanne_Rematch
+	case 1, Gym_EventScript_Reset_Brawly_Rematch
+	case 2, Gym_EventScript_Reset_Wattson_Rematch
+	case 3, Gym_EventScript_Reset_Flannery_Rematch
+	case 4, Gym_EventScript_Reset_Norman_Rematch
+	case 5, Gym_EventScript_Reset_Winona_Rematch
+	case 6, Gym_EventScript_Reset_Tate_Liza_Rematch
+	case 7, Gym_EventScript_Reset_Juan_Rematch
+	case 8, Gym_EventScript_Reset_Ability_Capsule
+	return
+	
+Gym_EventScript_Reset_Roxanne_Rematch::
+	goto_if_unset FLAG_BADGE01_GET, Gym_EventScript_Reset_Random_Rematch
+	clearflag FLAG_ROXANNE_REMATCH
+	return
+	
+Gym_EventScript_Reset_Brawly_Rematch::
+	goto_if_unset FLAG_BADGE02_GET, Gym_EventScript_Reset_Random_Rematch
+	clearflag FLAG_BRAWLY_REMATCH
+	return
+	
+Gym_EventScript_Reset_Wattson_Rematch::
+	goto_if_unset FLAG_BADGE03_GET, Gym_EventScript_Reset_Random_Rematch
+	clearflag FLAG_WATTSON_REMATCH
+	return
+	
+Gym_EventScript_Reset_Flannery_Rematch::
+	goto_if_unset FLAG_BADGE04_GET, Gym_EventScript_Reset_Random_Rematch
+	clearflag FLAG_FLANNERY_REMATCH
+	return
+	
+Gym_EventScript_Reset_Norman_Rematch::
+	goto_if_unset FLAG_BADGE05_GET, Gym_EventScript_Reset_Random_Rematch
+	clearflag FLAG_NORMAN_REMATCH
+	return
+	
+Gym_EventScript_Reset_Winona_Rematch::
+	goto_if_unset FLAG_BADGE06_GET, Gym_EventScript_Reset_Random_Rematch
+	clearflag FLAG_WINONA_REMATCH
+	return
+	
+Gym_EventScript_Reset_Tate_Liza_Rematch::
+	goto_if_unset FLAG_BADGE07_GET, Gym_EventScript_Reset_Random_Rematch
+	clearflag FLAG_TATE_AND_LIZA_REMATCH
+	return
+	
+Gym_EventScript_Reset_Juan_Rematch::
+	goto_if_unset FLAG_BADGE08_GET, Gym_EventScript_Reset_Random_Rematch
+	clearflag FLAG_JUAN_REMATCH
+	return
+	
+Gym_EventScript_Reset_Ability_Capsule::
+	goto_if_unset FLAG_BADGE08_GET, Gym_EventScript_Reset_Random_Rematch
+	clearflag FLAG_DAILY_ABILITY_PATCH
+	return
+
+`
+script EventScript_Gym_Attendant_Call{
+	lockall
+	switch (var(VAR_NUM_BADGES)) {
+		case 1: pokenavcall(format("Scott: Congratulations {PLAYER} on winning your first Gym battle, its just your first step to become the Champion, hang in there.\p" "Check your Achievements, there is a little gift that should be helpful to you there.\p" "Good Luck!", "1_latin", 180))
+		case 2: pokenavcall(format("Scott: Congratulations {PLAYER} on winning your second Gym badge, I knew you had it in you.\p" "Did you know that you can change your outfit in any Pokémon Center?\p" "Good luck on your journey!", "1_latin", 180))
+		case 3: pokenavcall(format("Scott: {PLAYER} you just won your third badge, that was really fast!\p" "Did you know that by making your first Pokémon hold an everstone or an eviolite you will only find first stage Pokémon in the wild?\p" "Take care.", "1_latin", 180))
+		case 4: pokenavcall(format("Scott: Congratulations on your Fourth badge {PLAYER}, you're halfway there!\p" "I heard that the Lilycove's department store now sells Evolution items maybe I should buy some of them.\p" "I have to go now, keep it up!", "1_latin", 180))
+		case 5: pokenavcall(format("Scott: You now have 5 badges {PLAYER}, that's great!\p" "It seems like the Lilycove's department store now has some great held items in stock, you should buy some of them!\p" "See you later!", "1_latin", 180))
+		case 6: pokenavcall(format("Scott: Congratulations on your 6th badge {PLAYER}, you're nearly a champion.\p" "I heard that the Blue lady next to the Nurse Joy can now teach your Pokémon some unique Egg moves, they should be helpful on your next Gym, give them a try!\p" "Good Luck!", "1_latin", 180))
+		case 7: pokenavcall(format("Scott: 7 badges, great just great, {PLAYER} there is only one to go!\p""The Blue haired lady in the Pokemon Center is now teaching trainers some strong tutor moves they cost a little but they are worth it, you should go and check them yourself.\p""By the way, I heard you got a Mega Ring, you should now be able to Mega Evolve your Pokémon, you can do so by pressing the Start Button while selecting your moves in battle.\p" "One to go kid, I'm waiting the good news, see you soon!", "1_latin", 180))
+		case 8: pokenavcall(format("Scott: {PLAYER} Wow! you now have all the Gym badges in Hoenn, that's great!\p" "I will wait for you in the Pokémon center on Evergrade City before you tackle the Victory Road and the Pokémon League.\p" "There is a green haired trainer here that seems really strong maybe you can fight him!\p" "Make sure you check the TM tutor with the Blue Nurse in the Pokemon Center it should help you in this tought challenge!\p" "See you soon!", "1_latin", 180))
+	}
+	waitmessage
+	clearflag(FLAG_GYM_ATTENDANT_CALL)
+	setvar(VAR_GYM_ATTENDANT_STEP_COUNTER, 0)
+	releaseall
+	end
+}
+    
+
+script RustboroCity_Gym_EventScript_Roxanne_New{
+	lock
+	faceplayer
+    if (flag(FLAG_BADGE01_GET) && !flag(FLAG_ROXANNE_REMATCH)){
+		//Rematch
+		//Intro
+		msgbox(RustboroCity_Gym_Text_RoxannePreRematch, MSGBOX_NPC)
+		//Trainer Battle
+		call(RustboroCity_Gym_EventScript_Roxanne_Battle_New)
+
+        //Defeated Message and Reset Rematches for other Leaders
+		msgbox(RustboroCity_Gym_Text_RoxannePostRematch, MSGBOX_NPC)
+		call(Gym_EventScript_Reset_Rematches)
+
+		//Give TMs or Items
+		msgbox(format("Please take these items with you."), MSGBOX_NPC)
+		call(RustboroCity_Gym_EventScript_Roxanne_Give_Gifts)
+
+		msgbox(format("Roxanne: Come back tomorrow so we can battle again."), MSGBOX_NPC)
+
+		//Set the Rematch Flag as False
+		setflag(FLAG_ROXANNE_REMATCH)
+    }
+	elif(flag(FLAG_BADGE01_GET) && flag(FLAG_ROXANNE_REMATCH)){
+		//You can challenge the other trainers an infinite number of times
+		msgbox(format("Roxanne: My Pokémon are tired for today, but the other trainers here need training, do you want to try battling them again?"), MSGBOX_YESNO)
+		if(var(VAR_RESULT) == 1){
+			cleartrainerflag(TRAINER_JOSH)
+			cleartrainerflag(TRAINER_TOMMY)
+			cleartrainerflag(TRAINER_MARC)
+			msgbox(format("Roxanne: I will tell them to get ready, so take care on your way out."), MSGBOX_NPC)
+		}
+		else{
+			//Set all the trainers in the Gym as Defeated
+			setvar(VAR_0x8008, 1)
+			call(Common_EventScript_SetGymTrainers)
+			msgbox(format("Roxanne: Come back tomorrow so we can battle again."), MSGBOX_NPC)
+		}
+	}
+	elif((!defeated(TRAINER_JOSH) || !defeated(TRAINER_TOMMY) || !defeated(TRAINER_MARC)) && flag(FLAG_HARD_MODE)){
+		msgbox(format("Roxanne: Sorry, but you need to defeat every trainer on this Gym before battling me"), MSGBOX_NPC)
+	}
+	else{
+		//First Battle
+		//Intro
+		msgbox(RustboroCity_Gym_Text_RoxanneIntro, MSGBOX_NPC)
+		//Trainer Battle
+		call(RustboroCity_Gym_EventScript_Roxanne_Battle_New)
+
+		//Get the Badge
+		message(RustboroCity_Gym_Text_ReceivedStoneBadge)
+		waitmessage
+		call(Common_EventScript_PlayGymBadgeFanfare)
+		msgbox(format("Please take these items with you, too,"), MSGBOX_NPC)
+		setflag(FLAG_DEFEATED_RUSTBORO_GYM)
+		setflag(FLAG_BADGE01_GET)
+
+		//Give Special Key Item
+		call(Special_Gym_EventScript_Give_Item)
+
+		//Give TM
+		giveitem(ITEM_TM39_ROCK_TOMB)
+		msgbox(format("That Technical Machine contains the move Rock Tomb.\p"
+                      "It not only inflicts damage by dropping rocks, it also lowers the target Speed.\p"
+                      "If you use a TM, it instantly teaches the move to a Pokémon.\p"
+                      "A TM can be used indefinitely, so use it without thinking it twice.$"), MSGBOX_NPC)
+		waitfanfare
+		closemessage
+		setflag(FLAG_TEMP_9)
+
+		//Give TMs or Items
+		call(RustboroCity_Gym_EventScript_Roxanne_Give_Gifts)
+
+		//Set all the trainers in the Gym as Defeated
+		setvar(VAR_0x8008, 1)
+		call(Common_EventScript_SetGymTrainers)
+
+		//Register Trainer in your PokeNav
+		msgbox(RustboroCity_Gym_Text_RegisteredRoxanne, MSGBOX_DEFAULT)
+		playfanfare(MUS_REGISTER_MATCH_CALL)
+		setflag(FLAG_ENABLE_ROXANNE_MATCH_CALL)
+		waitfanfare
+		closemessage
+
+		//Defeated Message and Reset Rematches for other Leaders
+		msgbox(RustboroCity_Gym_Text_RoxannePostBattle, MSGBOX_NPC)
+		call(Gym_EventScript_Reset_Rematches)
+
+		//Set the Rematch Flag as False
+		setflag(FLAG_ROXANNE_REMATCH)
+	}
+    release
+    end
+}
+
+script RustboroCity_Gym_EventScript_Roxanne_Battle_New{
+	if(flag(FLAG_BADGE01_GET)){
+		//Rematch
+		if(flag(FLAG_HARD_MODE)){
+			//Hard Mode
+			switch (var(VAR_NUM_BADGES)) {
+			case 0: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+			case 1: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+			case 2: trainerbattle_no_intro(TRAINER_ROXANNE_2, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+			case 3: trainerbattle_no_intro(TRAINER_ROXANNE_2, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+			case 4: trainerbattle_no_intro(TRAINER_ROXANNE_3, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+			case 5: trainerbattle_no_intro(TRAINER_ROXANNE_3, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+			case 6: trainerbattle_no_intro(TRAINER_ROXANNE_4, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+			case 7: trainerbattle_no_intro(TRAINER_ROXANNE_4, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+			default:
+				if(flag(FLAG_SYS_GAME_CLEAR)){
+					//When you beat the game you can get a random rematch each day
+					random(5)
+					switch (var(VAR_RESULT)) {
+						case 0: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+						case 1: trainerbattle_no_intro(TRAINER_ROXANNE_2, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+						case 2: trainerbattle_no_intro(TRAINER_ROXANNE_3, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+						case 3: trainerbattle_no_intro(TRAINER_ROXANNE_4, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+						case 4: trainerbattle_no_intro(TRAINER_ROXANNE_5, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+					}
+				}
+				else{
+					//If you have 8 badges you battle its final team
+					trainerbattle_no_intro(TRAINER_ROXANNE_5, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+				}
+			}
+		}
+		elif(flag(FLAG_NORMAL_MODE)){
+			//Normal Mode
+			switch (var(VAR_NUM_BADGES)) {
+				case 0: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+				case 1: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+				case 2: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+				case 3: trainerbattle_no_intro(TRAINER_ROXANNE_2, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+				case 4: trainerbattle_no_intro(TRAINER_ROXANNE_2, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+				case 5: trainerbattle_no_intro(TRAINER_ROXANNE_3, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+				case 6: trainerbattle_no_intro(TRAINER_ROXANNE_3, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+				case 7: trainerbattle_no_intro(TRAINER_ROXANNE_4, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+				default:
+					if(flag(FLAG_SYS_GAME_CLEAR)){
+						//When you beat the game you can get a random rematch each day
+						random(5)
+						switch (var(VAR_RESULT)) {
+							case 0: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+							case 1: trainerbattle_no_intro(TRAINER_ROXANNE_2, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+							case 2: trainerbattle_no_intro(TRAINER_ROXANNE_3, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+							case 3: trainerbattle_no_intro(TRAINER_ROXANNE_4, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+							case 4: trainerbattle_no_intro(TRAINER_ROXANNE_5, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+						}
+					}
+					else{
+						//If you have 8 badges you battle its final team
+						trainerbattle_no_intro(TRAINER_ROXANNE_5, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+					}
+			}
+		}
+		else{
+			//Easy Mode
+			switch (var(VAR_NUM_BADGES)) {
+				case 0: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+				case 1: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+				case 2: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+				case 3: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+				case 4: trainerbattle_no_intro(TRAINER_ROXANNE_2, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+				case 5: trainerbattle_no_intro(TRAINER_ROXANNE_2, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+				case 6: trainerbattle_no_intro(TRAINER_ROXANNE_3, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+				case 7: trainerbattle_no_intro(TRAINER_ROXANNE_3, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+				default:
+					if(flag(FLAG_SYS_GAME_CLEAR)){
+						//When you beat the game you can get a random rematch each day
+						random(5)
+						switch (var(VAR_RESULT)) {
+							case 0: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+							case 1: trainerbattle_no_intro(TRAINER_ROXANNE_2, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+							case 2: trainerbattle_no_intro(TRAINER_ROXANNE_3, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+							case 3: trainerbattle_no_intro(TRAINER_ROXANNE_4, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+							case 4: trainerbattle_no_intro(TRAINER_ROXANNE_5, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+						}
+					}
+					else{
+						//If you have 8 badges you battle its final team
+						trainerbattle_no_intro(TRAINER_ROXANNE_4, RustboroCity_Gym_Text_RoxanneRematchDefeat)
+					}
+			}
+		}
+	}
+	else{
+		//First Battle
+		if(flag(FLAG_HARD_MODE)){
+			//Hard Mode
+			switch (var(VAR_NUM_BADGES)) {
+			case 0: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneDefeat)
+			case 1: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneDefeat)
+			case 2: trainerbattle_no_intro(TRAINER_ROXANNE_2, RustboroCity_Gym_Text_RoxanneDefeat)
+			case 3: trainerbattle_no_intro(TRAINER_ROXANNE_2, RustboroCity_Gym_Text_RoxanneDefeat)
+			case 4: trainerbattle_no_intro(TRAINER_ROXANNE_3, RustboroCity_Gym_Text_RoxanneDefeat)
+			case 5: trainerbattle_no_intro(TRAINER_ROXANNE_3, RustboroCity_Gym_Text_RoxanneDefeat)
+			case 6: trainerbattle_no_intro(TRAINER_ROXANNE_4, RustboroCity_Gym_Text_RoxanneDefeat)
+			case 7: trainerbattle_no_intro(TRAINER_ROXANNE_4, RustboroCity_Gym_Text_RoxanneDefeat)
+			default:
+				if(flag(FLAG_SYS_GAME_CLEAR)){
+					//When you beat the game you can get a random rematch each day
+					random(5)
+					switch (var(VAR_RESULT)) {
+						case 0: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneDefeat)
+						case 1: trainerbattle_no_intro(TRAINER_ROXANNE_2, RustboroCity_Gym_Text_RoxanneDefeat)
+						case 2: trainerbattle_no_intro(TRAINER_ROXANNE_3, RustboroCity_Gym_Text_RoxanneDefeat)
+						case 3: trainerbattle_no_intro(TRAINER_ROXANNE_4, RustboroCity_Gym_Text_RoxanneDefeat)
+						case 4: trainerbattle_no_intro(TRAINER_ROXANNE_5, RustboroCity_Gym_Text_RoxanneDefeat)
+					}
+				}
+				else{
+					//If you have 8 badges you battle its final team
+					trainerbattle_no_intro(TRAINER_ROXANNE_5, RustboroCity_Gym_Text_RoxanneDefeat)
+				}
+			}
+		}
+		elif(flag(FLAG_NORMAL_MODE)){
+			//Normal Mode
+			switch (var(VAR_NUM_BADGES)) {
+				case 0: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneDefeat)
+				case 1: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneDefeat)
+				case 2: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneDefeat)
+				case 3: trainerbattle_no_intro(TRAINER_ROXANNE_2, RustboroCity_Gym_Text_RoxanneDefeat)
+				case 4: trainerbattle_no_intro(TRAINER_ROXANNE_2, RustboroCity_Gym_Text_RoxanneDefeat)
+				case 5: trainerbattle_no_intro(TRAINER_ROXANNE_3, RustboroCity_Gym_Text_RoxanneDefeat)
+				case 6: trainerbattle_no_intro(TRAINER_ROXANNE_3, RustboroCity_Gym_Text_RoxanneDefeat)
+				case 7: trainerbattle_no_intro(TRAINER_ROXANNE_4, RustboroCity_Gym_Text_RoxanneDefeat)
+				default:
+					if(flag(FLAG_SYS_GAME_CLEAR)){
+						//When you beat the game you can get a random rematch each day
+						random(5)
+						switch (var(VAR_RESULT)) {
+							case 0: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneDefeat)
+							case 1: trainerbattle_no_intro(TRAINER_ROXANNE_2, RustboroCity_Gym_Text_RoxanneDefeat)
+							case 2: trainerbattle_no_intro(TRAINER_ROXANNE_3, RustboroCity_Gym_Text_RoxanneDefeat)
+							case 3: trainerbattle_no_intro(TRAINER_ROXANNE_4, RustboroCity_Gym_Text_RoxanneDefeat)
+							case 4: trainerbattle_no_intro(TRAINER_ROXANNE_5, RustboroCity_Gym_Text_RoxanneDefeat)
+						}
+					}
+					else{
+						//If you have 8 badges you battle its final team
+						trainerbattle_no_intro(TRAINER_ROXANNE_5, RustboroCity_Gym_Text_RoxanneDefeat)
+					}
+			}
+		}
+		else{
+			//Easy Mode
+			switch (var(VAR_NUM_BADGES)){
+				case 0: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneDefeat)
+				case 1: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneDefeat)
+				case 2: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneDefeat)
+				case 3: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneDefeat)
+				case 4: trainerbattle_no_intro(TRAINER_ROXANNE_2, RustboroCity_Gym_Text_RoxanneDefeat)
+				case 5: trainerbattle_no_intro(TRAINER_ROXANNE_2, RustboroCity_Gym_Text_RoxanneDefeat)
+				case 6: trainerbattle_no_intro(TRAINER_ROXANNE_3, RustboroCity_Gym_Text_RoxanneDefeat)
+				case 7: trainerbattle_no_intro(TRAINER_ROXANNE_3, RustboroCity_Gym_Text_RoxanneDefeat)
+				default:
+					if(flag(FLAG_SYS_GAME_CLEAR)){
+						//When you beat the game you can get a random rematch each day
+						random(5)
+						switch (var(VAR_RESULT)) {
+							case 0: trainerbattle_no_intro(TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneDefeat)
+							case 1: trainerbattle_no_intro(TRAINER_ROXANNE_2, RustboroCity_Gym_Text_RoxanneDefeat)
+							case 2: trainerbattle_no_intro(TRAINER_ROXANNE_3, RustboroCity_Gym_Text_RoxanneDefeat)
+							case 3: trainerbattle_no_intro(TRAINER_ROXANNE_4, RustboroCity_Gym_Text_RoxanneDefeat)
+							case 4: trainerbattle_no_intro(TRAINER_ROXANNE_5, RustboroCity_Gym_Text_RoxanneDefeat)
+						}
+					}
+					else{
+						//If you have 8 badges you battle its final team
+						trainerbattle_no_intro(TRAINER_ROXANNE_4, RustboroCity_Gym_Text_RoxanneDefeat)
+					}
+			}
+		}
+	}
+	return
+}
+
+script RustboroCity_Gym_EventScript_Roxanne_Give_Gifts{
+	//Give Rock Polish
+	checkitem(ITEM_TM69_ROCK_POLISH, 1)
+	if(var(VAR_NUM_BADGES) >= 2 && var(VAR_RESULT) == FALSE){
+		giveitem(ITEM_TM69_ROCK_POLISH)
+		msgbox(format("Roxanne: This move raises the speed of Rock-type Pokémon by 2 stages, its really useful."), MSGBOX_NPC)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+
+	//Give Stealth Rock
+	checkitem(ITEM_TM110_STEALTH_ROCK, 1)
+	if(var(VAR_NUM_BADGES) >= 4 && var(VAR_RESULT) == FALSE){
+		giveitem(ITEM_TM110_STEALTH_ROCK)
+		msgbox(format("Roxanne: This move does damage every time an opposing Pokémon enters to the battle, try it at the start of the battle."), MSGBOX_NPC)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+
+	//Give Power Gem
+	checkitem(ITEM_TM107_POWER_GEM, 1)
+	if(var(VAR_NUM_BADGES) >= 6 && var(VAR_RESULT) == FALSE){
+		giveitem(ITEM_TM107_POWER_GEM)
+		msgbox(format("Roxanne: This is a Rock-type damage move made specially for Rock-type Pokémon with high Special Attack."), MSGBOX_NPC)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+
+	//Give Power Gem
+	checkitem(ITEM_TM71_STONE_EDGE, 1)
+	if(var(VAR_NUM_BADGES) >= 8 && var(VAR_RESULT) == FALSE){
+		giveitem(ITEM_TM71_STONE_EDGE)
+		msgbox(format("Roxanne: This is a Rock-type damage move with a high base attack, but misses a lot too so be careful when using it."), MSGBOX_NPC)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+
+	//Give Megastone
+	if(var(VAR_NUM_BADGES) >= 7 && !flag(FLAG_GOT_AGGRONITE)){
+		msgbox(format("Roxanne: Take this as an special gift from me, it's an Aggronite."), MSGBOX_NPC)
+		giveitem(ITEM_AGGRONITE)
+		msgbox(format("Make an Aggron hold it to unleash its real potential."), MSGBOX_NPC)
+		setflag(FLAG_GOT_AGGRONITE)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+	elif(!flag(FLAG_TEMP_9)){
+		//Get 2 random items for beating her
+		random(7)
+		switch (var(VAR_RESULT)) {
+			case 0: giveitem(ITEM_ROCK_GEM, 2)
+			case 1: giveitem(ITEM_ROCKY_HELMET, 2)
+			case 2: giveitem(ITEM_FOCUS_SASH, 2)
+			case 3: giveitem(ITEM_HARD_STONE, 2)
+			case 4: giveitem(ITEM_FLOAT_STONE, 2)
+			case 5: giveitem(ITEM_METAL_COAT, 2)
+			case 6: giveitem(ITEM_PROTECTOR, 2)
+		}
+	}
+	return
+}
+
+script RustboroCity_Gym_EventScript_GymGuide_New{
+	lock
+	faceplayer
+	if(flag(FLAG_DEFEATED_RUSTBORO_GYM)){
+		if(!flag(FLAG_ROXANNE_REMATCH)){
+			msgbox(format("Guide: Hello {PLAYER}, I see you came to this Gym again, do you want me to take you to the Leader?"), MSGBOX_YESNO)
+			if(var(VAR_RESULT) == 1){
+				msgbox(format("Let me tell the leader that you are here."), MSGBOX_NPC)
+				warp(MAP_RUSTBORO_CITY_GYM, 255, 5, 3)
+			}
+			else{
+				msgbox(format("I see, you can also go throught the Gym if you want."), MSGBOX_NPC)
+			}
+		}
+		else{
+			msgbox(RustboroCity_Gym_Text_GymGuidePostVictory, MSGBOX_NPC)
+		}
+	}
+	else{
+		msgbox(RustboroCity_Gym_Text_GymGuideAdvice, MSGBOX_NPC)
+	}
+	release
+	end
+}
+
+script RustboroCity_Gym_EventScript_Gym_Aaron{
+	lock
+	faceplayer
+	switch(var(VAR_GYM_POKEMON_SPECIES)){
+		case SPECIES_ARON:
+			if (flag(FLAG_BADGE01_GET) && !flag(FLAG_ROXANNE_REMATCH)){
+				//Ready for a rematch
+				msgbox(format("Aron: ron!"), MSGBOX_NPC)
+				msgbox(format("The Pokémon seems like it wants a rematch with You, its skin look's really shiny."), MSGBOX_SIGN)
+				waitmessage
+			}
+			elif(flag(FLAG_BADGE01_GET) && flag(FLAG_ROXANNE_REMATCH)){
+				//After a rematch
+				msgbox(format("Aron: ron..."), MSGBOX_NPC)
+				msgbox(format("The Pokémon seems tired after today's battle, its better to let it rest."), MSGBOX_SIGN)
+				waitmessage
+			}
+			else{
+				msgbox(format("Aron: ron?"), MSGBOX_NPC)
+				msgbox(format("The Pokémon is currently eating a little chunk of metal."), MSGBOX_SIGN)
+				waitmessage
+			}
+		case SPECIES_LAIRON:
+			if (flag(FLAG_BADGE01_GET) && !flag(FLAG_ROXANNE_REMATCH)){
+				//Ready for a rematch
+				msgbox(format("Lairon: ron!"), MSGBOX_NPC)
+				msgbox(format("The Pokémon seems like it wants a rematch with You, its skin look's really shiny."), MSGBOX_SIGN)
+				waitmessage
+			}
+			elif(flag(FLAG_BADGE01_GET) && flag(FLAG_ROXANNE_REMATCH)){
+				msgbox(format("Lairon: ron..."), MSGBOX_NPC)
+				msgbox(format("The Pokémon seems tired after today's battle, its better to let it rest."), MSGBOX_SIGN)
+				waitmessage
+			}
+			else{
+				msgbox(format("Lairon: ron?"), MSGBOX_NPC)
+				msgbox(format("The Pokémon is currently eating a chunk of metal."), MSGBOX_SIGN)
+				waitmessage
+			}
+		case SPECIES_AGGRON:
+			if (flag(FLAG_BADGE01_GET) && !flag(FLAG_ROXANNE_REMATCH)){
+				//Ready for a rematch
+				msgbox(format("Aggron: ron!"), MSGBOX_NPC)
+				msgbox(format("The Pokémon seems like it wants a rematch with You, its skin look's really tought."), MSGBOX_SIGN)
+				waitmessage
+			}
+			elif(flag(FLAG_BADGE01_GET) && flag(FLAG_ROXANNE_REMATCH)){
+				//Defeated
+				msgbox(format("Aggron: ron..."), MSGBOX_NPC)
+				msgbox(format("The Pokémon seems tired after today's battle, its better to let it rest."), MSGBOX_SIGN)
+				waitmessage
+			}
+			elif(var(VAR_NUM_BADGES) >= 6 && !flag(FLAG_GOT_AGGRONITE)){
+				//Mega Stone
+				msgbox(format("Aggron: ron!"), MSGBOX_NPC)
+				msgbox(format("The Pokémon is currently looking at a shiny rock on its arm with determination."), MSGBOX_SIGN)
+				waitmessage
+			}
+			else{
+				//First time
+				msgbox(format("Aggron: ron?"), MSGBOX_NPC)
+				msgbox(format("The Pokémon is currently eating what it looks to be a big rock."), MSGBOX_SIGN)
+				waitmessage
+			}
+	}
+	release
+	end
+}
+
+script RustboroCity_Gym_EventScript_Set_Gym_Pokemon_Species{
+	switch (var(VAR_NUM_BADGES)) {
+		case 0: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_ARON)   setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_ARON)   //Level 13 
+		case 1: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_ARON)   setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_ARON)   //Level 19
+		case 2: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_ARON)   setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_ARON)   //Level 25
+		case 3: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_LAIRON) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_LAIRON) //Level 31
+		case 4: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_LAIRON) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_LAIRON) //Level 38
+		case 5: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_AGGRON) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_AGGRON) //Level 45
+		case 6: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_AGGRON) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_AGGRON) //Level 51
+		case 7: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_AGGRON) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_AGGRON) //Level 62
+		case 8: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_AGGRON) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_AGGRON) //Level 70
+	}
+
+	if(flag(FLAG_NO_EVOLUTION_MODE)){
+		setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_ARON) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_ARON)
+	}
+	return
+}
+

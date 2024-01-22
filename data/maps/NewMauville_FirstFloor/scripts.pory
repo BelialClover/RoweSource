@@ -1,0 +1,4 @@
+raw `
+NewMauville_FirstFloor_MapScripts::
+	.byte 0
+`

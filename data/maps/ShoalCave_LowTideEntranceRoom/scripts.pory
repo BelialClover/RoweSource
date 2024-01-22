@@ -1,0 +1,141 @@
+raw `
+ShoalCave_LowTideEntranceRoom_MapScripts:: @ 8236DBA
+	map_script MAP_SCRIPT_ON_TRANSITION, ShoalCave_LowTideEntranceRoom_OnTransition
+	.byte 0
+
+ShoalCave_LowTideEntranceRoom_OnTransition: @ 8236DC0
+	setflag FLAG_VISITED_ROUTE125
+	//special UpdateShoalTideFlag
+	//goto_if_set FLAG_SYS_SHOAL_TIDE, ShoalCave_LowTideEntranceRoom_EventScript_SetHighTide
+	goto ShoalCave_LowTideEntranceRoom_EventScript_SetLowTide
+
+ShoalCave_LowTideEntranceRoom_EventScript_SetHighTide:: @ 8236DD1
+	//setmaplayoutindex LAYOUT_SHOAL_CAVE_HIGH_TIDE_ENTRANCE_ROOM
+	end
+
+ShoalCave_LowTideEntranceRoom_EventScript_SetLowTide:: @ 8236DD5
+	//setmaplayoutindex LAYOUT_SHOAL_CAVE_LOW_TIDE_ENTRANCE_ROOM
+	end
+
+ShoalCave_LowTideEntranceRoom_EventScript_ShellBellExpert:: @ 8236DD9
+	lock
+	faceplayer
+	goto_if_set FLAG_TEMP_1, ShoalCave_LowTideEntranceRoom_EventScript_Take_Good_Care
+	goto_if_unset FLAG_GOT_SLOWBROITE, ShoalCave_LowTideEntranceRoom_EventScript_ShellBellExpert_MegaStone
+	goto_if_set FLAG_RECEIVED_SHELL_BELL, ShoalCave_LowTideEntranceRoom_EventScript_Take_Good_Care
+	msgbox ShoalCave_LowTideEntranceRoom_Text_ShellBell, MSGBOX_DEFAULT
+	giveitem ITEM_SHELL_BELL
+	setflag FLAG_RECEIVED_SHELL_BELL
+	setflag FLAG_TEMP_1
+	goto ShoalCave_LowTideEntranceRoom_EventScript_Take_Good_Care
+	end
+	
+ShoalCave_LowTideEntranceRoom_EventScript_ShellBellExpert_MegaStone::	
+	goto_if_unset FLAG_RECEIVED_BADGE_07, ShoalCave_LowTideEntranceRoom_EventScript_ShellBellExpert_2
+	msgbox ShoalCave_LowTideEntranceRoom_Text_Slowbroite, MSGBOX_DEFAULT
+	giveitem ITEM_SLOWBRONITE
+	setflag FLAG_GOT_SLOWBROITE
+	setflag FLAG_TEMP_1
+	goto ShoalCave_LowTideEntranceRoom_EventScript_Take_Good_Care
+	end
+	
+ShoalCave_LowTideEntranceRoom_EventScript_ShellBellExpert_2:: @ 8236DD9
+	msgbox ShoalCave_LowTideEntranceRoom_Text_ShellBell, MSGBOX_DEFAULT
+	giveitem ITEM_SHELL_BELL
+	setflag FLAG_RECEIVED_SHELL_BELL
+	goto ShoalCave_LowTideEntranceRoom_EventScript_Take_Good_Care
+	end
+	
+ShoalCave_LowTideEntranceRoom_EventScript_Take_Good_Care:: @ 8236DD9
+	msgbox ShoalCave_LowTideEntranceRoom_Text_Good_Care, MSGBOX_DEFAULT
+	release
+	end
+	
+ShoalCave_LowTideEntranceRoom_Text_ShellBell: @ 822056D
+	.string "I used to make Shell Bells before\n"
+	.string "this cave became even colder after a\l"
+	.string "strange bird Pokémon made its nest here\l"
+	.string "and everything became colder.\p"
+	.string "Since there are no more Shoal Salts or\n"
+	.string "Shells I only have one Shell Bell left,\l"
+	.string "I want you to take it, Here you go!$"
+	
+ShoalCave_LowTideEntranceRoom_Text_Slowbroite: @ 822056D
+	.string "I found this strange stone further into\n"
+	.string "this cave, it is really heavy for my\l"
+	.string "old bones to carry so please take it.$"
+	
+ShoalCave_LowTideEntranceRoom_Text_Good_Care: @ 822056D
+	.string "Please take good care of it!$"
+	
+ShoalCave_LowTideEntranceRoom_Text_I_May: @ 822056D
+	.string "Please take good care of it!$"
+	
+
+@ If the bag is full, check if a slot will be freed when 4 Shoal Salt or Shells are given
+ShoalCave_LowTideEntranceRoom_EventScript_CheckSpaceWillBeFreed:: @ 8236E69
+	checkitem ITEM_SHOAL_SALT, 5
+	compare VAR_RESULT, TRUE
+	goto_if_eq ShoalCave_LowTideEntranceRoom_EventScript_CheckSpaceWillBeFreedShells
+	return
+
+ShoalCave_LowTideEntranceRoom_EventScript_CheckSpaceWillBeFreedShells:: @ 8236E7A
+	checkitem ITEM_SHOAL_SHELL, 5
+	compare VAR_RESULT, TRUE
+	goto_if_eq ShoalCave_LowTideEntranceRoom_EventScript_NoSpaceWillBeFreed
+	return
+
+ShoalCave_LowTideEntranceRoom_EventScript_NoSpaceWillBeFreed:: @ 8236E8B
+	setvar VAR_RESULT, 2
+	return
+
+ShoalCave_LowTideEntranceRoom_EventScript_NoRoomForShellBell:: @ 8236E91
+	msgbox ShoalCave_LowTideEntranceRoom_Text_NoSpaceInYourBag, MSGBOX_DEFAULT
+	release
+	end
+
+ShoalCave_LowTideEntranceRoom_EventScript_NotEnoughShoalSaltOrShells:: @ 8236E9B
+	checkitem ITEM_SHOAL_SALT, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq ShoalCave_LowTideEntranceRoom_EventScript_HasSomeShoalSaltOrShell
+	checkitem ITEM_SHOAL_SHELL, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq ShoalCave_LowTideEntranceRoom_EventScript_HasSomeShoalSaltOrShell
+	msgbox ShoalCave_LowTideEntranceRoom_Text_AreYouPlanningOnGoingInThere, MSGBOX_DEFAULT
+	release
+	end
+
+ShoalCave_LowTideEntranceRoom_EventScript_HasSomeShoalSaltOrShell:: @ 8236EC5
+	call_if_unset FLAG_GOT_SLOWBROITE, ShoalCave_LowTideEntranceRoom_EventScript_HasSomeShoalSaltOrShell_Megastone
+	msgbox ShoalCave_LowTideEntranceRoom_Text_BringMe4ShoalSaltAndShells, MSGBOX_DEFAULT
+	release
+	end
+	
+ShoalCave_LowTideEntranceRoom_EventScript_HasSomeShoalSaltOrShell_Megastone::
+	msgbox ShoalCave_LowTideEntranceRoom_Text_AreYouPlanningOnGoingInThere, MSGBOX_DEFAULT
+	release
+	end
+
+ShoalCave_LowTideEntranceRoom_EventScript_DeclineShellBell:: @ 8236ECF
+	call_if_unset FLAG_GOT_SLOWBROITE, ShoalCave_LowTideEntranceRoom_EventScript_DeclineMegaStone
+	msgbox ShoalCave_LowTideEntranceRoom_Text_WantedToMakeShellBell, MSGBOX_DEFAULT
+	release
+	end
+	
+ShoalCave_LowTideEntranceRoom_EventScript_DeclineMegaStone::
+	msgbox ShoalCave_LowTideEntranceRoom_Text_WantedToGiveSlowbroite, MSGBOX_DEFAULT
+	release
+	end
+
+ShoalCave_LowTideEntranceRoom_EventScript_ResetShoalItems:: @ 8236ED9
+	clearflag FLAG_RECEIVED_SHOAL_SALT_1
+	clearflag FLAG_RECEIVED_SHOAL_SALT_2
+	clearflag FLAG_RECEIVED_SHOAL_SALT_3
+	clearflag FLAG_RECEIVED_SHOAL_SALT_4
+	clearflag FLAG_RECEIVED_SHOAL_SHELL_1
+	clearflag FLAG_RECEIVED_SHOAL_SHELL_2
+	clearflag FLAG_RECEIVED_SHOAL_SHELL_3
+	clearflag FLAG_RECEIVED_SHOAL_SHELL_4
+	clearflag FLAG_SYS_SHOAL_ITEM
+	return
+`

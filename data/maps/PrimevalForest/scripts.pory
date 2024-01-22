@@ -1,0 +1,64 @@
+raw `
+PrimevalForest_MapScripts::
+	map_script MAP_SCRIPT_ON_LOAD, PrimevalForest_OnLoad
+	.byte 0
+	
+PrimevalForest_OnLoad: @ 8236F16
+	goto_if_set FLAG_SYS_GAME_CLEAR, PrimevalForest_EventScript_OpenShayminRoom
+	end
+	
+PrimevalForest_EventScript_OpenShayminRoom:
+	setmetatile 43, 22, METATILE_General_FRLG_EscalatorTile, 0
+	end
+
+PrimevalForest_EventScript_Shaymin::
+	lock
+	faceplayer
+	waitse
+	playmoncry SPECIES_SHAYMIN, 2
+	delay 40
+	waitmoncry
+	setflag FLAG_TOTEM_BATTLE
+	setvar VAR_NUM_WILD_POKEMON_STAT_BOOST, 2
+	setwildbattlewithcustommoves SPECIES_SHAYMIN, 70, ITEM_NONE, MOVE_SEED_FLARE, MOVE_EARTH_POWER, MOVE_PSYCHIC, MOVE_DAZZLING_GLEAM, 0, NATURE_TIMID
+	setflag FLAG_SYS_CTRL_OBJ_DELETE
+	dowildbattle
+	clearflag FLAG_SYS_CTRL_OBJ_DELETE
+	specialvar VAR_RESULT, GetBattleOutcome
+	compare VAR_RESULT, B_OUTCOME_CAUGHT
+	goto_if_eq PrimevalForest_EventScript_CaughtShaymin
+	compare VAR_RESULT, B_OUTCOME_WON
+	goto_if_eq PrimevalForest_EventScript_RanFromShaymin
+	compare VAR_RESULT, B_OUTCOME_RAN
+	goto_if_eq PrimevalForest_EventScript_RanFromShaymin
+	compare VAR_RESULT, B_OUTCOME_PLAYER_TELEPORTED
+	goto_if_eq PrimevalForest_EventScript_RanFromShaymin
+	setflag FLAG_UNUSED_0x4AB
+	release
+	end
+	
+PrimevalForest_EventScript_CaughtShaymin::
+	setflag FLAG_UNUSED_0x4AB
+	fadescreenswapbuffers FADE_TO_BLACK
+	removeobject VAR_LAST_TALKED
+	fadescreenswapbuffers FADE_FROM_BLACK
+	release
+	end
+
+PrimevalForest_EventScript_DefeatedShaymin::
+	fadescreenswapbuffers FADE_TO_BLACK
+	removeobject VAR_LAST_TALKED
+	fadescreenswapbuffers FADE_FROM_BLACK
+	release
+	end
+
+PrimevalForest_EventScript_RanFromShaymin::
+	setvar VAR_0x8004, SPECIES_SHAYMIN
+	fadescreenswapbuffers FADE_TO_BLACK
+	removeobject VAR_LAST_TALKED
+	fadescreenswapbuffers FADE_FROM_BLACK
+	bufferspeciesname 0, VAR_0x8004
+	msgbox gText_LegendaryFlewAway, MSGBOX_DEFAULT
+	release
+	end
+`

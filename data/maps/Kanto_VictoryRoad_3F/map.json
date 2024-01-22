@@ -1,0 +1,28 @@
+{
+  "id": "MAP_KANTO_VICTORY_ROAD_3F",
+  "name": "Kanto_VictoryRoad_3F",
+  "layout": "LAYOUT_KANTO_VICTORY_ROAD_3F",
+  "music": "MUS_VICTORY_ROAD",
+  "region_map_section": "MAPSEC_KANTO_VICTORY_ROAD",
+  "requires_flash": false,
+  "weather": "WEATHER_NONE",
+  "map_type": "MAP_TYPE_NONE",
+  "allow_cycling": false,
+  "allow_escaping": false,
+  "allow_running": false,
+  "show_map_name": true,
+  "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
+  "connections": 0,
+  "object_events": [
+
+  ],
+  "warp_events": [
+
+  ],
+  "coord_events": [
+
+  ],
+  "bg_events": [
+
+  ]
+}

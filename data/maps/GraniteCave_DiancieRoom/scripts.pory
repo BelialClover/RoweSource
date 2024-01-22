@@ -1,0 +1,57 @@
+raw `
+GraniteCave_DiancieRoom_MapScripts::
+	.byte 0
+
+GraniteCave_DiancieRoom_EventScript_Diance::
+	lock
+	faceplayer
+	waitse
+	playmoncry SPECIES_DIANCIE, 2
+	delay 40
+	waitmoncry
+	setflag FLAG_TOTEM_BATTLE
+	setflag FLAG_MEGA_EVOLVE_WILD_POKEMON
+	setvar VAR_NUM_WILD_POKEMON_STAT_BOOST, 2
+	setwildbattlewithcustommoves SPECIES_DIANCIE, 70, ITEM_NONE, MOVE_DIAMOND_STORM, MOVE_MOONBLAST, MOVE_EARTH_POWER, MOVE_PSYCHIC, 2, NATURE_TIMID
+	setflag FLAG_SYS_CTRL_OBJ_DELETE
+	dowildbattle
+	clearflag FLAG_SYS_CTRL_OBJ_DELETE
+	specialvar VAR_RESULT, GetBattleOutcome
+	compare VAR_RESULT, B_OUTCOME_CAUGHT
+	goto_if_eq GraniteCave_DiancieRoom_EventScript_CaughtDiance
+	compare VAR_RESULT, B_OUTCOME_WON
+	goto_if_eq GraniteCave_DiancieRoom_EventScript_RanFromDiance
+	compare VAR_RESULT, B_OUTCOME_RAN
+	goto_if_eq GraniteCave_DiancieRoom_EventScript_RanFromDiance
+	compare VAR_RESULT, B_OUTCOME_PLAYER_TELEPORTED
+	goto_if_eq GraniteCave_DiancieRoom_EventScript_RanFromDiance
+	setflag FLAG_DEFEATED_DIANCIE
+	release
+	end
+	
+GraniteCave_DiancieRoom_EventScript_CaughtDiance::
+	giveitem ITEM_DIANCITE
+	setflag FLAG_DEFEATED_DIANCIE
+	fadescreenswapbuffers FADE_TO_BLACK
+	removeobject VAR_LAST_TALKED
+	fadescreenswapbuffers FADE_FROM_BLACK
+	release
+	end
+
+GraniteCave_DiancieRoom_EventScript_DefeatedDiance::
+	fadescreenswapbuffers FADE_TO_BLACK
+	removeobject VAR_LAST_TALKED
+	fadescreenswapbuffers FADE_FROM_BLACK
+	release
+	end
+
+GraniteCave_DiancieRoom_EventScript_RanFromDiance::
+	setvar VAR_0x8004, SPECIES_DIANCIE
+	fadescreenswapbuffers FADE_TO_BLACK
+	removeobject VAR_LAST_TALKED
+	fadescreenswapbuffers FADE_FROM_BLACK
+	bufferspeciesname 0, VAR_0x8004
+	msgbox gText_LegendaryFlewAway, MSGBOX_DEFAULT
+	release
+	end
+`

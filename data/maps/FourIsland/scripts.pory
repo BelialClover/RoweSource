@@ -1,0 +1,162 @@
+raw `
+.equ LOCALID_DAYCARE_MAN, 1
+.equ LOCALID_RIVAL, 11
+.set LOCALID_SAILOR, 10
+
+FourIsland_MapScripts:: @ 8167CAE
+	map_script MAP_SCRIPT_ON_TRANSITION, FourIsland_OnTransition
+	//map_script MAP_SCRIPT_ON_FRAME_TABLE, FourIsland_OnFrame
+	.byte 0
+
+FourIsland_OnTransition:: @ 8167CB9
+	call_if_eq FourIsland_EventScript_ShowRival
+	end
+
+FourIsland_EventScript_ShowRival:: @ 8167CCD
+	//clearflag FLAG_HIDE_Four_Island_RIVAL
+	return
+
+FourIsland_EventScript_OldWoman:: @ 8167E2E
+	lock
+	faceplayer
+	//goto_if_set FLAG_SYS_CAN_LINK_WITH_RS, FourIsland_EventScript_OldWomanLoreleiLeft
+    goto FourIsland_EventScript_OldWomanLoreleiLeft
+	msgbox FourIsland_Text_LoreleiHasReturned
+	release
+	end
+
+FourIsland_EventScript_OldWomanLoreleiLeft:: @ 8167E43
+	msgbox FourIsland_Text_LoreleiMetLaprasAsChild
+	release
+	end
+
+FourIsland_EventScript_LittleGirl:: @ 8167E5A
+	lock
+	faceplayer
+	msgbox FourIsland_Text_LoreleiHasLotsOfStuffedDolls
+	release
+	end
+
+FourIsland_EventScript_FatMan:: @ 8167E73
+	msgbox FourIsland_Text_MadeSlushieUsingIcefallCaveIce, MSGBOX_NPC
+	end
+
+FourIsland_EventScript_IslandSign:: @ 8167E7C
+	msgbox FourIsland_Text_IslandSign, MSGBOX_SIGN
+	end
+
+FourIsland_EventScript_LoreleisHouseSign:: @ 8167E85
+	msgbox FourIsland_Text_LoreleisHouse, MSGBOX_SIGN
+	end
+
+FourIsland_Text_IslandSign:: @ 8182A03
+    .string "Four Island\n"
+    .string "The Warm, Blue, Floe Island$"
+
+FourIsland_Text_LoreleiHasReturned:: @ 8182A2B
+    .string "Loreli has returned.\p"
+    .string "Did she find the city life too\n"
+    .string "stressful, I wonder?$"
+
+FourIsland_Text_LoreleiMetLaprasAsChild:: @ 8182A75
+    .string "Loreli has gone back to Kanto.\p"
+    .string "The Lapras she has, I imagine it\n"
+    .string "to be the one she met as a child.\p"
+    .string "I believe it was in Icefall Cave\n"
+    .string "that she caught it.\p"
+    .string "Perhaps that Pokémon has been with\n"
+    .string "her ever since.$"
+
+FourIsland_Text_RivalAlreadyGotEggBeSmellingYa:: @ 8182B37
+    .string "{RIVAL}: Hey!\n"
+    .string "{PLAYER}!\p"
+    .string "What are you doing here in the\n"
+    .string "Sevii IslandS?\p"
+    .string "You should quit copying me,\n"
+    .string "you know?\p"
+    .string "Anyways, I already got my Pokémon\n"
+    .string "Egg, so I'm done with this island.\p"
+    .string "Heh, I bet you don't even know\n"
+    .string "about Pokémon Pokémon.\p"
+    .string "You'll never fill your National\n"
+    .string "Pokédex that way.\p"
+    .string "By the way, I saw someone we both\n"
+    .string "know on this island.\p"
+    .string "Why don't you go look around if\n"
+    .string "it makes you curious?\p"
+    .string "Me, I don't have the time to\n"
+    .string "waste.\p"
+    .string "Be smelling ya!$"
+
+FourIsland_Text_LoreleiHasLotsOfStuffedDolls:: @ 8182CE3
+    .string "Oh, you found me!\n"
+    .string "Please don't tell Loreli.\p"
+    .string "Did you know that Loreli has lots\n"
+    .string "and lots of stuffed dolls?\p"
+    .string "Every time she comes back to\n"
+    .string "Four Island, her collection grows!$"
+
+FourIsland_Text_MadeSlushieUsingIcefallCaveIce:: @ 8182D8E
+    .string "Ooh, chilly!\p"
+    .string "I made a slushie using ice I\n"
+    .string "shaved inside Icefall Cave.\p"
+    .string "It's chilly and tasty!$"
+
+FourIsland_Text_LoreleisHouse:: @ 8182DEB
+    .string "Loreli's House$"
+
+// Sailor -------------------------------------------------------------------------------------------
+FourIsland_EventScript_Sailor:: @ 8267CA2
+	lock
+	faceplayer
+	goto_if_set FLAG_SAILED_FROM_SLATEPORT, FourIsland_EventScript_Sailor_Slateport
+	msgbox FourIsland_Text_Text_SailorReturn_Lilycove, MSGBOX_YESNO
+	compare VAR_RESULT, NO
+	goto_if_eq FourIsland_EventScript_AsYouLike
+	msgbox EventTicket_Text_SailHome, MSGBOX_DEFAULT
+	closemessage
+	applymovement VAR_LAST_TALKED, Common_Movement_WalkInPlaceFastestDown
+	waitmovement 0
+	delay 30
+	hideobjectat LOCALID_SAILOR, MAP_FOUR_ISLAND
+	special HideFollower
+	setvar VAR_0x8004, LOCALID_SS_TIDAL
+	call Common_EventScript_FerryDepartIsland
+	warp MAP_LILYCOVE_CITY_HARBOR, 255, 8, 11
+	waitstate
+	release
+	end
+	
+FourIsland_EventScript_Sailor_Slateport:
+	msgbox FourIsland_Text_Text_SailorReturn_Slateport, MSGBOX_YESNO
+	compare VAR_RESULT, NO
+	goto_if_eq FourIsland_EventScript_AsYouLike
+	msgbox EventTicket_Text_SailHome, MSGBOX_DEFAULT
+	closemessage
+	applymovement VAR_LAST_TALKED, Common_Movement_WalkInPlaceFastestDown
+	waitmovement 0
+	delay 30
+	hideobjectat LOCALID_SAILOR, MAP_FOUR_ISLAND
+	special HideFollower
+	setvar VAR_0x8004, LOCALID_SS_TIDAL
+	call Common_EventScript_FerryDepartIsland
+	warp MAP_SLATEPORT_CITY_HARBOR, 255, 8, 11
+	waitstate
+	release
+	end
+
+FourIsland_EventScript_AsYouLike:: @ 8267CE7
+	msgbox EventTicket_Text_AsYouLike, MSGBOX_DEFAULT
+	release
+	end
+	
+FourIsland_Text_Text_SailorReturn_Lilycove: @ 82C6B90
+    .string "That cave its really chilly!\n"
+	.string "Do you want to return to Lilycove?$"
+	
+FourIsland_Text_Text_SailorReturn_Slateport: @ 82C6B90
+    .string "That cave its really chilly!\n"
+	.string "Do you want to return to Slateport?$"
+	
+// -------------------------------------------------------------------------------------------
+`

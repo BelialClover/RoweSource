@@ -1,0 +1,41 @@
+{
+  "id": "MAP_TWO_ISLAND_CAPE_BRINK",
+  "name": "TwoIsland_CapeBrink",
+  "layout": "LAYOUT_TWO_ISLAND_CAPE_BRINK",
+  "music": "MUS_RG_ROUTE3",
+  "region_map_section": "MAPSEC_CAPE_BRINK",
+  "requires_flash": false,
+  "weather": "WEATHER_SUNNY",
+  "map_type": "MAP_TYPE_TOWN",
+  "allow_cycling": true,
+  "allow_escaping": false,
+  "allow_running": true,
+  "show_map_name": true,
+  "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
+  "connections": [
+    {
+      "direction": "down",
+      "offset": -24,
+      "map": "MAP_TWO_ISLAND"
+    }
+  ],
+  "object_events": [
+
+  ],
+  "warp_events": [
+
+  ],
+  "coord_events": [
+
+  ],
+  "bg_events": [
+    {
+      "type": "sign",
+      "x": 12,
+      "y": 16,
+      "elevation": 0,
+      "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
+      "script": "TwoIsland_EventScript_ClosedDoor"
+    }
+  ]
+}

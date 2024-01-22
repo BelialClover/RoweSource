@@ -1,0 +1,46 @@
+{
+  "id": "MAP_SCORCHED_SLAB_HEATRANS_ROOM",
+  "name": "ScorchedSlab_HeatransRoom",
+  "layout": "LAYOUT_SCORCHED_SLAB_HEATRANS_ROOM",
+  "music": "MUS_RG_SEVII_CAVE",
+  "region_map_section": "MAPSEC_SCORCHED_SLAB",
+  "requires_flash": false,
+  "weather": "WEATHER_NONE",
+  "map_type": "MAP_TYPE_UNDERGROUND",
+  "allow_cycling": true,
+  "allow_escaping": true,
+  "allow_running": true,
+  "show_map_name": false,
+  "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
+  "connections": 0,
+  "object_events": [
+    {
+      "graphics_id": "OBJ_EVENT_GFX_POKEMON_485",
+      "x": 10,
+      "y": 5,
+      "elevation": 3,
+      "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "ScorchedSlab_HeatransRoom_EventScript_Heatran",
+      "flag": "FLAG_UNUSED_0x4A9"
+    }
+  ],
+  "warp_events": [
+    {
+      "x": 10,
+      "y": 18,
+      "elevation": 0,
+      "dest_map": "MAP_SCORCHED_SLAB_B2F",
+      "dest_warp_id": 1
+    }
+  ],
+  "coord_events": [
+
+  ],
+  "bg_events": [
+
+  ]
+}

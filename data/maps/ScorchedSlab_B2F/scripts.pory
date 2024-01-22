@@ -1,0 +1,13 @@
+raw `
+ScorchedSlab_B2F_MapScripts::
+	map_script MAP_SCRIPT_ON_LOAD, ScorchedSlab_B2F_OnLoad
+	.byte 0
+	
+ScorchedSlab_B2F_OnLoad::
+	goto_if_set FLAG_DEFEATED_RAYQUAZA, ScorchedSlab_B2F_EventScript_OpenHeatran
+	end
+	
+ScorchedSlab_B2F_EventScript_OpenHeatran::
+	setmetatile 18, 6, METATILE_MtEmber_Escalator_Tile, 0
+	end
+`

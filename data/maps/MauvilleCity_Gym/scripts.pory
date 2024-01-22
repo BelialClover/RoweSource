@@ -1,0 +1,994 @@
+raw `
+MauvilleCity_Gym_MapScripts:: @ 820DD6E
+	map_script MAP_SCRIPT_ON_LOAD, MauvilleCity_Gym_OnLoad
+	.byte 0
+
+MauvilleCity_Gym_OnLoad: @ 820DD74
+	call MauvilleCity_Gym_EventScript_Set_Gym_Pokemon_Species
+	goto_if_set FLAG_DEFEATED_MAUVILLE_GYM, MauvilleCity_Gym_EventScript_DeactivatePuzzle
+	switch VAR_MAUVILLE_GYM_STATE
+	case 0, MauvilleCity_Gym_EventScript_UpdateBarriers
+	case 1, MauvilleCity_Gym_EventScript_Switch1Pressed
+	case 2, MauvilleCity_Gym_EventScript_Switch2Pressed
+	case 3, MauvilleCity_Gym_EventScript_Switch3Pressed
+	case 4, MauvilleCity_Gym_EventScript_Switch4Pressed
+	end
+
+MauvilleCity_Gym_EventScript_UpdateBarriers:: @ 820DDBA
+	goto_if_set FLAG_MAUVILLE_GYM_BARRIERS_STATE, MauvilleCity_Gym_EventScript_SetAltBarriers
+	end
+
+MauvilleCity_Gym_EventScript_SetAltBarriers:: @ 820DDC4
+	setmetatile 3, 11, METATILE_MauvilleGym_RedBeamV1_On, 1
+	setmetatile 3, 12, METATILE_MauvilleGym_RedBeamV2_On, 1
+	setmetatile 3, 13, METATILE_MauvilleGym_PoleTop_On, 1
+	setmetatile 4, 10, METATILE_MauvilleGym_RedBeamH1_On, 0
+	setmetatile 5, 10, METATILE_MauvilleGym_RedBeamH2_On, 0
+	setmetatile 4, 11, METATILE_MauvilleGym_RedBeamH3_On, 1
+	setmetatile 5, 11, METATILE_MauvilleGym_RedBeamH4_On, 1
+	setmetatile 7, 10, METATILE_MauvilleGym_RedBeamH1_On, 0
+	setmetatile 8, 10, METATILE_MauvilleGym_RedBeamH2_On, 0
+	setmetatile 7, 11, METATILE_MauvilleGym_RedBeamH3_On, 1
+	setmetatile 8, 11, METATILE_MauvilleGym_RedBeamH4_On, 1
+	setmetatile 4, 13, METATILE_MauvilleGym_GreenBeamH1_Off, 0
+	setmetatile 5, 13, METATILE_MauvilleGym_GreenBeamH2_Off, 0
+	setmetatile 4, 14, METATILE_MauvilleGym_GreenBeamH3_Off, 0
+	setmetatile 5, 14, METATILE_MauvilleGym_GreenBeamH4_Off, 0
+	setmetatile 1, 10, METATILE_MauvilleGym_GreenBeamH1_Off, 0
+	setmetatile 2, 10, METATILE_MauvilleGym_GreenBeamH2_Off, 0
+	setmetatile 1, 11, METATILE_MauvilleGym_GreenBeamH3_Off, 0
+	setmetatile 2, 11, METATILE_MauvilleGym_GreenBeamH4_Off, 0
+	setmetatile 6, 8, METATILE_MauvilleGym_PoleBottom_On, 1
+	setmetatile 6, 9, METATILE_MauvilleGym_FloorTile, 0
+	setmetatile 6, 10, METATILE_MauvilleGym_PoleTop_Off, 0
+	setmetatile 4, 6, METATILE_MauvilleGym_GreenBeamH1_Off, 0
+	setmetatile 5, 6, METATILE_MauvilleGym_GreenBeamH2_Off, 0
+	setmetatile 4, 7, METATILE_MauvilleGym_GreenBeamH3_Off, 0
+	setmetatile 5, 7, METATILE_MauvilleGym_GreenBeamH4_Off, 0
+	end
+
+MauvilleCity_Gym_EventScript_Switch1Pressed:: @ 820DEAF
+	setvar VAR_0x8004, 0
+	special MauvilleGymPressSwitch
+	goto MauvilleCity_Gym_EventScript_UpdateBarriers
+	end
+
+MauvilleCity_Gym_EventScript_Switch2Pressed:: @ 820DEBD
+	setvar VAR_0x8004, 1
+	special MauvilleGymPressSwitch
+	goto MauvilleCity_Gym_EventScript_UpdateBarriers
+	end
+
+MauvilleCity_Gym_EventScript_Switch3Pressed:: @ 820DECB
+	setvar VAR_0x8004, 2
+	special MauvilleGymPressSwitch
+	goto MauvilleCity_Gym_EventScript_UpdateBarriers
+	end
+
+MauvilleCity_Gym_EventScript_Switch4Pressed:: @ 820DED9
+	setvar VAR_0x8004, 3
+	special MauvilleGymPressSwitch
+	goto MauvilleCity_Gym_EventScript_UpdateBarriers
+	end
+
+MauvilleCity_Gym_EventScript_DeactivatePuzzle:: @ 820DEE7
+	special MauvilleGymDeactivatePuzzle
+	end
+
+MauvilleCity_Gym_EventScript_Wattson:: @ 820DEEB
+	lock
+	faceplayer
+	call_if_set FLAG_BADGE03_GET, MauvilleCity_Gym_EventScript_Wattson_PostBattle
+	trainerbattle_single TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonIntro, MauvilleCity_Gym_Text_WattsonDefeat, MauvilleCity_Gym_EventScript_WattsonDefeated, NO_MUSIC
+	msgbox MauvilleCity_Gym_Text_WattsonPostBattle, MSGBOX_DEFAULT
+	release
+	end
+
+MauvilleCity_Gym_EventScript_WattsonDefeated:: @ 820DF2B
+	message MauvilleCity_Gym_Text_ReceivedDynamoBadge
+	waitmessage
+	call Common_EventScript_PlayGymBadgeFanfare
+	msgbox MauvilleCity_Gym_Text_ExplainDynamoBadgeTakeThis, MSGBOX_DEFAULT
+	setflag FLAG_DEFEATED_MAUVILLE_GYM
+	setflag FLAG_BADGE03_GET
+	addvar VAR_PETALBURG_GYM_STATE, 1
+	compare VAR_PETALBURG_GYM_STATE, 6
+	setvar VAR_0x8008, 3
+	call Common_EventScript_SetGymTrainers
+	special MauvilleGymDeactivatePuzzle
+	special DrawWholeMapView
+	playse SE_UNLOCK
+	call Special_Gym_EventScript_Give_Item
+	call MauvilleCity_Gym_EventScript_GiveShockWave
+	closemessage
+	delay 30
+	playfanfare MUS_REGISTER_MATCH_CALL
+	msgbox MauvilleCity_Gym_Text_RegisteredWattson, MSGBOX_DEFAULT
+	waitfanfare
+	closemessage
+	delay 30
+	setflag FLAG_ENABLE_WATTSON_MATCH_CALL
+	call Gym_EventScript_Reset_Rematches
+	setflag FLAG_WATTSON_REMATCH
+	release
+	end
+	
+MauvilleCity_Gym_EventScript_WattsonRematch:: @ 820DFDE
+	msgbox MauvilleCity_Gym_Text_WattsonPreRematch, MSGBOX_DEFAULT
+	goto MauvilleCity_Gym_EventScript_Start_Rematch_1
+	end
+	
+MauvilleCity_Gym_EventScript_Wattson_PostBattle::
+	goto_if_unset FLAG_WATTSON_REMATCH, MauvilleCity_Gym_EventScript_WattsonRematch
+	msgbox MauvilleCity_Gym_Text_WattsonPostBattle, MSGBOX_DEFAULT
+	release
+	end
+	
+//rematches
+MauvilleCity_Gym_EventScript_WattsonRematchEnd::
+	msgbox MauvilleCity_Gym_Text_WattsonPostBattle, MSGBOX_DEFAULT
+	call Gym_EventScript_Reset_Random_Rematch
+	setflag FLAG_WATTSON_REMATCH
+	release
+	end
+	
+//rematches
+MauvilleCity_Gym_EventScript_Start_Rematch_1::
+	checkitem ITEM_TM73_THUNDER_WAVE, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq MauvilleCity_Gym_EventScript_Start_Rematch_2
+	trainerbattle_no_intro TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonRematchDefeat
+	msgbox MauvilleCity_Gym_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM73_THUNDER_WAVE
+	goto MauvilleCity_Gym_EventScript_WattsonRematchEnd
+	end
+	
+MauvilleCity_Gym_EventScript_Start_Rematch_2::
+	goto_if_unset FLAG_RECEIVED_TM08 MauvilleCity_Gym_EventScript_Start_Rematch_Party_1
+	checkitem ITEM_TM34_SHOCK_WAVE, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq MauvilleCity_Gym_EventScript_Start_Rematch_3
+	trainerbattle_no_intro TRAINER_WATTSON_2, MauvilleCity_Gym_Text_WattsonRematchDefeat
+	msgbox MauvilleCity_Gym_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM34_SHOCK_WAVE
+	goto MauvilleCity_Gym_EventScript_WattsonRematchEnd
+	end
+	
+MauvilleCity_Gym_EventScript_Start_Rematch_3::
+	goto_if_unset FLAG_RECEIVED_TM42 MauvilleCity_Gym_EventScript_Start_Rematch_Party_2
+	checkitem ITEM_TM57_CHARGE_BEAM, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq MauvilleCity_Gym_EventScript_Start_Rematch_4
+	trainerbattle_no_intro TRAINER_WATTSON_3, MauvilleCity_Gym_Text_WattsonRematchDefeat
+	msgbox MauvilleCity_Gym_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM57_CHARGE_BEAM
+	goto MauvilleCity_Gym_EventScript_WattsonRematchEnd
+	end
+	
+MauvilleCity_Gym_EventScript_Start_Rematch_4::
+	goto_if_unset FLAG_RECEIVED_TM40 MauvilleCity_Gym_EventScript_Start_Rematch_Party_3
+	checkitem ITEM_TM72_VOLT_SWITCH, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq MauvilleCity_Gym_EventScript_Start_Rematch_5
+	trainerbattle_no_intro TRAINER_WATTSON_4, MauvilleCity_Gym_Text_WattsonRematchDefeat
+	msgbox MauvilleCity_Gym_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM72_VOLT_SWITCH
+	goto MauvilleCity_Gym_EventScript_WattsonRematchEnd
+	end
+	
+MauvilleCity_Gym_EventScript_Start_Rematch_5::
+	goto_if_unset FLAG_RECEIVED_TM04 MauvilleCity_Gym_EventScript_Start_Rematch_Party_4
+	goto_if_set FLAG_GOT_MANECTITE MauvilleCity_Gym_EventScript_Start_Rematch_6
+	trainerbattle_no_intro TRAINER_WATTSON_4, MauvilleCity_Gym_Text_WattsonRematchDefeat
+	msgbox MauvilleCity_Gym_Text_GetMegaStone, MSGBOX_DEFAULT
+	giveitem ITEM_MANECTITE
+	setflag FLAG_GOT_MANECTITE
+	goto MauvilleCity_Gym_EventScript_WattsonRematchEnd
+	end
+	
+MauvilleCity_Gym_EventScript_Start_Rematch_6::
+	goto_if_unset FLAG_RECEIVED_TM03 MauvilleCity_Gym_EventScript_Start_Rematch_Party_4
+	checkitem ITEM_TM93_WILD_CHARGE, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq MauvilleCity_Gym_EventScript_Start_Rematch_Final
+	trainerbattle_no_intro TRAINER_WATTSON_5, MauvilleCity_Gym_Text_WattsonRematchDefeat
+	msgbox MauvilleCity_Gym_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM93_WILD_CHARGE
+	goto MauvilleCity_Gym_EventScript_WattsonRematchEnd
+	end
+	
+MauvilleCity_Gym_EventScript_Start_Rematch_Final::
+	random 5
+	switch VAR_RESULT
+	case 0, MauvilleCity_Gym_EventScript_Start_Rematch_Party_1
+	case 1, MauvilleCity_Gym_EventScript_Start_Rematch_Party_2
+	case 2, MauvilleCity_Gym_EventScript_Start_Rematch_Party_3
+	case 3, MauvilleCity_Gym_EventScript_Start_Rematch_Party_4
+	case 4, MauvilleCity_Gym_EventScript_Start_Rematch_Party_5
+	end
+	
+MauvilleCity_Gym_EventScript_Start_Rematch_Party_1::
+	trainerbattle_no_intro TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, MauvilleCity_Gym_EventScript_WattsonRematchEnd
+	msgbox MauvilleCity_Gym_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_TIMID_MINT, 3
+	goto MauvilleCity_Gym_EventScript_WattsonRematchEnd
+	end
+	
+MauvilleCity_Gym_EventScript_Start_Rematch_Party_2::
+	trainerbattle_no_intro TRAINER_WATTSON_2, MauvilleCity_Gym_Text_WattsonRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, MauvilleCity_Gym_EventScript_WattsonRematchEnd
+	msgbox MauvilleCity_Gym_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_HASTY_MINT, 3
+	goto MauvilleCity_Gym_EventScript_WattsonRematchEnd
+	end
+	
+MauvilleCity_Gym_EventScript_Start_Rematch_Party_3::
+	trainerbattle_no_intro TRAINER_WATTSON_3, MauvilleCity_Gym_Text_WattsonRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, MauvilleCity_Gym_EventScript_WattsonRematchEnd
+	msgbox MauvilleCity_Gym_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_JOLLY_MINT, 3
+	goto MauvilleCity_Gym_EventScript_WattsonRematchEnd
+	end
+	
+MauvilleCity_Gym_EventScript_Start_Rematch_Party_4::
+	trainerbattle_no_intro TRAINER_WATTSON_4, MauvilleCity_Gym_Text_WattsonRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, MauvilleCity_Gym_EventScript_WattsonRematchEnd
+	msgbox MauvilleCity_Gym_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_NAIVE_MINT, 3
+	goto MauvilleCity_Gym_EventScript_WattsonRematchEnd
+	end
+	
+MauvilleCity_Gym_EventScript_Start_Rematch_Party_5::
+	trainerbattle_no_intro TRAINER_WATTSON_5, MauvilleCity_Gym_Text_WattsonRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, MauvilleCity_Gym_EventScript_WattsonRematchEnd
+	msgbox MauvilleCity_Gym_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_MODEST_MINT, 3
+	goto MauvilleCity_Gym_EventScript_WattsonRematchEnd
+	end
+	
+MauvilleCity_Gym_Text_GetTM:
+	.string "Wattson: Please take this\n"
+	.string "Technical Machine.$"
+
+MauvilleCity_Gym_Text_GetMegaStone:
+	.string "Wattson: Please take this\n"
+	.string "Mega Stone, with you.\p"
+	.string "Make an Aggron hold it to\n"
+	.string "unleash its Hidden Potential.$"
+	
+MauvilleCity_Gym_Text_GetReward:
+	.string "Wattson: Please take this\n"
+	.string "Item as a Reward.$"
+
+//rematches end
+
+MauvilleCity_Gym_EventScript_GiveShockWave:: @ 820DFB1
+	msgbox Gym_Text_Takethis2, MSGBOX_DEFAULT
+	giveitem ITEM_TM34
+	msgbox MauvilleCity_Gym_Text_ExplainShockWave, MSGBOX_DEFAULT
+	return
+
+MauvilleCity_Gym_EventScript_CompletedNewMauville:: @ 820DFD4
+	msgbox MauvilleCity_Gym_Text_WattsonGoForthAndEndeavor, MSGBOX_DEFAULT
+	release
+	end
+
+MauvilleCity_Gym_EventScript_Switch1:: @ 820DFF9
+	lockall
+	goto_if_set FLAG_DEFEATED_MAUVILLE_GYM, MauvilleCity_Gym_EventScript_SwitchDoNothing
+	compare VAR_MAUVILLE_GYM_STATE, 1
+	goto_if_eq MauvilleCity_Gym_EventScript_SwitchDoNothing
+	setvar VAR_MAUVILLE_GYM_STATE, 1
+	setvar VAR_0x8004, 0
+	goto MauvilleCity_Gym_EventScript_PressFloorSwitch
+	end
+
+MauvilleCity_Gym_EventScript_Switch2:: @ 820E01E
+	lockall
+	goto_if_set FLAG_DEFEATED_MAUVILLE_GYM, MauvilleCity_Gym_EventScript_SwitchDoNothing
+	compare VAR_MAUVILLE_GYM_STATE, 2
+	goto_if_eq MauvilleCity_Gym_EventScript_SwitchDoNothing
+	setvar VAR_MAUVILLE_GYM_STATE, 2
+	setvar VAR_0x8004, 1
+	goto MauvilleCity_Gym_EventScript_PressFloorSwitch
+	end
+
+MauvilleCity_Gym_EventScript_Switch3:: @ 820E043
+	lockall
+	goto_if_set FLAG_DEFEATED_MAUVILLE_GYM, MauvilleCity_Gym_EventScript_SwitchDoNothing
+	compare VAR_MAUVILLE_GYM_STATE, 3
+	goto_if_eq MauvilleCity_Gym_EventScript_SwitchDoNothing
+	setvar VAR_MAUVILLE_GYM_STATE, 3
+	setvar VAR_0x8004, 2
+	goto MauvilleCity_Gym_EventScript_PressFloorSwitch
+	end
+
+MauvilleCity_Gym_EventScript_Switch4:: @ 820E068
+	lockall
+	goto_if_set FLAG_DEFEATED_MAUVILLE_GYM, MauvilleCity_Gym_EventScript_SwitchDoNothing
+	compare VAR_MAUVILLE_GYM_STATE, 4
+	goto_if_eq MauvilleCity_Gym_EventScript_SwitchDoNothing
+	setvar VAR_MAUVILLE_GYM_STATE, 4
+	setvar VAR_0x8004, 3
+	goto MauvilleCity_Gym_EventScript_PressFloorSwitch
+	end
+
+MauvilleCity_Gym_EventScript_PressFloorSwitch:: @ 820E08D
+	special MauvilleGymSetDefaultBarriers
+	special MauvilleGymPressSwitch
+	special DrawWholeMapView
+	playse SE_UNLOCK
+	goto_if_set FLAG_MAUVILLE_GYM_BARRIERS_STATE, MauvilleCity_Gym_EventScript_ClearBarriersAltState
+	goto_if_unset FLAG_MAUVILLE_GYM_BARRIERS_STATE, MauvilleCity_Gym_EventScript_SetBarriersAltState
+	releaseall
+	end
+
+MauvilleCity_Gym_EventScript_SwitchDoNothing:: @ 820E0AD
+	releaseall
+	end
+
+MauvilleCity_Gym_EventScript_SetBarriersAltState:: @ 820E0AF
+	setflag FLAG_MAUVILLE_GYM_BARRIERS_STATE
+	releaseall
+	end
+
+MauvilleCity_Gym_EventScript_ClearBarriersAltState:: @ 820E0B4
+	clearflag FLAG_MAUVILLE_GYM_BARRIERS_STATE
+	releaseall
+	end
+
+MauvilleCity_Gym_EventScript_Kirk:: @ 820E0B9
+	trainerbattle_single TRAINER_KIRK, MauvilleCity_Gym_Text_KirkIntro, MauvilleCity_Gym_Text_KirkDefeat
+	msgbox MauvilleCity_Gym_Text_KirkPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+MauvilleCity_Gym_EventScript_Shawn:: @ 820E0D0
+	trainerbattle_single TRAINER_SHAWN, MauvilleCity_Gym_Text_ShawnIntro, MauvilleCity_Gym_Text_ShawnDefeat
+	msgbox MauvilleCity_Gym_Text_ShawnPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+MauvilleCity_Gym_EventScript_Ben:: @ 820E0E7
+	trainerbattle_single TRAINER_BEN, MauvilleCity_Gym_Text_BenIntro, MauvilleCity_Gym_Text_BenDefeat
+	msgbox MauvilleCity_Gym_Text_BenPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+MauvilleCity_Gym_EventScript_Vivian:: @ 820E0FE
+	trainerbattle_single TRAINER_VIVIAN, MauvilleCity_Gym_Text_VivianIntro, MauvilleCity_Gym_Text_VivianDefeat
+	msgbox MauvilleCity_Gym_Text_VivianPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+MauvilleCity_Gym_EventScript_Angelo:: @ 820E115
+	trainerbattle_single TRAINER_ANGELO, MauvilleCity_Gym_Text_AngeloIntro, MauvilleCity_Gym_Text_AngeloDefeat
+	msgbox MauvilleCity_Gym_Text_AngeloPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+MauvilleCity_Gym_EventScript_GymGuide:: @ 820E12C
+	lock
+	faceplayer
+	goto_if_set FLAG_DEFEATED_MAUVILLE_GYM, MauvilleCity_Gym_EventScript_GymGuidePostVictory
+	msgbox MauvilleCity_Gym_Text_GymGuideAdvice, MSGBOX_DEFAULT
+	release
+	end
+
+MauvilleCity_Gym_EventScript_GymGuidePostVictory:: @ 820E141
+	msgbox MauvilleCity_Gym_Text_GymGuidePostVictory, MSGBOX_DEFAULT
+	release
+	end
+
+MauvilleCity_Gym_EventScript_LeftGymStatue:: @ 820E14B
+	lockall
+	goto_if_set FLAG_BADGE03_GET, MauvilleCity_Gym_EventScript_GymStatueCertified
+	goto MauvilleCity_Gym_EventScript_GymStatue
+	end
+
+MauvilleCity_Gym_EventScript_RightGymStatue:: @ 820E15B
+	lockall
+	goto_if_set FLAG_BADGE03_GET, MauvilleCity_Gym_EventScript_GymStatueCertified
+	goto MauvilleCity_Gym_EventScript_GymStatue
+	end
+
+MauvilleCity_Gym_EventScript_GymStatueCertified:: @ 820E16B
+	msgbox MauvilleCity_Gym_Text_GymStatueCertified, MSGBOX_DEFAULT
+	releaseall
+	end
+
+MauvilleCity_Gym_EventScript_GymStatue:: @ 820E175
+	msgbox MauvilleCity_Gym_Text_GymStatue, MSGBOX_DEFAULT
+	releaseall
+	end
+
+MauvilleCity_Gym_Text_GymGuideAdvice: @ 820E17F
+	.string "Hey, how's it going, Champion-\n"
+	.string "bound {PLAYER}?\p"
+	.string "Wattson, the Leader of Mauville\n"
+	.string "Gym, uses Electric-type Pokémon.\p"
+	.string "If you challenge him with Water-type\n"
+	.string "Pokémon, he'll zap them! Bzzt!\p"
+	.string "And, he's put in switch-controlled\n"
+	.string "doors all over his Gym! Eccentric!\p"
+	.string "Hey, go for it!$"
+
+MauvilleCity_Gym_Text_GymGuidePostVictory: @ 820E283
+	.string "Whoa, you're electrifying!\n"
+	.string "You've powered the door open!$"
+
+MauvilleCity_Gym_Text_KirkIntro: @ 820E2BC
+	.string "My electric soul, it'll shatter your\n"
+	.string "dreams whole, whoa-yeahah!$"
+
+MauvilleCity_Gym_Text_KirkDefeat: @ 820E2FC
+	.string "That was plugged in, amped up,\n"
+	.string "over-driven electric, man!$"
+
+MauvilleCity_Gym_Text_KirkPostBattle: @ 820E336
+	.string "Pokémon and rock, it's all about heart,\n"
+	.string "whoa-yeah!$"
+
+MauvilleCity_Gym_Text_ShawnIntro: @ 820E369
+	.string "I trained under Wattson!\n"
+	.string "There ain't no way I'll lose easily!$"
+
+MauvilleCity_Gym_Text_ShawnDefeat: @ 820E3A7
+	.string "Unplugged and turned off…$"
+
+MauvilleCity_Gym_Text_ShawnPostBattle: @ 820E3C1
+	.string "Wattson, our Gym Leader, has been\n"
+	.string "around for a long, long time.\p"
+	.string "He was battling even before your\n"
+	.string "daddy was born, that tough coot.$"
+
+MauvilleCity_Gym_Text_BenIntro: @ 820E443
+	.string "This Gym's got puzzles!\n"
+	.string "Isn't it fun?$"
+
+MauvilleCity_Gym_Text_BenDefeat: @ 820E469
+	.string "It's no fun to lose…$"
+
+MauvilleCity_Gym_Text_BenPostBattle: @ 820E47E
+	.string "Wattson says he likes setting up\n"
+	.string "little traps with switches.$"
+
+MauvilleCity_Gym_Text_VivianIntro: @ 820E4BB
+	.string "With my charm and my Pokémon's moves,\n"
+	.string "you'll be shocked!$"
+
+MauvilleCity_Gym_Text_VivianDefeat: @ 820E4F4
+	.string "I'm shocked by your power!$"
+
+MauvilleCity_Gym_Text_VivianPostBattle: @ 820E50F
+	.string "I've heard that Mauville was founded\n"
+	.string "by Wattson.\p"
+	.string "He was a Trainer long before we\n"
+	.string "became Trainers.\l"
+	.string "He must know all sorts of things!$"
+
+MauvilleCity_Gym_Text_AngeloIntro: @ 820E593
+	.string "I love shiny things!$"
+
+MauvilleCity_Gym_Text_AngeloDefeat: @ 820E5A8
+	.string "Oh…\n"
+	.string "My eyes are frazzled…$"
+
+MauvilleCity_Gym_Text_AngeloPostBattle: @ 820E5C2
+	.string "Mauville Gym's Wattson has a shiny\n"
+	.string "forehead. It makes me happy!$"
+
+MauvilleCity_Gym_Text_WattsonIntro: @ 820E602
+	.string "I've given up on my plans to convert\n"
+	.string "the city, I have.\p"
+	.string "And so, I put my time into making\n"
+	.string "door traps in my Gym.\p"
+	.string "Oh? Now, what are you doing here?\p"
+	.string "What's that? You say you've gotten\n"
+	.string "past all my rigged doors?\p"
+	.string "Wahahahah!\n"
+	.string "Now, that is amusing!\p"
+	.string "Then, I, Wattson, the Leader of\n"
+	.string "Mauville Gym, shall electrify you!$"
+
+MauvilleCity_Gym_Text_WattsonDefeat: @ 820E734
+	.string "Wahahahah!\n"
+	.string "Fine, I lost!\p"
+	.string "You ended up giving me a thrill!\n"
+	.string "Take this Badge!$"
+
+MauvilleCity_Gym_Text_ReceivedDynamoBadge: @ 820E77F
+	.string "{PLAYER} received the Dynamo Badge\n"
+	.string "from Wattson.$"
+
+MauvilleCity_Gym_Text_ExplainDynamoBadgeTakeThis: @ 820E7AA
+	.string "Hmm…\n"
+	.string "You should take this, too!$"
+
+MauvilleCity_Gym_Text_ExplainShockWave: @ 820E844
+	.string "That TM34 there contains Shock Wave.\p"
+	.string "It's a trustworthy move that never\n"
+	.string "misses! You can count on it!\p"
+	.string "… … … … … …$"
+
+MauvilleCity_Gym_Text_RegisteredWattson: @ 820E8B5
+	.string "Registered Gym Leader Wattson\n"
+	.string "in the Pokénav.$"
+
+MauvilleCity_Gym_Text_WattsonPostBattle: @ 820E8E3
+	.string "I swell with optimism, seeing a promising\n"
+	.string "young Trainer like you!$"
+
+MauvilleCity_Gym_Text_WattsonGoForthAndEndeavor: @ 820E925
+	.string "Wahahahah!\n"
+	.string "Go forth and endeavor, youngster!$"
+
+MauvilleCity_Gym_Text_GymStatue: @ 820E952
+	.string "Mauville City Pokémon Gym$"
+
+MauvilleCity_Gym_Text_GymStatueCertified: @ 820E96C
+	.string "Mauville City Pokémon Gym\p"
+	.string "Wattson'S Certified Trainers:\n"
+	.string "{PLAYER}$"
+
+MauvilleCity_Gym_Text_WattsonPreRematch: @ 820E9A7
+	.string "Wattson: Ah-ha! Here at last!\n"
+	.string "I know what you want.\l"
+	.string "You want to battle my Pokémon!\p"
+	.string "Wahahahaha!\p"
+	.string "I'll make sparks fly from you!\n"
+	.string "Don't say I didn't warn you!$"
+
+MauvilleCity_Gym_Text_WattsonRematchDefeat: @ 820EA42
+	.string "Oof…\n"
+	.string "Our batteries ran dry…$"
+
+MauvilleCity_Gym_Text_WattsonPostRematch: @ 820EA5E
+	.string "Wattson: We'll have to recharge our\n"
+	.string "batteries again.\p"
+	.string "When we're fully charged up, we'll\n"
+	.string "gladly accept your challenge.\p"
+	.string "So, come back again sometime,\n"
+	.string "won't you?$"
+
+MauvilleCity_Gym_Text_WattsonRematchNeedTwoMons: @ 820EAFD
+	.string "Wattson: Ah-ha! Here at last!\n"
+	.string "I know what you want.\l"
+	.string "You want to battle my Pokémon!\p"
+	.string "Wahahahaha!\p"
+	.string "Oops! Wait!\n"
+	.string "You've only one Pokémon with you!\p"
+	.string "Come see me with two or more\n"
+	.string "Pokémon, all right?$"
+
+MauvilleCity_Gym_Text_ReceivedMegaStone:
+	.string "Take this Mega Stone with\n"
+	.string "you.$"
+`
+
+script MauvilleCity_Gym_EventScript_Wattson_New{
+	lock
+	faceplayer
+    if (flag(FLAG_BADGE03_GET) && !flag(FLAG_WATTSON_REMATCH)){
+		//Rematch
+		//Intro
+		msgbox(MauvilleCity_Gym_Text_WattsonPreRematch, MSGBOX_NPC)
+		//Trainer Battle
+		call(MauvilleCity_Gym_EventScript_Wattson_Battle_New)
+
+        //Defeated Message and Reset Rematches for other Leaders
+		msgbox(MauvilleCity_Gym_Text_WattsonPostRematch, MSGBOX_NPC)
+		call(Gym_EventScript_Reset_Rematches)
+
+		//Give TMs or Items
+		msgbox(format("Please take these items with you."), MSGBOX_NPC)
+		call(MauvilleCity_Gym_EventScript_Wattson_Give_Gifts)
+
+		msgbox(format("Wattson: Come back tomorrow so we can battle again."), MSGBOX_NPC)
+
+		//Set the Rematch Flag as False
+		setflag(FLAG_WATTSON_REMATCH)
+    }
+	elif(flag(FLAG_BADGE03_GET) && flag(FLAG_WATTSON_REMATCH)){
+		//You can challenge the other trainers an infinite number of times
+		msgbox(format("Wattson: My Pokémon are tired for today, but the other trainers here need training, do you want to try battling them again?"), MSGBOX_YESNO)
+		if(var(VAR_RESULT) == 1){
+			cleartrainerflag(TRAINER_KIRK)
+			cleartrainerflag(TRAINER_SHAWN)
+			cleartrainerflag(TRAINER_BEN)
+			cleartrainerflag(TRAINER_VIVIAN)
+			cleartrainerflag(TRAINER_ANGELO)
+			msgbox(format("Wattson: I will tell them to get ready, so take care on your way out."), MSGBOX_NPC)
+		}
+		else{
+			setvar(VAR_0x8008, 3)
+			call(Common_EventScript_SetGymTrainers)
+			msgbox(format("Wattson: Come back tomorrow so we can battle again."), MSGBOX_NPC)
+		}
+	}
+	elif((!defeated(TRAINER_KIRK) || !defeated(TRAINER_SHAWN) || !defeated(TRAINER_BEN) || 
+	      !defeated(TRAINER_VIVIAN) || !defeated(TRAINER_ANGELO))
+		  && flag(FLAG_HARD_MODE)){
+		msgbox(format("Wattson: Sorry, but you need to defeat every trainer on this Gym before battling me"), MSGBOX_NPC)
+	}
+	else{
+		//First Battle
+		//Intro
+		msgbox(MauvilleCity_Gym_Text_WattsonIntro, MSGBOX_NPC)
+		//Trainer Battle
+		call(MauvilleCity_Gym_EventScript_Wattson_Battle_New)
+
+		//Get the Badge
+		message(format("{PLAYER} received the Dynamo Badge from Wattson."))
+		waitmessage
+		call(Common_EventScript_PlayGymBadgeFanfare)
+		msgbox(format("Please take these items with you, too,"), MSGBOX_NPC)
+		setflag(FLAG_DEFEATED_MAUVILLE_GYM)
+		setflag(FLAG_BADGE03_GET)
+
+		//Give Special Key Item
+		call(Special_Gym_EventScript_Give_Item)
+
+		//Give TM
+		giveitem(ITEM_TM73_THUNDER_WAVE)
+		msgbox(format("That technical machine contains the move Thunder Wave.\p"
+					  "This move paralyzes the target so you can attack before them, its really useful.$"), MSGBOX_NPC)
+		waitfanfare
+		closemessage
+		setflag(FLAG_TEMP_9)
+
+		//Give TMs or Items
+		call(MauvilleCity_Gym_EventScript_Wattson_Give_Gifts)
+
+		//Set all the trainers in the Gym as Defeated
+		setvar(VAR_0x8008, 3)
+		call(Common_EventScript_SetGymTrainers)
+
+		//Register Trainer in your PokeNav
+		msgbox(MauvilleCity_Gym_Text_RegisteredWattson, MSGBOX_DEFAULT)
+		playfanfare(MUS_REGISTER_MATCH_CALL)
+		setflag(FLAG_ENABLE_WATTSON_MATCH_CALL)
+		waitfanfare
+		closemessage
+
+		//Defeated Message and Reset Rematches for other Leaders
+		msgbox(MauvilleCity_Gym_Text_WattsonPostBattle, MSGBOX_NPC)
+		call(Gym_EventScript_Reset_Rematches)
+
+		//Set the Rematch Flag as False
+		setflag(FLAG_WATTSON_REMATCH)
+	}
+    release
+    end
+}
+
+script MauvilleCity_Gym_EventScript_Wattson_Battle_New{
+	if(flag(FLAG_BADGE03_GET)){
+		if(flag(FLAG_HARD_MODE)){
+			//Hard Mode
+			switch (var(VAR_NUM_BADGES)) {
+			case 0: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+			case 1: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+			case 2: trainerbattle_no_intro(TRAINER_WATTSON_2, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+			case 3: trainerbattle_no_intro(TRAINER_WATTSON_2, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+			case 4: trainerbattle_no_intro(TRAINER_WATTSON_3, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+			case 5: trainerbattle_no_intro(TRAINER_WATTSON_3, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+			case 6: trainerbattle_no_intro(TRAINER_WATTSON_4, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+			case 7: trainerbattle_no_intro(TRAINER_WATTSON_4, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+			default:
+				if(flag(FLAG_SYS_GAME_CLEAR)){
+					//When you beat the game you can get a random rematch each day
+					random(5)
+					switch (var(VAR_RESULT)) {
+						case 0: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+						case 1: trainerbattle_no_intro(TRAINER_WATTSON_2, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+						case 2: trainerbattle_no_intro(TRAINER_WATTSON_3, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+						case 3: trainerbattle_no_intro(TRAINER_WATTSON_4, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+						case 4: trainerbattle_no_intro(TRAINER_WATTSON_5, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+					}
+				}
+				else{
+					//If you have 8 badges you battle its final team
+					trainerbattle_no_intro(TRAINER_WATTSON_5, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+				}
+			}
+		}
+		elif(flag(FLAG_NORMAL_MODE)){
+			//Normal Mode
+			switch (var(VAR_NUM_BADGES)) {
+				case 0: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+				case 1: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+				case 2: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+				case 3: trainerbattle_no_intro(TRAINER_WATTSON_2, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+				case 4: trainerbattle_no_intro(TRAINER_WATTSON_2, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+				case 5: trainerbattle_no_intro(TRAINER_WATTSON_3, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+				case 6: trainerbattle_no_intro(TRAINER_WATTSON_3, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+				case 7: trainerbattle_no_intro(TRAINER_WATTSON_4, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+				default:
+					if(flag(FLAG_SYS_GAME_CLEAR)){
+						//When you beat the game you can get a random rematch each day
+						random(5)
+						switch (var(VAR_RESULT)) {
+							case 0: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+							case 1: trainerbattle_no_intro(TRAINER_WATTSON_2, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+							case 2: trainerbattle_no_intro(TRAINER_WATTSON_3, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+							case 3: trainerbattle_no_intro(TRAINER_WATTSON_4, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+							case 4: trainerbattle_no_intro(TRAINER_WATTSON_5, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+						}
+					}
+					else{
+						//If you have 8 badges you battle its final team
+						trainerbattle_no_intro(TRAINER_WATTSON_5, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+					}
+			}
+		}
+		else{
+			//Easy Mode
+			switch (var(VAR_NUM_BADGES)) {
+				case 0: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+				case 1: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+				case 2: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+				case 3: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+				case 4: trainerbattle_no_intro(TRAINER_WATTSON_2, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+				case 5: trainerbattle_no_intro(TRAINER_WATTSON_2, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+				case 6: trainerbattle_no_intro(TRAINER_WATTSON_3, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+				case 7: trainerbattle_no_intro(TRAINER_WATTSON_3, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+				default:
+					if(flag(FLAG_SYS_GAME_CLEAR)){
+						//When you beat the game you can get a random rematch each day
+						random(5)
+						switch (var(VAR_RESULT)) {
+							case 0: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+							case 1: trainerbattle_no_intro(TRAINER_WATTSON_2, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+							case 2: trainerbattle_no_intro(TRAINER_WATTSON_3, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+							case 3: trainerbattle_no_intro(TRAINER_WATTSON_4, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+							case 4: trainerbattle_no_intro(TRAINER_WATTSON_5, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+						}
+					}
+					else{
+						//If you have 8 badges you battle its final team
+						trainerbattle_no_intro(TRAINER_WATTSON_4, MauvilleCity_Gym_Text_WattsonRematchDefeat)
+					}
+			}
+		}
+	}
+	else{
+		//First Battle
+		if(flag(FLAG_HARD_MODE)){
+			//Hard Mode
+			switch (var(VAR_NUM_BADGES)) {
+			case 0: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonDefeat)
+			case 1: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonDefeat)
+			case 2: trainerbattle_no_intro(TRAINER_WATTSON_2, MauvilleCity_Gym_Text_WattsonDefeat)
+			case 3: trainerbattle_no_intro(TRAINER_WATTSON_2, MauvilleCity_Gym_Text_WattsonDefeat)
+			case 4: trainerbattle_no_intro(TRAINER_WATTSON_3, MauvilleCity_Gym_Text_WattsonDefeat)
+			case 5: trainerbattle_no_intro(TRAINER_WATTSON_3, MauvilleCity_Gym_Text_WattsonDefeat)
+			case 6: trainerbattle_no_intro(TRAINER_WATTSON_4, MauvilleCity_Gym_Text_WattsonDefeat)
+			case 7: trainerbattle_no_intro(TRAINER_WATTSON_4, MauvilleCity_Gym_Text_WattsonDefeat)
+			default:
+				if(flag(FLAG_SYS_GAME_CLEAR)){
+					//When you beat the game you can get a random rematch each day
+					random(5)
+					switch (var(VAR_RESULT)) {
+						case 0: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonDefeat)
+						case 1: trainerbattle_no_intro(TRAINER_WATTSON_2, MauvilleCity_Gym_Text_WattsonDefeat)
+						case 2: trainerbattle_no_intro(TRAINER_WATTSON_3, MauvilleCity_Gym_Text_WattsonDefeat)
+						case 3: trainerbattle_no_intro(TRAINER_WATTSON_4, MauvilleCity_Gym_Text_WattsonDefeat)
+						case 4: trainerbattle_no_intro(TRAINER_WATTSON_5, MauvilleCity_Gym_Text_WattsonDefeat)
+					}
+				}
+				else{
+					//If you have 8 badges you battle its final team
+					trainerbattle_no_intro(TRAINER_WATTSON_5, MauvilleCity_Gym_Text_WattsonDefeat)
+				}
+			}
+		}
+		elif(flag(FLAG_NORMAL_MODE)){
+			//Normal Mode
+			switch (var(VAR_NUM_BADGES)) {
+				case 0: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonDefeat)
+				case 1: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonDefeat)
+				case 2: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonDefeat)
+				case 3: trainerbattle_no_intro(TRAINER_WATTSON_2, MauvilleCity_Gym_Text_WattsonDefeat)
+				case 4: trainerbattle_no_intro(TRAINER_WATTSON_2, MauvilleCity_Gym_Text_WattsonDefeat)
+				case 5: trainerbattle_no_intro(TRAINER_WATTSON_3, MauvilleCity_Gym_Text_WattsonDefeat)
+				case 6: trainerbattle_no_intro(TRAINER_WATTSON_3, MauvilleCity_Gym_Text_WattsonDefeat)
+				case 7: trainerbattle_no_intro(TRAINER_WATTSON_4, MauvilleCity_Gym_Text_WattsonDefeat)
+				default:
+					if(flag(FLAG_SYS_GAME_CLEAR)){
+						//When you beat the game you can get a random rematch each day
+						random(5)
+						switch (var(VAR_RESULT)) {
+							case 0: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonDefeat)
+							case 1: trainerbattle_no_intro(TRAINER_WATTSON_2, MauvilleCity_Gym_Text_WattsonDefeat)
+							case 2: trainerbattle_no_intro(TRAINER_WATTSON_3, MauvilleCity_Gym_Text_WattsonDefeat)
+							case 3: trainerbattle_no_intro(TRAINER_WATTSON_4, MauvilleCity_Gym_Text_WattsonDefeat)
+							case 4: trainerbattle_no_intro(TRAINER_WATTSON_5, MauvilleCity_Gym_Text_WattsonDefeat)
+						}
+					}
+					else{
+						//If you have 8 badges you battle its final team
+						trainerbattle_no_intro(TRAINER_WATTSON_5, MauvilleCity_Gym_Text_WattsonDefeat)
+					}
+			}
+		}
+		else{
+			//Easy Mode
+			switch (var(VAR_NUM_BADGES)) {
+				case 0: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonDefeat)
+				case 1: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonDefeat)
+				case 2: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonDefeat)
+				case 3: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonDefeat)
+				case 4: trainerbattle_no_intro(TRAINER_WATTSON_2, MauvilleCity_Gym_Text_WattsonDefeat)
+				case 5: trainerbattle_no_intro(TRAINER_WATTSON_2, MauvilleCity_Gym_Text_WattsonDefeat)
+				case 6: trainerbattle_no_intro(TRAINER_WATTSON_3, MauvilleCity_Gym_Text_WattsonDefeat)
+				case 7: trainerbattle_no_intro(TRAINER_WATTSON_3, MauvilleCity_Gym_Text_WattsonDefeat)
+				default:
+					if(flag(FLAG_SYS_GAME_CLEAR)){
+						//When you beat the game you can get a random rematch each day
+						random(5)
+						switch (var(VAR_RESULT)) {
+							case 0: trainerbattle_no_intro(TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonDefeat)
+							case 1: trainerbattle_no_intro(TRAINER_WATTSON_2, MauvilleCity_Gym_Text_WattsonDefeat)
+							case 2: trainerbattle_no_intro(TRAINER_WATTSON_3, MauvilleCity_Gym_Text_WattsonDefeat)
+							case 3: trainerbattle_no_intro(TRAINER_WATTSON_4, MauvilleCity_Gym_Text_WattsonDefeat)
+							case 4: trainerbattle_no_intro(TRAINER_WATTSON_5, MauvilleCity_Gym_Text_WattsonDefeat)
+						}
+					}
+					else{
+						//If you have 8 badges you battle its final team
+						trainerbattle_no_intro(TRAINER_WATTSON_4, MauvilleCity_Gym_Text_WattsonDefeat)
+					}
+			}
+		}
+	}
+	return
+}
+
+script MauvilleCity_Gym_EventScript_Wattson_Give_Gifts{
+	//Give Shock Wave
+	checkitem(ITEM_TM34_SHOCK_WAVE, 1)
+	if(var(VAR_NUM_BADGES) >= 2 && var(VAR_RESULT) == FALSE){
+		giveitem(ITEM_TM34_SHOCK_WAVE)
+		msgbox(format("Wattson: This move inflicts damage and always lands, use it if you had your accuracy lowered."), MSGBOX_NPC)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+
+	//Give Charge Beam
+	checkitem(ITEM_TM57_CHARGE_BEAM, 1)
+	if(var(VAR_NUM_BADGES) >= 4 && var(VAR_RESULT) == FALSE){
+		giveitem(ITEM_TM57_CHARGE_BEAM)
+		msgbox(format("Wattson: This move inflicts damage and always rises the user Special Attack so it becomes stronger on each hit."), MSGBOX_NPC)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+
+	//Give Volt Switch
+	checkitem(ITEM_TM72_VOLT_SWITCH, 1)
+	if(var(VAR_NUM_BADGES) >= 6 && var(VAR_RESULT) == FALSE){
+		giveitem(ITEM_TM72_VOLT_SWITCH)
+		msgbox(format("Wattson: This move inflicts damage and lets you switch your Pokémon on the same turn, use it to switch if you are faster than your enemy."), MSGBOX_NPC)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+
+	//Give Wild Charge
+	checkitem(ITEM_TM93_WILD_CHARGE, 1)
+	if(var(VAR_NUM_BADGES) >= 8 && var(VAR_RESULT) == FALSE){
+		giveitem(ITEM_TM93_WILD_CHARGE)
+		msgbox(format("Wattson: This is an Electric-type damage move made specially for Electric-type Pokémon with high Physical Attack, it also inflicts recoil damage to the user so use it wisely."), MSGBOX_NPC)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+
+	//Give Megastone
+	if(var(VAR_NUM_BADGES) >= 6 && !flag(FLAG_GOT_MANECTITE)){
+		msgbox(format("Wattson: Take this as an special gift from me, it's a Manectite."), MSGBOX_NPC)
+		giveitem(ITEM_MANECTITE)
+		msgbox(format("Make a Manectric hold it to unleash its real potential."), MSGBOX_NPC)
+		setflag(FLAG_GOT_MANECTITE)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+	elif(!flag(FLAG_TEMP_9)){
+		//Get 2 random items for beating him
+		random(7)
+		switch (var(VAR_RESULT)) {
+			case 0: giveitem(ITEM_CELL_BATTERY, 2)
+			case 1: giveitem(ITEM_MAGNET, 2)
+			case 2: giveitem(ITEM_LIGHT_BALL, 2)
+			case 3: giveitem(ITEM_ELECTRIC_SEED, 2)
+			case 4: giveitem(ITEM_WACAN_BERRY, 5)
+			case 5: giveitem(ITEM_THUNDER_STONE, 2)
+			case 6: giveitem(ITEM_ELECTRIC_GEM, 2)
+		}
+	}
+	return
+}
+
+script MauvilleCity_Gym_EventScript_GymGuide_New{
+	lock
+	faceplayer
+	if(flag(FLAG_DEFEATED_MAUVILLE_GYM)){
+		if(!flag(FLAG_WATTSON_REMATCH)){
+			msgbox(format("Guide: Hello {PLAYER}, I see you came to this Gym again, do you want me to take you to the Leader?"), MSGBOX_YESNO)
+			if(var(VAR_RESULT) == 1){
+				msgbox(format("Let me tell the leader that you are here."), MSGBOX_NPC)
+				warp(MAP_MAUVILLE_CITY_GYM, 255, 5, 3)
+			}
+			else{
+				msgbox(format("I see, you can also go throught the Gym if you want."), MSGBOX_NPC)
+			}
+		}
+		else{
+			msgbox(MauvilleCity_Gym_Text_GymGuidePostVictory, MSGBOX_NPC)
+		}
+	}
+	else{
+		msgbox(MauvilleCity_Gym_Text_GymGuideAdvice, MSGBOX_NPC)
+	}
+	release
+	end
+}
+
+script MauvilleCity_Gym_EventScript_Gym_Electrike{
+	lock
+	faceplayer
+	switch(var(VAR_GYM_POKEMON_SPECIES)){
+		case SPECIES_ELECTRIKE:
+			if (flag(FLAG_BADGE03_GET) && !flag(FLAG_WATTSON_REMATCH)){
+				//Ready for a rematch
+				msgbox(format("Electrike: trike!"), MSGBOX_NPC)
+				msgbox(format("The Pokémon seems like it wants a rematch with You, its fur looks like it has a lot of electricity."), MSGBOX_SIGN)
+				waitmessage
+			}
+			elif(flag(FLAG_BADGE03_GET) && flag(FLAG_WATTSON_REMATCH)){
+				//After a rematch
+				msgbox(format("Electrike: trike..."), MSGBOX_NPC)
+				msgbox(format("The Pokémon seems tired after today's battle, it let out a loud yawn."), MSGBOX_SIGN)
+				waitmessage
+			}
+			else{
+				msgbox(format("Electrike: trike?"), MSGBOX_NPC)
+				msgbox(format("The Pokémon is chewing on a little toy."), MSGBOX_SIGN)
+				waitmessage
+			}
+		case SPECIES_MANECTRIC:
+			if (flag(FLAG_BADGE03_GET) && !flag(FLAG_WATTSON_REMATCH)){
+				//Ready for a rematch
+				msgbox(format("Manectric: tric!"), MSGBOX_NPC)
+				msgbox(format("The Pokémon seems like it wants a rematch, it may even create thunderclouds."), MSGBOX_SIGN)
+				waitmessage
+			}
+			elif(flag(FLAG_BADGE03_GET) && flag(FLAG_WATTSON_REMATCH)){
+				msgbox(format("Manectric: tric..."), MSGBOX_NPC)
+				msgbox(format("The Pokémon seems tired after today's battle, but it is still alert."), MSGBOX_SIGN)
+				waitmessage
+			}
+			elif(var(VAR_NUM_BADGES) >= 6 && !flag(FLAG_GOT_MANECTITE)){
+				//Mega Stone
+				msgbox(format("Manectric: ron!"), MSGBOX_NPC)
+				msgbox(format("The Pokémon is proudly wearing a collar with an stone attatched to it."), MSGBOX_SIGN)
+				waitmessage
+			}
+			else{
+				msgbox(format("Manectric: tric?"), MSGBOX_NPC)
+				msgbox(format("The Pokémon is currently eating something."), MSGBOX_SIGN)
+				waitmessage
+			}
+	}
+	release
+	end
+}
+
+script MauvilleCity_Gym_EventScript_Set_Gym_Pokemon_Species{
+	switch (var(VAR_NUM_BADGES)) {
+		case 0: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_ELECTRIKE) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_ELECTRIKE) //Level 13 
+		case 1: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_ELECTRIKE) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_ELECTRIKE) //Level 19
+		case 2: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_MANECTRIC) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_MANECTRIC) //Level 25
+		case 3: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_MANECTRIC) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_MANECTRIC) //Level 31
+		case 4: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_MANECTRIC) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_MANECTRIC) //Level 38
+		case 5: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_MANECTRIC) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_MANECTRIC) //Level 45
+		case 6: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_MANECTRIC) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_MANECTRIC) //Level 51
+		case 7: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_MANECTRIC) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_MANECTRIC) //Level 62
+		case 8: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_MANECTRIC) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_MANECTRIC) //Level 70
+	}
+
+	if(flag(FLAG_NO_EVOLUTION_MODE)){
+		setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_ELECTRIKE) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_ELECTRIKE)
+	}
+	return
+}
+

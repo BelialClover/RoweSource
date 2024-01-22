@@ -1,0 +1,56 @@
+raw `
+MtEmber_Summit_MapScripts::
+	.byte 0
+
+//Moltres
+MtEmber_Summit_EventScript_Moltres::
+	lock
+	faceplayer
+	waitse
+	playmoncry SPECIES_MOLTRES, 2
+	delay 40
+	waitmoncry
+	setflag FLAG_TOTEM_BATTLE
+	setvar VAR_NUM_WILD_POKEMON_STAT_BOOST, 2
+	setwildbattlewithcustommoves SPECIES_MOLTRES, 70, ITEM_NONE, MOVE_FIRE_BLAST, MOVE_HURRICANE, MOVE_EXTRASENSORY, MOVE_ROOST, 2, NATURE_TIMID
+	setflag FLAG_SYS_CTRL_OBJ_DELETE
+	dowildbattle
+	clearflag FLAG_SYS_CTRL_OBJ_DELETE
+	specialvar VAR_RESULT, GetBattleOutcome
+	compare VAR_RESULT, B_OUTCOME_CAUGHT
+	goto_if_eq MtEmber_Summit_EventScript_CaughtMoltres
+	compare VAR_RESULT, B_OUTCOME_WON
+	goto_if_eq MtEmber_Summit_EventScript_RanFromMoltres
+	compare VAR_RESULT, B_OUTCOME_RAN
+	goto_if_eq MtEmber_Summit_EventScript_RanFromMoltres
+	compare VAR_RESULT, B_OUTCOME_PLAYER_TELEPORTED
+	goto_if_eq MtEmber_Summit_EventScript_RanFromMoltres
+	setflag FLAG_DEFEATED_MOLTRES
+	release
+	end
+
+MtEmber_Summit_EventScript_CaughtMoltres::
+	setflag FLAG_DEFEATED_MOLTRES
+	fadescreenswapbuffers FADE_TO_BLACK
+	removeobject VAR_LAST_TALKED
+	fadescreenswapbuffers FADE_FROM_BLACK
+	release
+	end
+
+MtEmber_Summit_EventScript_DefeatedMoltres::
+	fadescreenswapbuffers FADE_TO_BLACK
+	removeobject VAR_LAST_TALKED
+	fadescreenswapbuffers FADE_FROM_BLACK
+	release
+	end
+
+MtEmber_Summit_EventScript_RanFromMoltres::
+	setvar VAR_0x8004, SPECIES_MOLTRES
+	fadescreenswapbuffers FADE_TO_BLACK
+	removeobject VAR_LAST_TALKED
+	fadescreenswapbuffers FADE_FROM_BLACK
+	bufferspeciesname 0, VAR_0x8004
+	msgbox gText_LegendaryFlewAway, MSGBOX_DEFAULT
+	release
+	end
+`

@@ -1,0 +1,32 @@
+raw `
+ShoalCave_HighTideInnerRoom_MapScripts:: @ 82372AC
+	.byte 0
+	
+	
+ShoalCave_HighTideInnerRoom_EventScript_Red::	
+	lock
+	faceplayer
+	goto_if_set FLAG_DEFEATED_RED, ShoalCave_HighTideInnerRoom_EventScript_Defeated
+	playse SE_PIN
+	msgbox ShoalCave_HighTideInnerRoom_Text_Red, MSGBOX_DEFAULT
+	trainerbattle_no_intro TRAINER_RED, ShoalCave_HighTideInnerRoom_Text_Red_Defeat
+	msgbox ShoalCave_HighTideInnerRoom_Text_Red_Defeat, MSGBOX_DEFAULT
+	setflag FLAG_DEFEATED_RED
+	setflag FLAG_ENABLE_RED_FIGHT
+	clearflag FLAG_DEFEATED_METEOR_FALLS_STEVEN
+	release
+	end
+
+ShoalCave_HighTideInnerRoom_EventScript_Defeated:: @ 823B1CD
+	msgbox ShoalCave_HighTideInnerRoom_Text_Red_Defeat, MSGBOX_DEFAULT
+	warp MAP_LITTLEROOT_TOWN, 192, 192, 192
+	release
+	end
+	
+ShoalCave_HighTideInnerRoom_Text_Red: @ 823A353
+	.string "...$"
+	
+ShoalCave_HighTideInnerRoom_Text_Red_Defeat: @ 823A353
+	.string "...!$"
+
+`

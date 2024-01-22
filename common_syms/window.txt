@@ -1,0 +1,5 @@
+filler_03002F58
+filler_03002F5C
+gTransparentTileNumber
+filler_03002F64
+gUnknown_03002F70

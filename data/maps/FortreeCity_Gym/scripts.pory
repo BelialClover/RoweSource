@@ -1,0 +1,884 @@
+raw `
+FortreeCity_Gym_MapScripts:: @ 82165AB
+	map_script MAP_SCRIPT_ON_TRANSITION, FortreeCity_Gym_OnTransition
+	map_script MAP_SCRIPT_ON_WARP_INTO_MAP_TABLE, FortreeCity_Gym_OnWarp
+	.byte 0
+
+FortreeCity_Gym_OnTransition: @ 82165B6
+	call FortreeCity_Gym_EventScript_Set_Gym_Pokemon_Species
+	special RotatingGate_InitPuzzle
+	end
+
+FortreeCity_Gym_OnWarp: @ 82165BA
+	map_script_2 VAR_TEMP_0, VAR_TEMP_0, FortreeCity_Gym_EventScript_InitRotatingGates
+	.2byte 0
+
+FortreeCity_Gym_EventScript_InitRotatingGates:: @ 82165C4
+	special RotatingGate_InitPuzzleAndGraphics
+	end
+
+FortreeCity_Gym_EventScript_Winona:: @ 82165C8
+	lock
+	faceplayer
+	call_if_set FLAG_BADGE06_GET, FortreeCity_Gym_EventScript_Winona_PostBattle
+	trainerbattle_single TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaIntro, FortreeCity_Gym_Text_WinonaDefeat, FortreeCity_Gym_EventScript_WinonaDefeated, NO_MUSIC
+	msgbox FortreeCity_Gym_Text_WinonaPostBattle, MSGBOX_DEFAULT
+	release
+	end
+
+FortreeCity_Gym_EventScript_WinonaDefeated:: @ 82165FD
+	message FortreeCity_Gym_Text_ReceivedFeatherBadge
+	waitmessage
+	call Common_EventScript_PlayGymBadgeFanfare
+	msgbox FortreeCity_Gym_Text_ExplainFeatherBadgeTakeThis, MSGBOX_DEFAULT
+	setflag FLAG_DEFEATED_FORTREE_GYM
+	setflag FLAG_BADGE06_GET
+	setvar VAR_0x8008, 6
+	call Common_EventScript_SetGymTrainers
+	call Special_Gym_EventScript_Give_Item
+	call FortreeCity_Gym_EventScript_GiveAerialAce
+	closemessage
+	delay 30
+	playfanfare MUS_REGISTER_MATCH_CALL
+	msgbox FortreeCity_Gym_Text_RegisteredWinona, MSGBOX_DEFAULT
+	waitfanfare
+	closemessage
+	delay 30
+	setflag FLAG_ENABLE_WINONA_MATCH_CALL
+	setvar VAR_GYM_ATTENDANT_STEP_COUNTER, 0
+	setflag FLAG_GYM_ATTENDANT_CALL
+	call Gym_EventScript_Reset_Rematches
+	setflag FLAG_WINONA_REMATCH
+	release
+	end
+	
+FortreeCity_Gym_EventScript_Winona_PostBattle::
+	goto_if_unset FLAG_WINONA_REMATCH, FortreeCity_Gym_EventScript_WinonaRematch
+	msgbox FortreeCity_Gym_Text_WinonaPostBattle, MSGBOX_DEFAULT
+	release
+	end
+	
+//Rematch	
+FortreeCity_Gym_EventScript_WinonaRematch:: @ 8204DB3
+	msgbox FortreeCity_Gym_Text_WinonaPreRematch, MSGBOX_DEFAULT
+	goto FortreeCity_Gym_EventScript_Start_Rematch_1
+	end
+	
+FortreeCity_Gym_EventScript_WinonaRematchEnd::
+	msgbox FortreeCity_Gym_Text_WinonaPostRematch, MSGBOX_AUTOCLOSE
+	call Gym_EventScript_Reset_Random_Rematch
+	setflag FLAG_WINONA_REMATCH
+	end
+	
+FortreeCity_Gym_EventScript_Start_Rematch_1::
+	checkitem ITEM_TM40_AERIAL_ACE, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq FortreeCity_Gym_EventScript_Start_Rematch_2
+	trainerbattle_no_intro TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaRematchDefeat
+	msgbox FortreeCity_Gym_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM40_AERIAL_ACE
+	goto FortreeCity_Gym_EventScript_WinonaRematchEnd
+	end
+	
+FortreeCity_Gym_EventScript_Start_Rematch_2::
+	goto_if_unset FLAG_RECEIVED_TM08 FortreeCity_Gym_EventScript_Start_Rematch_Party_1
+	checkitem ITEM_TM58_ROOST, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq FortreeCity_Gym_EventScript_Start_Rematch_3
+	trainerbattle_no_intro TRAINER_WINONA_2, FortreeCity_Gym_Text_WinonaRematchDefeat
+	msgbox FortreeCity_Gym_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM58_ROOST
+	goto FortreeCity_Gym_EventScript_WinonaRematchEnd
+	end
+	
+FortreeCity_Gym_EventScript_Start_Rematch_3::
+	goto_if_unset FLAG_RECEIVED_TM42 FortreeCity_Gym_EventScript_Start_Rematch_Party_2
+	checkitem ITEM_TM62_ACROBATICS, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq FortreeCity_Gym_EventScript_Start_Rematch_4
+	trainerbattle_no_intro TRAINER_WINONA_3, FortreeCity_Gym_Text_WinonaRematchDefeat
+	msgbox FortreeCity_Gym_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM62_ACROBATICS
+	goto FortreeCity_Gym_EventScript_WinonaRematchEnd
+	end
+	
+FortreeCity_Gym_EventScript_Start_Rematch_4::
+	goto_if_unset FLAG_RECEIVED_TM40 FortreeCity_Gym_EventScript_Start_Rematch_Party_3
+	checkitem ITEM_TM76_FLY, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq FortreeCity_Gym_EventScript_Start_Rematch_5
+	trainerbattle_no_intro TRAINER_WINONA_4, FortreeCity_Gym_Text_WinonaRematchDefeat
+	msgbox FortreeCity_Gym_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM76_FLY
+	goto FortreeCity_Gym_EventScript_WinonaRematchEnd
+	end
+	
+FortreeCity_Gym_EventScript_Start_Rematch_5::
+	goto_if_unset FLAG_RECEIVED_TM04 FortreeCity_Gym_EventScript_Start_Rematch_Party_4
+	goto_if_set FLAG_GOT_ALTARIANITE FortreeCity_Gym_EventScript_Start_Rematch_6
+	trainerbattle_no_intro TRAINER_WINONA_4, FortreeCity_Gym_Text_WinonaRematchDefeat
+	msgbox FortreeCity_Gym_Text_GetMegaStone, MSGBOX_DEFAULT
+	giveitem ITEM_ALTARIANITE
+	setflag FLAG_GOT_ALTARIANITE
+	goto FortreeCity_Gym_EventScript_WinonaRematchEnd
+	end
+	
+FortreeCity_Gym_EventScript_Start_Rematch_6::
+	goto_if_unset FLAG_RECEIVED_TM03 FortreeCity_Gym_EventScript_Start_Rematch_Party_4
+	checkitem ITEM_TM114_BRAVE_BIRD, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq FortreeCity_Gym_EventScript_Start_Rematch_Final
+	trainerbattle_no_intro TRAINER_WINONA_5, FortreeCity_Gym_Text_WinonaRematchDefeat
+	msgbox FortreeCity_Gym_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM114_BRAVE_BIRD
+	goto FortreeCity_Gym_EventScript_WinonaRematchEnd
+	end
+	
+FortreeCity_Gym_EventScript_Start_Rematch_Final::
+	random 5
+	switch VAR_RESULT
+	case 0, FortreeCity_Gym_EventScript_Start_Rematch_Party_1
+	case 1, FortreeCity_Gym_EventScript_Start_Rematch_Party_2
+	case 2, FortreeCity_Gym_EventScript_Start_Rematch_Party_3
+	case 3, FortreeCity_Gym_EventScript_Start_Rematch_Party_4
+	case 4, FortreeCity_Gym_EventScript_Start_Rematch_Party_5
+	end
+	
+FortreeCity_Gym_EventScript_Start_Rematch_Party_1::
+	trainerbattle_no_intro TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, FortreeCity_Gym_EventScript_WinonaRematchEnd
+	msgbox FortreeCity_Gym_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_TIMID_MINT, 3
+	goto FortreeCity_Gym_EventScript_WinonaRematchEnd
+	end
+	
+FortreeCity_Gym_EventScript_Start_Rematch_Party_2::
+	trainerbattle_no_intro TRAINER_WINONA_2, FortreeCity_Gym_Text_WinonaRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, FortreeCity_Gym_EventScript_WinonaRematchEnd
+	msgbox FortreeCity_Gym_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_HASTY_MINT, 3
+	goto FortreeCity_Gym_EventScript_WinonaRematchEnd
+	end
+	
+FortreeCity_Gym_EventScript_Start_Rematch_Party_3::
+	trainerbattle_no_intro TRAINER_WINONA_3, FortreeCity_Gym_Text_WinonaRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, FortreeCity_Gym_EventScript_WinonaRematchEnd
+	msgbox FortreeCity_Gym_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_JOLLY_MINT, 3
+	goto FortreeCity_Gym_EventScript_WinonaRematchEnd
+	end
+	
+FortreeCity_Gym_EventScript_Start_Rematch_Party_4::
+	trainerbattle_no_intro TRAINER_WINONA_4, FortreeCity_Gym_Text_WinonaRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, FortreeCity_Gym_EventScript_WinonaRematchEnd
+	msgbox FortreeCity_Gym_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_NAIVE_MINT, 3
+	goto FortreeCity_Gym_EventScript_WinonaRematchEnd
+	end
+	
+FortreeCity_Gym_EventScript_Start_Rematch_Party_5::
+	trainerbattle_no_intro TRAINER_WINONA_5, FortreeCity_Gym_Text_WinonaRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, FortreeCity_Gym_EventScript_WinonaRematchEnd
+	msgbox FortreeCity_Gym_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_MODEST_MINT, 3
+	goto FortreeCity_Gym_EventScript_WinonaRematchEnd
+	end
+	
+FortreeCity_Gym_Text_GetTM:
+	.string "Winona: Please take this\n"
+	.string "Technical Machine.$"
+
+FortreeCity_Gym_Text_GetMegaStone:
+	.string "Winona: Please take this\n"
+	.string "Mega Stone, with you.\p"
+	.string "Make an Aggron hold it to\n"
+	.string "unleash its Hidden Potential.$"
+	
+FortreeCity_Gym_Text_GetReward:
+	.string "Winona: Please take this\n"
+	.string "Item as a Reward.$"
+
+//rematches end
+	
+FortreeCity_Gym_EventScript_GiveAerialAce2:: @ 8216646
+	giveitem ITEM_TM40
+	compare VAR_RESULT, FALSE
+	goto_if_eq Common_EventScript_ShowBagIsFull
+	msgbox FortreeCity_Gym_Text_ExplainAerialAce, MSGBOX_DEFAULT
+	release
+	end
+
+FortreeCity_Gym_EventScript_GiveAerialAce:: @ 821666A
+	msgbox Gym_Text_Takethis2, MSGBOX_DEFAULT
+	giveitem ITEM_TM40
+	msgbox FortreeCity_Gym_Text_ExplainAerialAce, MSGBOX_DEFAULT
+	return
+
+FortreeCity_Gym_EventScript_Jared:: @ 82166A8
+	trainerbattle_single TRAINER_JARED, FortreeCity_Gym_Text_JaredIntro, FortreeCity_Gym_Text_JaredDefeat
+	msgbox FortreeCity_Gym_Text_JaredPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+FortreeCity_Gym_EventScript_Edwardo:: @ 82166BF
+	trainerbattle_single TRAINER_EDWARDO, FortreeCity_Gym_Text_EdwardoIntro, FortreeCity_Gym_Text_EdwardoDefeat
+	msgbox FortreeCity_Gym_Text_EdwardoPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+FortreeCity_Gym_EventScript_Flint:: @ 82166D6
+	trainerbattle_single TRAINER_FLINT, FortreeCity_Gym_Text_FlintIntro, FortreeCity_Gym_Text_FlintDefeat
+	msgbox FortreeCity_Gym_Text_FlintPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+FortreeCity_Gym_EventScript_Ashley:: @ 82166ED
+	trainerbattle_single TRAINER_ASHLEY, FortreeCity_Gym_Text_AshleyIntro, FortreeCity_Gym_Text_AshleyDefeat
+	msgbox FortreeCity_Gym_Text_AshleyPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+FortreeCity_Gym_EventScript_Humberto:: @ 8216704
+	trainerbattle_single TRAINER_HUMBERTO, FortreeCity_Gym_Text_HumbertoIntro, FortreeCity_Gym_Text_HumbertoDefeat
+	msgbox FortreeCity_Gym_Text_HumbertoPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+FortreeCity_Gym_EventScript_Darius:: @ 821671B
+	trainerbattle_single TRAINER_DARIUS, FortreeCity_Gym_Text_DariusIntro, FortreeCity_Gym_Text_DariusDefeat
+	msgbox FortreeCity_Gym_Text_DariusPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+FortreeCity_Gym_EventScript_GymGuide:: @ 8216732
+	lock
+	faceplayer
+	goto_if_set FLAG_DEFEATED_FORTREE_GYM, FortreeCity_Gym_EventScript_GymGuidePostVictory
+	msgbox FortreeCity_Gym_Text_GymGuideAdvice, MSGBOX_DEFAULT
+	release
+	end
+
+FortreeCity_Gym_EventScript_GymGuidePostVictory:: @ 8216747
+	msgbox FortreeCity_Gym_Text_GymGuidePostVictory, MSGBOX_DEFAULT
+	release
+	end
+
+FortreeCity_Gym_EventScript_LeftGymStatue:: @ 8216751
+	lockall
+	goto_if_set FLAG_BADGE06_GET, FortreeCity_Gym_EventScript_GymStatueCertified
+	goto FortreeCity_Gym_EventScript_GymStatue
+	end
+
+FortreeCity_Gym_EventScript_RightGymStatue:: @ 8216761
+	lockall
+	goto_if_set FLAG_BADGE06_GET, FortreeCity_Gym_EventScript_GymStatueCertified
+	goto FortreeCity_Gym_EventScript_GymStatue
+	end
+
+FortreeCity_Gym_EventScript_GymStatueCertified:: @ 8216771
+	msgbox FortreeCity_Gym_Text_GymStatueCertified, MSGBOX_DEFAULT
+	releaseall
+	end
+
+FortreeCity_Gym_EventScript_GymStatue:: @ 821677B
+	msgbox FortreeCity_Gym_Text_GymStatue, MSGBOX_DEFAULT
+	releaseall
+	end
+
+FortreeCity_Gym_Text_GymGuideAdvice: @ 8216785
+	.string "Yo, how's it going, Champion-\n"
+	.string "bound {PLAYER}?\p"
+	.string "Fortree Gym Leader Winona is\n"
+	.string "a master of Flying-type Pokémon.\p"
+	.string "She's waiting at the back of this Gym,\n"
+	.string "behind the rotating doors.\p"
+	.string "She's waiting for new challengers\n"
+	.string "who are trying to take wing!\p"
+	.string "Okay, go for it!$"
+
+FortreeCity_Gym_Text_GymGuidePostVictory: @ 821687D
+	.string "You did it!\n"
+	.string "You've achieved liftoff!$"
+
+FortreeCity_Gym_Text_JaredIntro: @ 82168A2
+	.string "Behold the elegant battle style of\n"
+	.string "Bird Pokémon!$"
+
+FortreeCity_Gym_Text_JaredDefeat: @ 82168D3
+	.string "You…\n"
+	.string "You're strong…$"
+
+FortreeCity_Gym_Text_JaredPostBattle: @ 82168E7
+	.string "A Trainer has to be smart to keep\n"
+	.string "up with unexpected turns of events.\p"
+	.string "Do you have the smarts to get to\n"
+	.string "our Leader?$"
+
+FortreeCity_Gym_Text_EdwardoIntro: @ 821695A
+	.string "The lovers of Bird Pokémon aspire\n"
+	.string "to join this Gym.\p"
+	.string "As a member of the Fortree Gym,\n"
+	.string "I'm not allowed to lose!$"
+
+FortreeCity_Gym_Text_EdwardoDefeat: @ 82169C7
+	.string "It was too much of a load for me\n"
+	.string "to bear…$"
+
+FortreeCity_Gym_Text_EdwardoPostBattle: @ 82169F1
+	.string "The world is huge, and there are\n"
+	.string "countless tough Trainers.\p"
+	.string "I'm going to keep training and make\n"
+	.string "myself even stronger.$"
+
+FortreeCity_Gym_Text_FlintIntro: @ 8216A66
+	.string "There's no need for Winona, our Gym\n"
+	.string "Leader, to deal with you!\p"
+	.string "I'm plenty good enough for you!$"
+
+FortreeCity_Gym_Text_FlintDefeat: @ 8216AC4
+	.string "Winona, I…\n"
+	.string "I lost!$"
+
+FortreeCity_Gym_Text_FlintPostBattle: @ 8216AD7
+	.string "Winona is cute and she's strong.\n"
+	.string "She's the ultimate Leader!\p"
+	.string "Blush…$"
+
+FortreeCity_Gym_Text_AshleyIntro: @ 8216B1A
+	.string "Winona taught me personally!\n"
+	.string "You can't beat me easily!$"
+
+FortreeCity_Gym_Text_AshleyDefeat: @ 8216B51
+	.string "I was beaten…$"
+
+FortreeCity_Gym_Text_AshleyPostBattle: @ 8216B5F
+	.string "Thanks to Winona, the people of\n"
+	.string "Fortree can live without fear.$"
+
+FortreeCity_Gym_Text_HumbertoIntro: @ 8216B9E
+	.string "When Winona takes to battle, her face\n"
+	.string "shines with beautiful determination…\p"
+	.string "I'm not letting you witness that\n"
+	.string "lovely sight!$"
+
+FortreeCity_Gym_Text_HumbertoDefeat: @ 8216C18
+	.string "Urk!\n"
+	.string "I couldn't stop you.$"
+
+FortreeCity_Gym_Text_HumbertoPostBattle: @ 8216C32
+	.string "You'd better watch it!\n"
+	.string "Don't get distracted staring at Winona\l"
+	.string "or you'll go crashing down in a heap!$"
+
+FortreeCity_Gym_Text_DariusIntro: @ 8216C96
+	.string "You'd better know that there are all\n"
+	.string "sorts of Flying-type Pokémon.\p"
+	.string "You do know that, right?$"
+
+FortreeCity_Gym_Text_DariusDefeat: @ 8216CF2
+	.string "You seem to know your stuff!$"
+
+FortreeCity_Gym_Text_DariusPostBattle: @ 8216D0F
+	.string "Sure, you beat me all right.\n"
+	.string "But you'd better watch it! Our Leader\l"
+	.string "Winona's Pokémon are all business.$"
+
+FortreeCity_Gym_Text_WinonaIntro: @ 8216D75
+	.string "I am Winona. I am the Leader of\n"
+	.string "the Fortree Pokémon Gym.\p"
+	.string "I have become one with Bird Pokémon\n"
+	.string "and have soared the skies…\p"
+	.string "However grueling the battle, we have\n"
+	.string "triumphed with grace…\p"
+	.string "Witness the elegant choreography\n"
+	.string "of Bird Pokémon and I!$"
+
+FortreeCity_Gym_Text_WinonaDefeat: @ 8216E60
+	.string "Never before have I seen a Trainer\n"
+	.string "command Pokémon with more grace\l"
+	.string "than I…\p"
+	.string "In recognition of your prowess,\n"
+	.string "I present to you this Gym Badge.$"
+
+FortreeCity_Gym_Text_ReceivedFeatherBadge: @ 8216EEC
+	.string "{PLAYER} received the Feather Badge\n"
+	.string "from Winona.$"
+
+FortreeCity_Gym_Text_ExplainFeatherBadgeTakeThis: @ 8216F17
+	.string "This…\n"
+	.string "This is a gift from me.$"
+
+FortreeCity_Gym_Text_ExplainAerialAce: @ 8216FEC
+	.string "TM40 contains Aerial Ace.\p"
+	.string "Its speed…\n"
+	.string "No Pokémon should be able to avoid it.\p"
+	.string "… … … … … …$"
+
+FortreeCity_Gym_Text_RegisteredWinona: @ 8217044
+	.string "Registered Gym Leader Winona\n"
+	.string "in the Pokénav.$"
+
+FortreeCity_Gym_Text_WinonaPostBattle: @ 8217071
+	.string "Though I fell to you, I will remain\n"
+	.string "devoted to Bird Pokémon.$"
+
+FortreeCity_Gym_Text_GymStatue: @ 82170AE
+	.string "Fortree City Pokémon Gym$"
+
+FortreeCity_Gym_Text_GymStatueCertified: @ 82170C7
+	.string "Fortree City Pokémon Gym\p"
+	.string "Winona'S Certified Trainers:\n"
+	.string "{PLAYER}$"
+
+FortreeCity_Gym_Text_WinonaPreRematch: @ 8217100
+	.string "Winona: We humans can never escape\n"
+	.string "gravity's pull on the ground.\p"
+	.string "But by striving for excellence,\n"
+	.string "we have the power to soar!\p"
+	.string "Please, allow me to see your power\n"
+	.string "at full flight!$"
+
+FortreeCity_Gym_Text_WinonaRematchDefeat: @ 82171E6
+	.string "I failed to reach your height again…$"
+
+FortreeCity_Gym_Text_WinonaPostRematch: @ 821720B
+	.string "Winona: Even though I have lost,\n"
+	.string "the wings of my heart remain unbroken.\p"
+	.string "I can rise and soar again and\n"
+	.string "yet again.\p"
+	.string "I am convinced of it!$"
+
+FortreeCity_Gym_Text_WinonaRematchNeedTwoMons: @ 8217292
+	.string "Winona: We humans can never escape\n"
+	.string "gravity's pull on the ground.\p"
+	.string "But by striving for excellence,\n"
+	.string "we have the power to soar!\p"
+	.string "You have scaled the pinnacle as\n"
+	.string "the reigning Champion.\p"
+	.string "Please, allow me to see your power\n"
+	.string "at full flight!\p"
+	.string "Oh, no… Do you have but one\n"
+	.string "Pokémon with you?\p"
+	.string "Please return with two Pokémon\n"
+	.string "at the very least.$"
+`
+
+
+script FortreeCity_Gym_EventScript_Winona_New{
+	lock
+	faceplayer
+    if (flag(FLAG_BADGE06_GET) && !flag(FLAG_WINONA_REMATCH)){
+		//Rematch
+		//Intro
+		msgbox(FortreeCity_Gym_Text_WinonaPreRematch, MSGBOX_NPC)
+		//Trainer Battle
+		call(FortreeCity_Gym_EventScript_Winona_Battle_New)
+
+        //Defeated Message and Reset Rematches for other Leaders
+		msgbox(FortreeCity_Gym_Text_WinonaPostRematch, MSGBOX_NPC)
+		call(Gym_EventScript_Reset_Rematches)
+
+		//Give TMs or Items
+		msgbox(format("Please take these items with you."), MSGBOX_NPC)
+		call(FortreeCity_Gym_EventScript_Winona_Give_Gifts)
+
+		msgbox(format("Winona: Come back tomorrow so we can battle again."), MSGBOX_NPC)
+
+		//Set the Rematch Flag as False
+		setflag(FLAG_WINONA_REMATCH)
+    }
+	elif(flag(FLAG_BADGE06_GET) && flag(FLAG_WINONA_REMATCH)){
+		//You can challenge the other trainers an infinite number of times
+		msgbox(format("Winona: My Pokémon are tired for today, but the other trainers here need training, do you want to try battling them again?"), MSGBOX_YESNO)
+		if(var(VAR_RESULT) == 1){
+			cleartrainerflag(TRAINER_JARED)
+			cleartrainerflag(TRAINER_FLINT)
+			cleartrainerflag(TRAINER_ASHLEY)
+			cleartrainerflag(TRAINER_EDWARDO)
+			cleartrainerflag(TRAINER_HUMBERTO)
+			cleartrainerflag(TRAINER_DARIUS)
+			msgbox(format("Winona: I will tell them to get ready, so take care on your way out."), MSGBOX_NPC)
+		}
+		else{
+			setvar(VAR_0x8008, 6)
+			call(Common_EventScript_SetGymTrainers)
+			msgbox(format("Winona: Come back tomorrow so we can battle again."), MSGBOX_NPC)
+		}
+	}
+	elif((!defeated(TRAINER_JARED) || !defeated(TRAINER_FLINT) || !defeated(TRAINER_ASHLEY) || 
+	      !defeated(TRAINER_EDWARDO) || !defeated(TRAINER_HUMBERTO) || !defeated(TRAINER_DARIUS)) 
+		  && flag(FLAG_HARD_MODE)){
+		msgbox(format("Winona: Sorry, but you need to defeat every trainer on this Gym before battling me"), MSGBOX_NPC)
+	}
+	else{
+		//First Battle
+		//Intro
+		msgbox(FortreeCity_Gym_Text_WinonaIntro, MSGBOX_NPC)
+		//Trainer Battle
+		call(FortreeCity_Gym_EventScript_Winona_Battle_New)
+
+		//Get the Badge
+		message(format("{PLAYER} received the Feather Badge from Winona."))
+		waitmessage
+		call(Common_EventScript_PlayGymBadgeFanfare)
+		msgbox(format("Please take these items with you, too,"), MSGBOX_NPC)
+		setflag(FLAG_DEFEATED_FORTREE_GYM)
+		setflag(FLAG_BADGE06_GET)
+
+		//Give Special Key Item
+		call(Special_Gym_EventScript_Give_Item)
+
+		//Give TM
+		giveitem(ITEM_TM58_ROOST)
+		msgbox(format("That technical machine contains the move Bulk Up.\p"
+					  "It's a move that raises both Attack and Defense stats for the User.$"), MSGBOX_NPC)
+		waitfanfare
+		closemessage
+		setflag(FLAG_TEMP_9)
+
+		//Give TMs or Items
+		call(FortreeCity_Gym_EventScript_Winona_Give_Gifts)
+
+		//Set all the trainers in the Gym as Defeated
+		setvar(VAR_0x8008, 6)
+		call(Common_EventScript_SetGymTrainers)
+
+		//Register Trainer in your PokeNav
+		msgbox(FortreeCity_Gym_Text_RegisteredWinona, MSGBOX_DEFAULT)
+		playfanfare(MUS_REGISTER_MATCH_CALL)
+		setflag(FLAG_ENABLE_WINONA_MATCH_CALL)
+		waitfanfare
+		closemessage
+
+		//Defeated Message and Reset Rematches for other Leaders
+		msgbox(FortreeCity_Gym_Text_WinonaPostBattle, MSGBOX_NPC)
+		call(Gym_EventScript_Reset_Rematches)
+
+		//Set the Rematch Flag as False
+		setflag(FLAG_WINONA_REMATCH)
+	}
+    release
+    end
+}
+
+script FortreeCity_Gym_EventScript_Winona_Battle_New{
+	if(flag(FLAG_BADGE06_GET)){
+		if(flag(FLAG_HARD_MODE)){
+			//Hard Mode
+			switch (var(VAR_NUM_BADGES)) {
+			case 0: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaRematchDefeat)
+			case 1: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaRematchDefeat)
+			case 2: trainerbattle_no_intro(TRAINER_WINONA_2, FortreeCity_Gym_Text_WinonaRematchDefeat)
+			case 3: trainerbattle_no_intro(TRAINER_WINONA_2, FortreeCity_Gym_Text_WinonaRematchDefeat)
+			case 4: trainerbattle_no_intro(TRAINER_WINONA_3, FortreeCity_Gym_Text_WinonaRematchDefeat)
+			case 5: trainerbattle_no_intro(TRAINER_WINONA_3, FortreeCity_Gym_Text_WinonaRematchDefeat)
+			case 6: trainerbattle_no_intro(TRAINER_WINONA_4, FortreeCity_Gym_Text_WinonaRematchDefeat)
+			case 7: trainerbattle_no_intro(TRAINER_WINONA_4, FortreeCity_Gym_Text_WinonaRematchDefeat)
+			default:
+				if(flag(FLAG_SYS_GAME_CLEAR)){
+					//When you beat the game you can get a random rematch each day
+					random(5)
+					switch (var(VAR_RESULT)) {
+						case 0: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaRematchDefeat)
+						case 1: trainerbattle_no_intro(TRAINER_WINONA_2, FortreeCity_Gym_Text_WinonaRematchDefeat)
+						case 2: trainerbattle_no_intro(TRAINER_WINONA_3, FortreeCity_Gym_Text_WinonaRematchDefeat)
+						case 3: trainerbattle_no_intro(TRAINER_WINONA_4, FortreeCity_Gym_Text_WinonaRematchDefeat)
+						case 4: trainerbattle_no_intro(TRAINER_WINONA_5, FortreeCity_Gym_Text_WinonaRematchDefeat)
+					}
+				}
+				else{
+					//If you have 8 badges you battle its final team
+					trainerbattle_no_intro(TRAINER_WINONA_5, FortreeCity_Gym_Text_WinonaRematchDefeat)
+				}
+			}
+		}
+		elif(flag(FLAG_NORMAL_MODE)){
+			//Normal Mode
+			switch (var(VAR_NUM_BADGES)) {
+				case 0: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaRematchDefeat)
+				case 1: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaRematchDefeat)
+				case 2: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaRematchDefeat)
+				case 3: trainerbattle_no_intro(TRAINER_WINONA_2, FortreeCity_Gym_Text_WinonaRematchDefeat)
+				case 4: trainerbattle_no_intro(TRAINER_WINONA_2, FortreeCity_Gym_Text_WinonaRematchDefeat)
+				case 5: trainerbattle_no_intro(TRAINER_WINONA_3, FortreeCity_Gym_Text_WinonaRematchDefeat)
+				case 6: trainerbattle_no_intro(TRAINER_WINONA_3, FortreeCity_Gym_Text_WinonaRematchDefeat)
+				case 7: trainerbattle_no_intro(TRAINER_WINONA_4, FortreeCity_Gym_Text_WinonaRematchDefeat)
+				default:
+					if(flag(FLAG_SYS_GAME_CLEAR)){
+						//When you beat the game you can get a random rematch each day
+						random(5)
+						switch (var(VAR_RESULT)) {
+							case 0: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaRematchDefeat)
+							case 1: trainerbattle_no_intro(TRAINER_WINONA_2, FortreeCity_Gym_Text_WinonaRematchDefeat)
+							case 2: trainerbattle_no_intro(TRAINER_WINONA_3, FortreeCity_Gym_Text_WinonaRematchDefeat)
+							case 3: trainerbattle_no_intro(TRAINER_WINONA_4, FortreeCity_Gym_Text_WinonaRematchDefeat)
+							case 4: trainerbattle_no_intro(TRAINER_WINONA_5, FortreeCity_Gym_Text_WinonaRematchDefeat)
+						}
+					}
+					else{
+						//If you have 8 badges you battle its final team
+						trainerbattle_no_intro(TRAINER_WINONA_5, FortreeCity_Gym_Text_WinonaRematchDefeat)
+					}
+			}
+		}
+		else{
+			//Easy Mode
+			switch (var(VAR_NUM_BADGES)) {
+				case 0: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaRematchDefeat)
+				case 1: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaRematchDefeat)
+				case 2: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaRematchDefeat)
+				case 3: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaRematchDefeat)
+				case 4: trainerbattle_no_intro(TRAINER_WINONA_2, FortreeCity_Gym_Text_WinonaRematchDefeat)
+				case 5: trainerbattle_no_intro(TRAINER_WINONA_2, FortreeCity_Gym_Text_WinonaRematchDefeat)
+				case 6: trainerbattle_no_intro(TRAINER_WINONA_3, FortreeCity_Gym_Text_WinonaRematchDefeat)
+				case 7: trainerbattle_no_intro(TRAINER_WINONA_3, FortreeCity_Gym_Text_WinonaRematchDefeat)
+				default:
+					if(flag(FLAG_SYS_GAME_CLEAR)){
+						//When you beat the game you can get a random rematch each day
+						random(5)
+						switch (var(VAR_RESULT)) {
+							case 0: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaRematchDefeat)
+							case 1: trainerbattle_no_intro(TRAINER_WINONA_2, FortreeCity_Gym_Text_WinonaRematchDefeat)
+							case 2: trainerbattle_no_intro(TRAINER_WINONA_3, FortreeCity_Gym_Text_WinonaRematchDefeat)
+							case 3: trainerbattle_no_intro(TRAINER_WINONA_4, FortreeCity_Gym_Text_WinonaRematchDefeat)
+							case 4: trainerbattle_no_intro(TRAINER_WINONA_5, FortreeCity_Gym_Text_WinonaRematchDefeat)
+						}
+					}
+					else{
+						//If you have 8 badges you battle its final team
+						trainerbattle_no_intro(TRAINER_WINONA_4, FortreeCity_Gym_Text_WinonaRematchDefeat)
+					}
+			}
+		}
+	}
+	else{
+		//First Battle
+		if(flag(FLAG_HARD_MODE)){
+			//Hard Mode
+			switch (var(VAR_NUM_BADGES)) {
+			case 0: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaDefeat)
+			case 1: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaDefeat)
+			case 2: trainerbattle_no_intro(TRAINER_WINONA_2, FortreeCity_Gym_Text_WinonaDefeat)
+			case 3: trainerbattle_no_intro(TRAINER_WINONA_2, FortreeCity_Gym_Text_WinonaDefeat)
+			case 4: trainerbattle_no_intro(TRAINER_WINONA_3, FortreeCity_Gym_Text_WinonaDefeat)
+			case 5: trainerbattle_no_intro(TRAINER_WINONA_3, FortreeCity_Gym_Text_WinonaDefeat)
+			case 6: trainerbattle_no_intro(TRAINER_WINONA_4, FortreeCity_Gym_Text_WinonaDefeat)
+			case 7: trainerbattle_no_intro(TRAINER_WINONA_4, FortreeCity_Gym_Text_WinonaDefeat)
+			default:
+				if(flag(FLAG_SYS_GAME_CLEAR)){
+					//When you beat the game you can get a random rematch each day
+					random(5)
+					switch (var(VAR_RESULT)) {
+						case 0: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaDefeat)
+						case 1: trainerbattle_no_intro(TRAINER_WINONA_2, FortreeCity_Gym_Text_WinonaDefeat)
+						case 2: trainerbattle_no_intro(TRAINER_WINONA_3, FortreeCity_Gym_Text_WinonaDefeat)
+						case 3: trainerbattle_no_intro(TRAINER_WINONA_4, FortreeCity_Gym_Text_WinonaDefeat)
+						case 4: trainerbattle_no_intro(TRAINER_WINONA_5, FortreeCity_Gym_Text_WinonaDefeat)
+					}
+				}
+				else{
+					//If you have 8 badges you battle its final team
+					trainerbattle_no_intro(TRAINER_WINONA_5, FortreeCity_Gym_Text_WinonaDefeat)
+				}
+			}
+		}
+		elif(flag(FLAG_NORMAL_MODE)){
+			//Normal Mode
+			switch (var(VAR_NUM_BADGES)) {
+				case 0: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaDefeat)
+				case 1: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaDefeat)
+				case 2: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaDefeat)
+				case 3: trainerbattle_no_intro(TRAINER_WINONA_2, FortreeCity_Gym_Text_WinonaDefeat)
+				case 4: trainerbattle_no_intro(TRAINER_WINONA_2, FortreeCity_Gym_Text_WinonaDefeat)
+				case 5: trainerbattle_no_intro(TRAINER_WINONA_3, FortreeCity_Gym_Text_WinonaDefeat)
+				case 6: trainerbattle_no_intro(TRAINER_WINONA_3, FortreeCity_Gym_Text_WinonaDefeat)
+				case 7: trainerbattle_no_intro(TRAINER_WINONA_4, FortreeCity_Gym_Text_WinonaDefeat)
+				default:
+					if(flag(FLAG_SYS_GAME_CLEAR)){
+						//When you beat the game you can get a random rematch each day
+						random(5)
+						switch (var(VAR_RESULT)) {
+							case 0: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaDefeat)
+							case 1: trainerbattle_no_intro(TRAINER_WINONA_2, FortreeCity_Gym_Text_WinonaDefeat)
+							case 2: trainerbattle_no_intro(TRAINER_WINONA_3, FortreeCity_Gym_Text_WinonaDefeat)
+							case 3: trainerbattle_no_intro(TRAINER_WINONA_4, FortreeCity_Gym_Text_WinonaDefeat)
+							case 4: trainerbattle_no_intro(TRAINER_WINONA_5, FortreeCity_Gym_Text_WinonaDefeat)
+						}
+					}
+					else{
+						//If you have 8 badges you battle its final team
+						trainerbattle_no_intro(TRAINER_WINONA_5, FortreeCity_Gym_Text_WinonaDefeat)
+					}
+			}
+		}
+		else{
+			//Easy Mode
+			switch (var(VAR_NUM_BADGES)) {
+				case 0: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaDefeat)
+				case 1: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaDefeat)
+				case 2: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaDefeat)
+				case 3: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaDefeat)
+				case 4: trainerbattle_no_intro(TRAINER_WINONA_2, FortreeCity_Gym_Text_WinonaDefeat)
+				case 5: trainerbattle_no_intro(TRAINER_WINONA_2, FortreeCity_Gym_Text_WinonaDefeat)
+				case 6: trainerbattle_no_intro(TRAINER_WINONA_3, FortreeCity_Gym_Text_WinonaDefeat)
+				case 7: trainerbattle_no_intro(TRAINER_WINONA_3, FortreeCity_Gym_Text_WinonaDefeat)
+				default:
+					if(flag(FLAG_SYS_GAME_CLEAR)){
+						//When you beat the game you can get a random rematch each day
+						random(5)
+						switch (var(VAR_RESULT)) {
+							case 0: trainerbattle_no_intro(TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaDefeat)
+							case 1: trainerbattle_no_intro(TRAINER_WINONA_2, FortreeCity_Gym_Text_WinonaDefeat)
+							case 2: trainerbattle_no_intro(TRAINER_WINONA_3, FortreeCity_Gym_Text_WinonaDefeat)
+							case 3: trainerbattle_no_intro(TRAINER_WINONA_4, FortreeCity_Gym_Text_WinonaDefeat)
+							case 4: trainerbattle_no_intro(TRAINER_WINONA_5, FortreeCity_Gym_Text_WinonaDefeat)
+						}
+					}
+					else{
+						//If you have 8 badges you battle its final team
+						trainerbattle_no_intro(TRAINER_WINONA_4, FortreeCity_Gym_Text_WinonaDefeat)
+					}
+			}
+		}
+	}
+	return
+}
+
+script FortreeCity_Gym_EventScript_Winona_Give_Gifts{
+	//Give Aerial Ace
+	checkitem(ITEM_TM40_AERIAL_ACE, 1)
+	if(var(VAR_NUM_BADGES) >= 2 && var(VAR_RESULT) == FALSE){
+		giveitem(ITEM_TM40_AERIAL_ACE)
+		msgbox(format("Winona: This move inflicts damage and never fails, use it when you are low on accuracy."), MSGBOX_NPC)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+
+	//Give Fly
+	checkitem(ITEM_TM62_ACROBATICS, 1)
+	if(var(VAR_NUM_BADGES) >= 4 && var(VAR_RESULT) == FALSE){
+		giveitem(ITEM_TM62_ACROBATICS)
+		msgbox(format("Winona: This move inflicts double the damage if its used by a Pokémon without a held item."), MSGBOX_NPC)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+
+	//Give Fly
+	checkitem(ITEM_TM76_FLY, 1)
+	if(var(VAR_NUM_BADGES) >= 6 && var(VAR_RESULT) == FALSE){
+		giveitem(ITEM_TM76_FLY)
+		msgbox(format("Winona: This is a two turns Flying-type move, its really powerful and lets you stay out of the enemy range for 1 turn."), MSGBOX_NPC)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+
+	//Give Brave Bird
+	checkitem(ITEM_TM114_BRAVE_BIRD, 1)
+	if(var(VAR_NUM_BADGES) >= 8 && var(VAR_RESULT) == FALSE){
+		giveitem(ITEM_TM114_BRAVE_BIRD)
+		msgbox(format("Winona: This is one of the best Flying-type moves, it does a lot of damage but also hurts the user."), MSGBOX_NPC)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+
+	//Give Megastone
+	if(var(VAR_NUM_BADGES) >= 7 && !flag(FLAG_GOT_ALTARIANITE)){
+		msgbox(format("Winona: Take this as an special gift from me, it's a Altaria."), MSGBOX_NPC)
+		giveitem(ITEM_ALTARIANITE)
+		msgbox(format("Make a Altaria hold it to unleash its real potential."), MSGBOX_NPC)
+		setflag(FLAG_GOT_ALTARIANITE)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+	elif(!flag(FLAG_TEMP_9)){
+		//Get 2 random items for beating him
+		random(7)
+		switch (var(VAR_RESULT)) {
+			case 0: giveitem(ITEM_FLYING_GEM, 2)
+			case 1: giveitem(ITEM_POWER_HERB, 2)
+			case 2: giveitem(ITEM_AIR_BALLOON, 2)
+			case 3: giveitem(ITEM_SWIFT_WING, 2)
+			case 4: giveitem(ITEM_SHARP_BEAK, 5)
+			case 5: giveitem(ITEM_COBA_BERRY, 2)
+			case 6: giveitem(ITEM_GREPA_BERRY, 2)
+		}
+	}
+	return
+}
+
+script FortreeCity_Gym_EventScript_GymGuide_New{
+	lock
+	faceplayer
+	if(flag(FLAG_DEFEATED_FORTREE_GYM)){
+		if(!flag(FLAG_WINONA_REMATCH)){
+			msgbox(format("Guide: Hello {PLAYER}, I see you came to this Gym again, do you want me to take you to the Leader?"), MSGBOX_YESNO)
+			if(var(VAR_RESULT) == 1){
+				msgbox(format("Let me tell the leader that you are here."), MSGBOX_NPC)
+				warp(MAP_FORTREE_CITY_GYM, 255, 15, 3)
+			}
+			else{
+				msgbox(format("I see, you can also go throught the Gym if you want."), MSGBOX_NPC)
+			}
+		}
+		else{
+			msgbox(FortreeCity_Gym_Text_GymGuidePostVictory, MSGBOX_NPC)
+		}
+	}
+	else{
+		msgbox(FortreeCity_Gym_Text_GymGuideAdvice, MSGBOX_NPC)
+	}
+	release
+	end
+}
+
+script FortreeCity_Gym_EventScript_Gym_Taillow{
+	lock
+	faceplayer
+	switch(var(VAR_GYM_POKEMON_SPECIES)){
+		case SPECIES_TAILLOW:
+			if (flag(FLAG_BADGE06_GET) && !flag(FLAG_WINONA_REMATCH)){
+				//Ready for a rematch
+				msgbox(format("Taillow: low!"), MSGBOX_NPC)
+				msgbox(format("The Pokémon seems like it wants a rematch with You, it is flying really fast."), MSGBOX_SIGN)
+				waitmessage
+			}
+			elif(flag(FLAG_BADGE06_GET) && flag(FLAG_WINONA_REMATCH)){
+				//After a rematch
+				msgbox(format("Taillow: low..."), MSGBOX_NPC)
+				msgbox(format("The Pokémon seems tired after today's battle, it is currently eating a sunflower seed."), MSGBOX_SIGN)
+				waitmessage
+			}
+			else{
+				msgbox(format("Taillow: low?"), MSGBOX_NPC)
+				msgbox(format("The Pokémon is looking confused on how you finished the puzzle."), MSGBOX_SIGN)
+				waitmessage
+			}
+		case SPECIES_SWELLOW:
+			if (flag(FLAG_BADGE06_GET) && !flag(FLAG_WINONA_REMATCH)){
+				//Ready for a rematch
+				msgbox(format("Swellow: low!"), MSGBOX_NPC)
+				msgbox(format("The Pokémon seems like it wants a rematch, it is flying really fast."), MSGBOX_SIGN)
+				waitmessage
+			}
+			elif(flag(FLAG_BADGE06_GET) && flag(FLAG_WINONA_REMATCH)){
+				msgbox(format("Swellow: low..."), MSGBOX_NPC)
+				msgbox(format("The Pokémon seems tired after today's battle, it may want to rest a little more."), MSGBOX_SIGN)
+				waitmessage
+			}
+			else{
+				msgbox(format("Swellow: low?"), MSGBOX_NPC)
+				msgbox(format("The Pokémon is currently looking at you while flying."), MSGBOX_SIGN)
+				waitmessage
+			}
+	}
+	release
+	end
+}
+
+script FortreeCity_Gym_EventScript_Set_Gym_Pokemon_Species{
+	switch (var(VAR_NUM_BADGES)) {
+		case 0: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_TAILLOW) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_TAILLOW) //Level 13 
+		case 1: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_TAILLOW) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_TAILLOW) //Level 19
+		case 2: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_TAILLOW) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_TAILLOW) //Level 25
+		case 3: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_SWELLOW) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_SWELLOW) //Level 31
+		case 4: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_SWELLOW) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_SWELLOW) //Level 38
+		case 5: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_SWELLOW) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_SWELLOW) //Level 45
+		case 6: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_SWELLOW) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_SWELLOW) //Level 51
+		case 7: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_SWELLOW) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_SWELLOW) //Level 62
+		case 8: setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_SWELLOW) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_SWELLOW) //Level 70
+	}
+
+	if(flag(FLAG_NO_EVOLUTION_MODE)){
+		setvar(VAR_OBJ_GFX_ID_1, OBJ_EVENT_GFX_POKEMON_000 + SPECIES_TAILLOW) setvar(VAR_GYM_POKEMON_SPECIES, SPECIES_TAILLOW)
+	}
+	return
+}

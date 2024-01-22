@@ -1,0 +1,67 @@
+raw `
+RustboroCity_House2_MapScripts:: @ 8215EB3
+	.byte 0
+
+RustboroCity_House2_EventScript_PokefanF:: @ 8215EB4
+	msgbox RustboroCity_House2_Text_TrainerSchoolExcellent, MSGBOX_NPC
+	end
+
+RustboroCity_House2_EventScript_LittleGirl:: @ 8215EBD
+	msgbox RustboroCity_House2_Text_RoxanneKnowsALot, MSGBOX_NPC
+	end
+	
+RustboroCity_House2_EventScript_ExioliteMan:: @ 81E4C26
+	lock
+	faceplayer
+	goto_if_set FLAG_RECEIVED_EXIOLITE, RustboroCity_House2_EventScript_ReceivedExiolite
+	msgbox RustboroCity_House2_Text_WantExioliteRoxanneGaveMe, MSGBOX_YESNO
+	compare VAR_RESULT, NO
+	goto_if_eq RustboroCity_House2_EventScript_DeclineExiolite
+	msgbox RustboroCity_House2_Text_YouCanKeepIt, MSGBOX_DEFAULT
+	giveitem ITEM_EXIOLITE
+	compare VAR_RESULT, FALSE
+	goto_if_eq Common_EventScript_ShowBagIsFull
+	setflag FLAG_RECEIVED_EXIOLITE
+	release
+	end
+
+RustboroCity_House2_EventScript_ReceivedExiolite:: @ 81E4C68
+	msgbox RustboroCity_House2_Text_StevensHouseOverThere, MSGBOX_DEFAULT
+	release
+	end
+
+RustboroCity_House2_EventScript_DeclineExiolite:: @ 81E4C72
+	msgbox RustboroCity_House2_Text_WhatToDoWithWeirdItem, MSGBOX_DEFAULT
+	release
+	end
+
+RustboroCity_House2_Text_TrainerSchoolExcellent: @ 8215EC6
+	.string "The Trainer's School is excellent.\p"
+	.string "If you study there, you could even\n"
+	.string "become a Gym Leader.$"
+
+RustboroCity_House2_Text_RoxanneKnowsALot: @ 8215F21
+	.string "Roxanne, the Gym Leader, really knows\n"
+	.string "a lot about Pokémon.\p"
+	.string "She's really strong, too!$"
+	
+RustboroCity_House2_Text_WantExioliteRoxanneGaveMe:
+	.string "I got this from Roxanne, but I don't\n"
+	.string "know what it's good for.\p"
+	.string "I think it's called Exiolite.\n"
+	.string "Do you want it?$"
+
+RustboroCity_House2_Text_YouCanKeepIt:
+	.string "Why would you want it?\n"
+	.string "You're weird.\p"
+	.string "You can keep it, but keep it a secret\n"
+	.string "from Roxanne.$"
+	
+RustboroCity_House2_Text_WhatToDoWithWeirdItem:
+	.string "Yeah, you think so, too! What are you\n"
+	.string "supposed to do with some weird item?$"
+	
+RustboroCity_House2_Text_StevensHouseOverThere: @ 81E4DB3
+	.string "Roxanne's Gym is right over there!$"
+
+`

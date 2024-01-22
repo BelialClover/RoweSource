@@ -1,0 +1,107 @@
+raw `
+LavaridgeTown_HerbShop_MapScripts:: @ 81FE4D6
+	.byte 0
+
+LavaridgeTown_HerbShop_EventScript_Clerk:: @ 81FE4D7
+	lock
+	faceplayer
+	message LavaridgeTown_HerbShop_Text_WelcomeToHerbShop
+	waitmessage
+	pokemart LavaridgeTown_HerbShop_Pokemart
+	msgbox gText_PleaseComeAgain, MSGBOX_DEFAULT
+	release
+	end
+
+	.align 2
+LavaridgeTown_HerbShop_Pokemart: @ 81FE4F0
+	.2byte ITEM_LUM_BERRY
+	.2byte ITEM_ORAN_BERRY
+	.2byte ITEM_SITRUS_BERRY
+	.2byte ITEM_POMEG_BERRY
+	.2byte ITEM_KELPSY_BERRY
+	.2byte ITEM_QUALOT_BERRY
+	.2byte ITEM_HONDEW_BERRY
+	.2byte ITEM_GREPA_BERRY
+	.2byte ITEM_TAMATO_BERRY
+	.2byte ITEM_OCCA_BERRY
+	.2byte ITEM_PASSHO_BERRY
+	.2byte ITEM_WACAN_BERRY
+	.2byte ITEM_RINDO_BERRY
+	.2byte ITEM_YACHE_BERRY
+	.2byte ITEM_CHOPLE_BERRY
+	.2byte ITEM_KEBIA_BERRY
+	.2byte ITEM_SHUCA_BERRY
+	.2byte ITEM_COBA_BERRY
+	.2byte ITEM_PAYAPA_BERRY
+	.2byte ITEM_TANGA_BERRY
+	.2byte ITEM_CHARTI_BERRY
+	.2byte ITEM_KASIB_BERRY
+	.2byte ITEM_HABAN_BERRY
+	.2byte ITEM_COLBUR_BERRY
+	.2byte ITEM_BABIRI_BERRY
+	.2byte ITEM_ROSELI_BERRY
+	.2byte ITEM_FIGY_BERRY
+	.2byte ITEM_WIKI_BERRY
+	.2byte ITEM_MAGO_BERRY
+	.2byte ITEM_AGUAV_BERRY
+	.2byte ITEM_IAPAPA_BERRY
+	.2byte ITEM_LIECHI_BERRY
+	.2byte ITEM_GANLON_BERRY
+	.2byte ITEM_SALAC_BERRY
+	.2byte ITEM_PETAYA_BERRY
+	.2byte ITEM_APICOT_BERRY
+	.2byte ITEM_LANSAT_BERRY
+	.2byte ITEM_STARF_BERRY
+	.2byte ITEM_ENERGY_POWDER
+	.2byte ITEM_ENERGY_ROOT
+	.2byte ITEM_HEAL_POWDER
+	.2byte ITEM_REVIVAL_HERB
+	.2byte ITEM_NONE
+	release
+	end
+
+LavaridgeTown_HerbShop_EventScript_ExpertM:: @ 81FE4FC
+	msgbox LavaridgeTown_HerbShop_Text_HerbalMedicineWorksButMonWillDislike, MSGBOX_NPC
+	end
+
+LavaridgeTown_HerbShop_EventScript_OldMan:: @ 81FE505
+	lock
+	faceplayer
+	goto_if_set FLAG_RECEIVED_CHARCOAL, LavaridgeTown_HerbShop_EventScript_ExplainCharcoal
+	msgbox LavaridgeTown_HerbShop_Text_YouveComeToLookAtHerbalMedicine, MSGBOX_DEFAULT
+	giveitem ITEM_CHARCOAL
+	compare VAR_RESULT, FALSE
+	goto_if_eq Common_EventScript_ShowBagIsFull
+	setflag FLAG_RECEIVED_CHARCOAL
+	release
+	end
+
+LavaridgeTown_HerbShop_EventScript_ExplainCharcoal:: @ 81FE534
+	msgbox LavaridgeTown_HerbShop_Text_ExplainCharcoal, MSGBOX_DEFAULT
+	release
+	end
+
+LavaridgeTown_HerbShop_Text_WelcomeToHerbShop: @ 81FE53E
+	.string "Welcome to the Herb Shop, home of\n"
+	.string "effective and inexpensive medicine!$"
+
+LavaridgeTown_HerbShop_Text_YouveComeToLookAtHerbalMedicine: @ 81FE584
+	.string "You've come to look at herbal medicine\n"
+	.string "in Lavaridge?\p"
+	.string "That's rather commendable.\p"
+	.string "I like you! Take this!$"
+
+LavaridgeTown_HerbShop_Text_ExplainCharcoal: @ 81FE5EB
+	.string "That Charcoal I gave you, it's used\n"
+	.string "for making herbal medicine.\p"
+	.string "It also does wonders when held by\n"
+	.string "a Pokémon.\p"
+	.string "It intensifies the power of Fire-type\n"
+	.string "moves.$"
+
+LavaridgeTown_HerbShop_Text_HerbalMedicineWorksButMonWillDislike: @ 81FE685
+	.string "Herbal medicine works impressively well.\n"
+	.string "But your Pokémon will dislike you for it.\l"
+	.string "It must be horribly bitter!$"
+
+`

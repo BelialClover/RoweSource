@@ -1,0 +1,106 @@
+raw `
+Route117_PokemonDayCare_MapScripts:: @ 822BBB1
+	map_script MAP_SCRIPT_ON_TRANSITION, Route117_PokemonDayCare_OnTransition
+	.byte 0
+
+Route117_PokemonDayCare_OnTransition: @ 822BBB7
+	setflag FLAG_LANDMARK_POKEMON_DAYCARE
+	end
+	
+Route117_PokemonDayCare_EventScript_Daycare_Fun::
+	msgbox Route117_PokemonDayCare_Text_Fun, MSGBOX_DEFAULT
+	release
+	end
+	
+Route117_PokemonDayCare_EventScript_ReceivedDitto::
+	msgbox Route117_PokemonDayCare_Text_Woman, MSGBOX_DEFAULT
+	release
+	end
+	
+Route117_PokemonDayCare_EventScript_DeclineDitto::
+	msgbox Route117_PokemonDayCare_Text_AsYouWishThen, MSGBOX_DEFAULT
+	release
+	end
+	
+Route117_PokemonDayCare_EventScript_NoRoomForThis::
+	msgbox Route117_PokemonDayCare_Text_NoRoomForThis, MSGBOX_DEFAULT
+	release
+	
+Route117_PokemonDayCare_Text_Fun:
+	.string "I'm having a lot of fun\n"
+	.string "taking care of Pokémon\l"
+	.string "in the Daycare every day.$"
+	
+Route117_PokemonDayCare_Text_DittoWoman:
+	.string "I have this rare Pokémon.\p"
+	.string "Someone forgot about it at\n"
+	.string "the Daycare and since nobody took\n"
+	.string "it in, I'm keeping it.\p"
+	.string "Sadly, I'm not a Trainer so I\n"
+	.string "can't help it grow stronger.\p"
+	.string "You are a Trainer, right?\n"
+	.string "I see your Pokémon radiating life.\p"
+	.string "So, what do say?\n"
+	.string "Will you take this Ditto?$"
+
+Route117_PokemonDayCare_Text_Adventures:
+	.string "I hope you take it on a lot\n"
+	.string "of fun adventures.$"
+	
+Route117_PokemonDayCare_Text_Woman:
+	.string "That Pokémon has a lot of\n"
+	.string "friends here at the Daycare.\p"
+	.string "It'd be bad if you would\n"
+	.string "let us take care of it every\l"
+	.string "once in a while.\p"
+	.string "As long as you don't forget\n"
+	.string "about it, of course!$"
+	
+Route117_PokemonDayCare_Text_AsYouWishThen:
+	.string "As you wish, then…\p"
+	.string "If you have a change of heart about\n"
+	.string "this, I will be here.$"
+	
+Route117_PokemonDayCare_Text_NoRoomForThis:
+	.string "Oh? You've too many Pokémon.\n"
+	.string "There's no room for this Pokémon…$"
+	
+Route117_PokemonDayCare_Text_RecivedDitto:
+	.string "{PLAYER} received a Ditto!$"
+`
+
+script Route117_PokemonDayCare_DittoWoman{
+	lock
+	faceplayer
+	if(!flag(FLAG_RECEIVED_TM40)){
+		msgbox(format("I'm having a lot of fun taking care of Pokémon in the Daycare every day."), MSGBOX_DEFAULT)
+	}
+	elif(flag(FLAG_MOVE_TUTOR_TAUGHT_SWAGGER)){
+		msgbox(format("That Pokémon has a lot of friends here at the Daycare. It'd be bad if you would let us take care of it every once in a while. As long as you don't forget about it, of course!"), MSGBOX_DEFAULT)
+	}
+	else{
+		msgbox(format("I have this rare Pokémon, someone forgot it here in the Daycare, since nobody took it in, I'm keeping it for now. Sadly, I'm not a Trainer so I can't help it grow stronger. You are a Trainer, right? I see your Pokémon radiating life. So, what do say? Can you take care of this Ditto?"), MSGBOX_YESNO)
+		if(var(VAR_RESULT) == NO){
+			msgbox(format("I hope I can find a good Trainer for this Pokémon..."), MSGBOX_DEFAULT)
+		}
+		else{
+			getpartysize
+			switch(var(VAR_RESULT)){
+				case PARTY_SIZE:
+					msgbox(format("Oh? You've too many Pokémon. There's no room for this Pokémon…"), MSGBOX_DEFAULT)
+				break
+				default:
+					msgbox(format("I hope you can take it on a lot of fun adventures."), MSGBOX_DEFAULT)
+					setflag(FLAG_MOVE_TUTOR_TAUGHT_SWAGGER)
+					playfanfare(MUS_OBTAIN_ITEM)
+					message(format("{PLAYER} received a Ditto!."))
+					waitfanfare
+					givecustommon(SPECIES_DITTO, 10, ITEM_DESTINY_KNOT, ITEM_POKE_BALL, NATURE_JOLLY, 1, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_TRANSFORM)
+				break
+			}
+		}
+	}
+	release
+	end
+
+}

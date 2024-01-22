@@ -1,0 +1,55 @@
+raw `
+ValorCavern_MapScripts::
+	.byte 0
+
+ValorCavern_EventScript_Azelf::
+	lock
+	faceplayer
+	waitse
+	playmoncry SPECIES_AZELF, 2
+	delay 40
+	waitmoncry
+	setflag FLAG_TOTEM_BATTLE
+	setvar VAR_NUM_WILD_POKEMON_STAT_BOOST, 2
+	setwildbattlewithcustommoves SPECIES_AZELF, 70, ITEM_NONE, MOVE_PSYCHIC, MOVE_FIRE_BLAST, MOVE_SHADOW_BALL, MOVE_DAZZLING_GLEAM, 0, NATURE_MODEST
+	setflag FLAG_SYS_CTRL_OBJ_DELETE
+	dowildbattle
+	clearflag FLAG_SYS_CTRL_OBJ_DELETE
+	specialvar VAR_RESULT, GetBattleOutcome
+	compare VAR_RESULT, B_OUTCOME_CAUGHT
+	goto_if_eq ValorCavern_EventScript_CaughtAzelf
+	compare VAR_RESULT, B_OUTCOME_WON
+	goto_if_eq ValorCavern_EventScript_RanFromAzelf
+	compare VAR_RESULT, B_OUTCOME_RAN
+	goto_if_eq ValorCavern_EventScript_RanFromAzelf
+	compare VAR_RESULT, B_OUTCOME_PLAYER_TELEPORTED
+	goto_if_eq ValorCavern_EventScript_RanFromAzelf
+	setflag FLAG_DEFEATED_AZELF
+	release
+	end
+	
+ValorCavern_EventScript_CaughtAzelf::
+	setflag FLAG_DEFEATED_AZELF
+	fadescreenswapbuffers FADE_TO_BLACK
+	removeobject VAR_LAST_TALKED
+	fadescreenswapbuffers FADE_FROM_BLACK
+	release
+	end
+
+ValorCavern_EventScript_DefeatedAzelf::
+	fadescreenswapbuffers FADE_TO_BLACK
+	removeobject VAR_LAST_TALKED
+	fadescreenswapbuffers FADE_FROM_BLACK
+	release
+	end
+
+ValorCavern_EventScript_RanFromAzelf::
+	setvar VAR_0x8004, SPECIES_AZELF
+	fadescreenswapbuffers FADE_TO_BLACK
+	removeobject VAR_LAST_TALKED
+	fadescreenswapbuffers FADE_FROM_BLACK
+	bufferspeciesname 0, VAR_0x8004
+	msgbox gText_LegendaryFlewAway, MSGBOX_DEFAULT
+	release
+	end
+`

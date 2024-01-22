@@ -1,0 +1,58 @@
+raw `
+ScorchedSlab_HeatransRoom_MapScripts::
+	.byte 0
+	
+ScorchedSlab_HeatransRoom_EventScript_Heatran::
+	lock
+	faceplayer
+	waitse
+	playmoncry SPECIES_HEATRAN, 2
+	delay 40
+	waitmoncry
+	setflag FLAG_TOTEM_BATTLE
+	setvar VAR_NUM_WILD_POKEMON_STAT_BOOST, 3
+	setwildbattlewithcustommoves SPECIES_HEATRAN, 70, ITEM_NONE, MOVE_MAGMA_STORM, MOVE_FLASH_CANNON, MOVE_EARTH_POWER, MOVE_DARK_PULSE, 2, NATURE_MODEST
+	setflag FLAG_SYS_CTRL_OBJ_DELETE
+	dowildbattle
+	clearflag FLAG_SYS_CTRL_OBJ_DELETE
+	specialvar VAR_RESULT, GetBattleOutcome
+	compare VAR_RESULT, B_OUTCOME_CAUGHT
+	goto_if_eq ScorchedSlab_HeatransRoom_EventScript_CaughtHeatran
+	compare VAR_RESULT, B_OUTCOME_WON
+	goto_if_eq ScorchedSlab_HeatransRoom_EventScript_RanFromHeatran
+	compare VAR_RESULT, B_OUTCOME_RAN
+	goto_if_eq ScorchedSlab_HeatransRoom_EventScript_RanFromHeatran
+	compare VAR_RESULT, B_OUTCOME_PLAYER_TELEPORTED
+	goto_if_eq ScorchedSlab_HeatransRoom_EventScript_RanFromHeatran
+	setflag FLAG_UNUSED_0x4A9
+	release
+	end
+	
+ScorchedSlab_HeatransRoom_EventScript_CaughtHeatran::
+	setflag FLAG_UNUSED_0x4A9
+	fadescreenswapbuffers FADE_TO_BLACK
+	removeobject VAR_LAST_TALKED
+	fadescreenswapbuffers FADE_FROM_BLACK
+	release
+	end
+
+ScorchedSlab_HeatransRoom_EventScript_DefeatedHeatran::
+	fadescreenswapbuffers FADE_TO_BLACK
+	removeobject VAR_LAST_TALKED
+	fadescreenswapbuffers FADE_FROM_BLACK
+	release
+	end
+
+ScorchedSlab_HeatransRoom_EventScript_RanFromHeatran::
+	setvar VAR_0x8004, SPECIES_HEATRAN
+	fadescreenswapbuffers FADE_TO_BLACK
+	removeobject VAR_LAST_TALKED
+	fadescreenswapbuffers FADE_FROM_BLACK
+	bufferspeciesname 0, VAR_0x8004
+	msgbox gText_LegendaryFlewAway, MSGBOX_DEFAULT
+	release
+	end
+	
+ScorchedSlab_HeatransRoom_Text_Heatran::
+	.string "Gwogobo weobobobo!$"
+`

@@ -1,0 +1,62 @@
+raw `
+.set LOCALID_SAILOR, 1
+
+ThreeIsland_Port_Port_MapScripts::
+ThreeIsland_Port_MapScripts::
+	.byte 0
+	
+// Sailor -------------------------------------------------------------------------------------------
+ThreeIsland_Port_EventScript_Sailor:: @ 8267CA2
+	lock
+	faceplayer
+	goto_if_set FLAG_SAILED_FROM_SLATEPORT, ThreeIsland_Port_EventScript_Sailor_Slateport
+	msgbox ThreeIsland_Port_Text_Text_SailorReturn_Lilycove, MSGBOX_YESNO
+	compare VAR_RESULT, NO
+	goto_if_eq ThreeIsland_Port_EventScript_AsYouLike
+	msgbox EventTicket_Text_SailHome, MSGBOX_DEFAULT
+	closemessage
+	applymovement VAR_LAST_TALKED, Common_Movement_WalkInPlaceFastestDown
+	waitmovement 0
+	delay 30
+	hideobjectat LOCALID_SAILOR, MAP_THREE_ISLAND_PORT
+	special HideFollower
+	setvar VAR_0x8004, LOCALID_SS_TIDAL
+	call Common_EventScript_FerryDepartIsland
+	warp MAP_LILYCOVE_CITY_HARBOR, 255, 8, 11
+	waitstate
+	release
+	end
+	
+ThreeIsland_Port_EventScript_Sailor_Slateport:
+	msgbox ThreeIsland_Port_Text_Text_SailorReturn_Slateport, MSGBOX_YESNO
+	compare VAR_RESULT, NO
+	goto_if_eq ThreeIsland_Port_EventScript_AsYouLike
+	msgbox EventTicket_Text_SailHome, MSGBOX_DEFAULT
+	closemessage
+	applymovement VAR_LAST_TALKED, Common_Movement_WalkInPlaceFastestDown
+	waitmovement 0
+	delay 30
+	hideobjectat LOCALID_SAILOR, MAP_THREE_ISLAND_PORT
+	special HideFollower
+	setvar VAR_0x8004, LOCALID_SS_TIDAL
+	call Common_EventScript_FerryDepartIsland
+	warp MAP_SLATEPORT_CITY_HARBOR, 255, 8, 11
+	waitstate
+	release
+	end
+
+ThreeIsland_Port_EventScript_AsYouLike:: @ 8267CE7
+	msgbox EventTicket_Text_AsYouLike, MSGBOX_DEFAULT
+	release
+	end
+	
+ThreeIsland_Port_Text_Text_SailorReturn_Lilycove: @ 82C6B90
+    .string "This island has a lot of berries, eh?\n"
+	.string "Do you want to return to Lilycove?$"
+	
+ThreeIsland_Port_Text_Text_SailorReturn_Slateport: @ 82C6B90
+    .string "This island has a lot of berries, eh?\n"
+	.string "Do you want to return to Slateport?$"
+	
+// -------------------------------------------------------------------------------------------
+`

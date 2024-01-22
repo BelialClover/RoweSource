@@ -1,0 +1,929 @@
+raw `
+.set LOCALID_COLE, 2
+.set LOCALID_GERALD, 3
+.set LOCALID_AXLE, 4
+.set LOCALID_DANIELLE, 5
+
+LavaridgeTown_Gym_1F_MapScripts:: @ 81FE6F4
+	map_script MAP_SCRIPT_ON_TRANSITION, LavaridgeTown_Gym_1F_OnTransition
+	.byte 0
+
+LavaridgeTown_Gym_1F_OnTransition: @ 81FE6FA
+	call LavaridgeTown_Gym_1F_EventScript_SetTrainerTempVars
+	call LavaridgeTown_Gym_1F_EventScript_CheckHideTrainers
+	end
+
+@ Unclear where/if these temp vars are getting checked
+LavaridgeTown_Gym_1F_EventScript_SetTrainerTempVars:: @ 81FE705
+	setvar VAR_TEMP_B, 0
+	setvar VAR_TEMP_C, 0
+	setvar VAR_TEMP_D, 0
+	setvar VAR_TEMP_E, 0
+	setvar VAR_TEMP_F, 0
+	goto_if_defeated TRAINER_COLE LavaridgeTown_Gym_1F_EventScript_SetGeraldTempVar
+	setvar VAR_TEMP_B, 1
+LavaridgeTown_Gym_1F_EventScript_SetGeraldTempVar:: @ 81FE72C
+	goto_if_defeated TRAINER_GERALD, LavaridgeTown_Gym_1F_EventScript_SetAxleTempVar
+	setvar VAR_TEMP_C, 1
+LavaridgeTown_Gym_1F_EventScript_SetAxleTempVar:: @ 81FE73A
+	goto_if_defeated TRAINER_AXLE, LavaridgeTown_Gym_1F_EventScript_SetDanielleTempVar
+	setvar VAR_TEMP_D, 1
+LavaridgeTown_Gym_1F_EventScript_SetDanielleTempVar:: @ 81FE748
+	goto_if_defeated TRAINER_DANIELLE, LavaridgeTown_Gym_1F_EventScript_EndSetTrainerTempVars
+	setvar VAR_TEMP_E, 1
+LavaridgeTown_Gym_1F_EventScript_EndSetTrainerTempVars:: @ 81FE756
+	return
+
+LavaridgeTown_Gym_1F_EventScript_CheckHideTrainers:: @ 81FE757
+	goto_if_defeated TRAINER_COLE, LavaridgeTown_Gym_1F_EventScript_CheckHideGerald
+	setobjectmovementtype LOCALID_COLE, MOVEMENT_TYPE_HIDDEN
+LavaridgeTown_Gym_1F_EventScript_CheckHideGerald:: @ 81FE764
+	goto_if_defeated TRAINER_GERALD, LavaridgeTown_Gym_1F_EventScript_CheckHideAxle
+	setobjectmovementtype LOCALID_GERALD, MOVEMENT_TYPE_HIDDEN
+LavaridgeTown_Gym_1F_EventScript_CheckHideAxle:: @ 81FE771
+	goto_if_defeated TRAINER_AXLE, LavaridgeTown_Gym_1F_EventScript_CheckHideDanielle
+	setobjectmovementtype LOCALID_AXLE, MOVEMENT_TYPE_HIDDEN
+LavaridgeTown_Gym_1F_EventScript_CheckHideDanielle:: @ 81FE77E
+	goto_if_defeated TRAINER_DANIELLE, LavaridgeTown_Gym_1F_EventScript_EndCheckHideTrainers
+	setobjectmovementtype LOCALID_DANIELLE, MOVEMENT_TYPE_HIDDEN
+LavaridgeTown_Gym_1F_EventScript_EndCheckHideTrainers:: @ 81FE78B
+	return
+
+LavaridgeTown_Gym_1F_EventScript_Flannery:: @ 81FE78C
+	lock
+	faceplayer
+	call_if_set FLAG_BADGE04_GET, LavaridgeTown_Gym_EventScript_Flannery_PostBattle
+	trainerbattle_single TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryIntro, LavaridgeTown_Gym_1F_Text_FlanneryDefeat, LavaridgeTown_Gym_1F_EventScript_FlanneryDefeated, NO_MUSIC
+	msgbox LavaridgeTown_Gym_1F_Text_FlanneryPostBattle, MSGBOX_DEFAULT
+	release
+	end
+
+LavaridgeTown_Gym_1F_EventScript_FlanneryDefeated:: @ 81FE7C1
+	message LavaridgeTown_Gym_1F_Text_ReceivedHeatBadge
+	waitmessage
+	call Common_EventScript_PlayGymBadgeFanfare
+	msgbox LavaridgeTown_Gym_1F_Text_ExplainHeatBadgeTakeThis, MSGBOX_DEFAULT
+	setflag FLAG_WHITEOUT_TO_LAVARIDGE
+	setflag FLAG_DEFEATED_LAVARIDGE_GYM
+	setflag FLAG_BADGE04_GET
+	setvar VAR_0x8008, 4
+	call Common_EventScript_SetGymTrainers
+	call Special_Gym_EventScript_Give_Item
+	call LavaridgeTown_Gym_1F_EventScript_GiveOverheat
+	closemessage
+	delay 30
+	playfanfare MUS_REGISTER_MATCH_CALL
+	msgbox LavaridgeTown_Gym_1F_Text_RegisteredFlannery, MSGBOX_DEFAULT
+	waitfanfare
+	closemessage
+	delay 30
+	setflag FLAG_ENABLE_FLANNERY_MATCH_CALL
+	call Gym_EventScript_Reset_Rematches
+	setflag FLAG_FLANNERY_REMATCH
+	release
+	end
+	
+LavaridgeTown_Gym_EventScript_Flannery_PostBattle::
+	goto_if_unset FLAG_FLANNERY_REMATCH, LavaridgeTown_Gym_1F_EventScript_FlanneryRematch
+	msgbox LavaridgeTown_Gym_1F_Text_FlanneryPostBattle, MSGBOX_DEFAULT
+	release
+	end
+	
+LavaridgeTown_Gym_1F_EventScript_FlanneryRematch:: @ 81FC89C
+	msgbox LavaridgeTown_Gym_1F_Text_FlanneryPreRematch, MSGBOX_DEFAULT
+	goto LavaridgeTown_Gym_1F_EventScript_Start_Rematch_1
+	end
+	
+//rematches
+LavaridgeTown_Gym_1F_EventScript_FlanneryRematchEnd::
+	msgbox LavaridgeTown_Gym_1F_Text_FlanneryPostRematch, MSGBOX_AUTOCLOSE
+	call Gym_EventScript_Reset_Random_Rematch
+	setflag FLAG_FLANNERY_REMATCH
+	end
+	
+LavaridgeTown_Gym_1F_EventScript_Start_Rematch_1::
+	checkitem ITEM_TM61_WILL_O_WISP, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq LavaridgeTown_Gym_1F_EventScript_Start_Rematch_2
+	trainerbattle_no_intro TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat
+	msgbox LavaridgeTown_Gym_1F_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM61_WILL_O_WISP
+	goto LavaridgeTown_Gym_1F_EventScript_FlanneryRematchEnd
+	end
+	
+LavaridgeTown_Gym_1F_EventScript_Start_Rematch_2::
+	goto_if_unset FLAG_RECEIVED_TM08 LavaridgeTown_Gym_1F_EventScript_Start_Rematch_Party_1
+	checkitem ITEM_TM120_MYSTICAL_FIRE, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq LavaridgeTown_Gym_1F_EventScript_Start_Rematch_3
+	trainerbattle_no_intro TRAINER_FLANNERY_2, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat
+	msgbox LavaridgeTown_Gym_1F_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM120_MYSTICAL_FIRE
+	goto LavaridgeTown_Gym_1F_EventScript_FlanneryRematchEnd
+	end
+	
+LavaridgeTown_Gym_1F_EventScript_Start_Rematch_3::
+	goto_if_unset FLAG_RECEIVED_TM42 LavaridgeTown_Gym_1F_EventScript_Start_Rematch_Party_2
+	checkitem ITEM_TM111_HEAT_CRASH, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq LavaridgeTown_Gym_1F_EventScript_Start_Rematch_4
+	trainerbattle_no_intro TRAINER_FLANNERY_3, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat
+	msgbox LavaridgeTown_Gym_1F_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM111_HEAT_CRASH
+	goto LavaridgeTown_Gym_1F_EventScript_FlanneryRematchEnd
+	end
+	
+LavaridgeTown_Gym_1F_EventScript_Start_Rematch_4::
+	goto_if_unset FLAG_RECEIVED_TM40 LavaridgeTown_Gym_1F_EventScript_Start_Rematch_Party_3
+	checkitem ITEM_TM117_BLAZE_KICK, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq LavaridgeTown_Gym_1F_EventScript_Start_Rematch_5
+	trainerbattle_no_intro TRAINER_FLANNERY_4, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat
+	msgbox LavaridgeTown_Gym_1F_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM117_BLAZE_KICK
+	goto LavaridgeTown_Gym_1F_EventScript_FlanneryRematchEnd
+	end
+	
+LavaridgeTown_Gym_1F_EventScript_Start_Rematch_5::
+	goto_if_unset FLAG_RECEIVED_TM04 LavaridgeTown_Gym_1F_EventScript_Start_Rematch_Party_4
+	goto_if_set FLAG_GOT_HOUNDOOMINITE LavaridgeTown_Gym_1F_EventScript_Start_Rematch_6
+	trainerbattle_no_intro TRAINER_FLANNERY_4, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat
+	msgbox LavaridgeTown_Gym_1F_Text_GetMegaStone, MSGBOX_DEFAULT
+	giveitem ITEM_HOUNDOOMINITE
+	setflag FLAG_GOT_HOUNDOOMINITE
+	goto LavaridgeTown_Gym_1F_EventScript_FlanneryRematchEnd
+	end
+	
+LavaridgeTown_Gym_1F_EventScript_Start_Rematch_6::
+	goto_if_unset FLAG_RECEIVED_TM03 LavaridgeTown_Gym_1F_EventScript_Start_Rematch_Party_4
+	checkitem ITEM_TM50_OVERHEAT, 1
+	compare VAR_RESULT, TRUE
+	goto_if_eq LavaridgeTown_Gym_1F_EventScript_Start_Rematch_Final
+	trainerbattle_no_intro TRAINER_FLANNERY_5, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat
+	msgbox LavaridgeTown_Gym_1F_Text_GetTM, MSGBOX_DEFAULT
+	giveitem ITEM_TM50_OVERHEAT
+	goto LavaridgeTown_Gym_1F_EventScript_FlanneryRematchEnd
+	end
+	
+LavaridgeTown_Gym_1F_EventScript_Start_Rematch_Final::
+	random 5
+	switch VAR_RESULT
+	case 0, LavaridgeTown_Gym_1F_EventScript_Start_Rematch_Party_1
+	case 1, LavaridgeTown_Gym_1F_EventScript_Start_Rematch_Party_2
+	case 2, LavaridgeTown_Gym_1F_EventScript_Start_Rematch_Party_3
+	case 3, LavaridgeTown_Gym_1F_EventScript_Start_Rematch_Party_4
+	case 4, LavaridgeTown_Gym_1F_EventScript_Start_Rematch_Party_5
+	end
+	
+LavaridgeTown_Gym_1F_EventScript_Start_Rematch_Party_1::
+	trainerbattle_no_intro TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, LavaridgeTown_Gym_1F_EventScript_FlanneryRematchEnd
+	msgbox LavaridgeTown_Gym_1F_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_TIMID_MINT, 3
+	goto LavaridgeTown_Gym_1F_EventScript_FlanneryRematchEnd
+	end
+	
+LavaridgeTown_Gym_1F_EventScript_Start_Rematch_Party_2::
+	trainerbattle_no_intro TRAINER_FLANNERY_2, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, LavaridgeTown_Gym_1F_EventScript_FlanneryRematchEnd
+	msgbox LavaridgeTown_Gym_1F_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_MODEST_MINT, 3
+	goto LavaridgeTown_Gym_1F_EventScript_FlanneryRematchEnd
+	end
+	
+LavaridgeTown_Gym_1F_EventScript_Start_Rematch_Party_3::
+	trainerbattle_no_intro TRAINER_FLANNERY_3, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, LavaridgeTown_Gym_1F_EventScript_FlanneryRematchEnd
+	msgbox LavaridgeTown_Gym_1F_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_MILD_MINT, 3
+	goto LavaridgeTown_Gym_1F_EventScript_FlanneryRematchEnd
+	end
+	
+LavaridgeTown_Gym_1F_EventScript_Start_Rematch_Party_4::
+	trainerbattle_no_intro TRAINER_FLANNERY_4, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, LavaridgeTown_Gym_1F_EventScript_FlanneryRematchEnd
+	msgbox LavaridgeTown_Gym_1F_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_RASH_MINT, 3
+	goto LavaridgeTown_Gym_1F_EventScript_FlanneryRematchEnd
+	end
+	
+LavaridgeTown_Gym_1F_EventScript_Start_Rematch_Party_5::
+	trainerbattle_no_intro TRAINER_FLANNERY_5, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat
+	goto_if_unset FLAG_RECEIVED_TM04, LavaridgeTown_Gym_1F_EventScript_FlanneryRematchEnd
+	msgbox LavaridgeTown_Gym_1F_Text_GetReward, MSGBOX_DEFAULT
+	giveitem ITEM_QUIET_MINT, 3
+	goto LavaridgeTown_Gym_1F_EventScript_FlanneryRematchEnd
+	end
+	
+LavaridgeTown_Gym_1F_Text_GetTM:
+	.string "Flannery: Please take this\n"
+	.string "Technical Machine.$"
+
+LavaridgeTown_Gym_1F_Text_GetMegaStone:
+	.string "Flannery: Please take this\n"
+	.string "Mega Stone, with you.\p"
+	.string "Make an Aggron hold it to\n"
+	.string "unleash its Hidden Potential.$"
+	
+LavaridgeTown_Gym_1F_Text_GetReward:
+	.string "Flannery: Please take this\n"
+	.string "Item as a Reward.$"
+
+//rematches end
+
+LavaridgeTown_Gym_1F_EventScript_GiveOverheat2:: @ 81FE81D
+	giveitem ITEM_TM50
+	compare VAR_RESULT, FALSE
+	goto_if_eq Common_EventScript_ShowBagIsFull
+	msgbox LavaridgeTown_Gym_1F_Text_ExplainOverheat, MSGBOX_DEFAULT
+	release
+	end
+
+LavaridgeTown_Gym_1F_EventScript_GiveOverheat:: @ 81FE841
+	msgbox Gym_Text_Takethis2, MSGBOX_DEFAULT
+	giveitem ITEM_TM50
+	msgbox LavaridgeTown_Gym_1F_Text_ExplainOverheat, MSGBOX_DEFAULT
+	return
+
+LavaridgeTown_Gym_1F_EventScript_Cole:: @ 81FE87F
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, TRAINER_COLE, LOCALID_COLE, LavaridgeTown_Gym_1F_Text_ColeIntro, LavaridgeTown_Gym_1F_Text_ColeDefeat, LavaridgeTown_Gym_EventScript_CheckTrainerScript
+	msgbox LavaridgeTown_Gym_1F_Text_ColePostBattle MSGBOX_AUTOCLOSE
+	end
+
+LavaridgeTown_Gym_EventScript_CheckTrainerScript:: @ 81FE89A
+	call LavaridgeTown_Gym_1F_EventScript_SetTrainerTempVars
+	release
+	special ShouldTryGetTrainerScript
+	compare VAR_RESULT, 1
+	goto_if_eq EventScript_GotoTrainerScript
+	end
+
+LavaridgeTown_Gym_1F_EventScript_Axle:: @ 81FE8AF
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, TRAINER_AXLE, LOCALID_AXLE, LavaridgeTown_Gym_1F_Text_AxleIntro, LavaridgeTown_Gym_1F_Text_AxleDefeat, LavaridgeTown_Gym_EventScript_CheckTrainerScript
+	msgbox LavaridgeTown_Gym_1F_Text_AxlePostBattle, MSGBOX_AUTOCLOSE
+	end
+
+LavaridgeTown_Gym_B1F_EventScript_Keegan:: @ 81FE8CA
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, TRAINER_KEEGAN, LOCALID_KEEGAN, LavaridgeTown_Gym_B1F_Text_KeeganIntro, LavaridgeTown_Gym_B1F_Text_KeeganDefeat, LavaridgeTown_Gym_EventScript_CheckTrainerScript
+	msgbox LavaridgeTown_Gym_B1F_Text_KeeganPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+LavaridgeTown_Gym_1F_EventScript_Danielle:: @ 81FE8E5
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, TRAINER_DANIELLE, LOCALID_DANIELLE, LavaridgeTown_Gym_1F_Text_DanielleIntro, LavaridgeTown_Gym_1F_Text_DanielleDefeat, LavaridgeTown_Gym_EventScript_CheckTrainerScript
+	msgbox LavaridgeTown_Gym_1F_Text_DaniellePostBattle, MSGBOX_AUTOCLOSE
+	end
+
+LavaridgeTown_Gym_1F_EventScript_Gerald:: @ 81FE900
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, TRAINER_GERALD, LOCALID_GERALD, LavaridgeTown_Gym_1F_Text_GeraldIntro, LavaridgeTown_Gym_1F_Text_GeraldDefeat, LavaridgeTown_Gym_EventScript_CheckTrainerScript
+	msgbox LavaridgeTown_Gym_1F_Text_GeraldPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+LavaridgeTown_Gym_B1F_EventScript_Jace:: @ 81FE91B
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, TRAINER_JACE, LOCALID_JACE, LavaridgeTown_Gym_B1F_Text_JaceIntro, LavaridgeTown_Gym_B1F_Text_JaceDefeat, LavaridgeTown_Gym_EventScript_CheckTrainerScript
+	msgbox LavaridgeTown_Gym_B1F_Text_JacePostBattle, MSGBOX_AUTOCLOSE
+	end
+
+LavaridgeTown_Gym_B1F_EventScript_Jeff:: @ 81FE936
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, TRAINER_JEFF, LOCALID_JEFF, LavaridgeTown_Gym_B1F_Text_JeffIntro, LavaridgeTown_Gym_B1F_Text_JeffDefeat, LavaridgeTown_Gym_EventScript_CheckTrainerScript
+	msgbox LavaridgeTown_Gym_B1F_Text_JeffPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+LavaridgeTown_Gym_B1F_EventScript_Eli:: @ 81FE951
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, TRAINER_ELI, LOCALID_ELI, LavaridgeTown_Gym_B1F_Text_EliIntro, LavaridgeTown_Gym_B1F_Text_EliDefeat, LavaridgeTown_Gym_EventScript_CheckTrainerScript
+	msgbox LavaridgeTown_Gym_B1F_Text_EliPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+LavaridgeTown_Gym_1F_EventScript_GymGuide:: @ 81FE96C
+	lock
+	faceplayer
+	goto_if_set FLAG_DEFEATED_LAVARIDGE_GYM, LavaridgeTown_Gym_1F_EventScript_GymGuidePostVictory
+	msgbox LavaridgeTown_Gym_1F_Text_GymGuideAdvice, MSGBOX_DEFAULT
+	release
+	end
+
+LavaridgeTown_Gym_1F_EventScript_GymGuidePostVictory:: @ 81FE981
+	msgbox LavaridgeTown_Gym_1F_Text_GymGuidePostVictory, MSGBOX_DEFAULT
+	release
+	end
+
+LavaridgeTown_Gym_1F_EventScript_LeftGymStatue:: @ 81FE98B
+	lockall
+	goto_if_set FLAG_BADGE04_GET, LavaridgeTown_Gym_1F_EventScript_GymStatueCertified
+	goto LavaridgeTown_Gym_1F_EventScript_GymStatue
+	end
+
+LavaridgeTown_Gym_1F_EventScript_RightGymStatue:: @ 81FE99B
+	lockall
+	goto_if_set FLAG_BADGE04_GET, LavaridgeTown_Gym_1F_EventScript_GymStatueCertified
+	goto LavaridgeTown_Gym_1F_EventScript_GymStatue
+	end
+
+LavaridgeTown_Gym_1F_EventScript_GymStatueCertified:: @ 81FE9AB
+	msgbox LavaridgeTown_Gym_1F_Text_GymStatueCertified, MSGBOX_DEFAULT
+	releaseall
+	end
+
+LavaridgeTown_Gym_1F_EventScript_GymStatue:: @ 81FE9B5
+	msgbox LavaridgeTown_Gym_1F_Text_GymStatue, MSGBOX_DEFAULT
+	releaseall
+	end
+
+LavaridgeTown_Gym_1F_Text_GymGuideAdvice: @ 81FE9BF
+	.string "Hey, how's it going, Champion-\n"
+	.string "bound {PLAYER}?\p"
+	.string "Lavaridge's Gym Leader Flannery\n"
+	.string "uses Fire-type Pokémon.\p"
+	.string "Her passion for Pokémon burns stronger\n"
+	.string "and hotter than a volcano.\p"
+	.string "Don't get too close to her--you'll burn!\n"
+	.string "Hose her down with water and then\l"
+	.string "go for it!$"
+
+LavaridgeTown_Gym_1F_Text_GymGuidePostVictory: @ 81FEAB8
+	.string "Yow! That was a scorching-hot battle!$"
+
+LavaridgeTown_Gym_1F_Text_ColeIntro: @ 81FEADE
+	.string "Owowowowow!\n"
+	.string "Yikes, it's hot!$"
+
+LavaridgeTown_Gym_1F_Text_ColeDefeat: @ 81FEAFB
+	.string "I'm blinded by sweat in my eyes…$"
+
+LavaridgeTown_Gym_1F_Text_ColePostBattle: @ 81FEB1C
+	.string "Being buried in hot sand promotes\n"
+	.string "circulation.\p"
+	.string "It's effective for healing pain in\n"
+	.string "your joints.$"
+
+LavaridgeTown_Gym_1F_Text_AxleIntro: @ 81FEB7B
+	.string "I'm trying to relieve my stress.\n"
+	.string "Don't come along and stress me out!$"
+
+LavaridgeTown_Gym_1F_Text_AxleDefeat: @ 81FEBC0
+	.string "I hope Flannery flames you good!$"
+
+LavaridgeTown_Gym_1F_Text_AxlePostBattle: @ 81FEBE1
+	.string "Haaah… Whew…\p"
+	.string "If you spend too much time buried in\n"
+	.string "hot sand, it tuckers you out…$"
+
+LavaridgeTown_Gym_B1F_Text_KeeganIntro: @ 81FEC31
+	.string "You must be getting tired by now.\n"
+	.string "You'd like to rest in the hot sand,\l"
+	.string "wouldn't you?\p"
+	.string "But you should know that maintaining\n"
+	.string "your willpower is an important ability\l"
+	.string "for all Trainers.$"
+
+LavaridgeTown_Gym_B1F_Text_KeeganDefeat: @ 81FECE3
+	.string "Play with fire, and be burned…$"
+
+LavaridgeTown_Gym_B1F_Text_KeeganPostBattle: @ 81FED02
+	.string "Your skill is real…\n"
+	.string "But our Leader Flannery is strong.\p"
+	.string "If you don't watch yourself, you'll be\n"
+	.string "burned seriously.$"
+
+LavaridgeTown_Gym_1F_Text_GeraldIntro: @ 81FED72
+	.string "Can your Pokémon withstand\n"
+	.string "392-degree heat?$"
+
+LavaridgeTown_Gym_1F_Text_GeraldDefeat: @ 81FED9E
+	.string "It didn't burn hotly enough…$"
+
+LavaridgeTown_Gym_1F_Text_GeraldPostBattle: @ 81FEDBB
+	.string "The temperature of magma is\n"
+	.string "392 degrees.\p"
+	.string "Your Pokémon beat me, so they should\n"
+	.string "easily survive in magma.$"
+
+LavaridgeTown_Gym_1F_Text_DanielleIntro: @ 81FEE22
+	.string "Um…\n"
+	.string "Okay, I'll battle with you.$"
+
+LavaridgeTown_Gym_1F_Text_DanielleDefeat: @ 81FEE42
+	.string "Oh, but you're too strong.$"
+
+LavaridgeTown_Gym_1F_Text_DaniellePostBattle: @ 81FEE5D
+	.string "I'm going to be a pretty and strong\n"
+	.string "Trainer just like Flannery.$"
+
+LavaridgeTown_Gym_B1F_Text_JaceIntro: @ 81FEE9D
+	.string "Come on, get with it!\n"
+	.string "Let's go before my feelings cool!$"
+
+LavaridgeTown_Gym_B1F_Text_JaceDefeat: @ 81FEED5
+	.string "It's so hot, and yet my heart is\n"
+	.string "clutched by ice…$"
+
+LavaridgeTown_Gym_B1F_Text_JacePostBattle: @ 81FEF07
+	.string "The way the battling spirit burns\n"
+	.string "within you, you may stand a chance\l"
+	.string "against our Leader.$"
+
+LavaridgeTown_Gym_B1F_Text_JeffIntro: @ 81FEF60
+	.string "See how the flames blaze wildly?\n"
+	.string "They flare in anticipation of my win!$"
+
+LavaridgeTown_Gym_B1F_Text_JeffDefeat: @ 81FEFA7
+	.string "Something didn't go right.$"
+
+LavaridgeTown_Gym_B1F_Text_JeffPostBattle: @ 81FEFC2
+	.string "Well, so what? I say so what?\n"
+	.string "I can walk on hot coals barefoot!\p"
+	.string "…Don't even think about trying it!$"
+
+LavaridgeTown_Gym_B1F_Text_EliIntro: @ 81FF025
+	.string "As much as I love mountains,\n"
+	.string "I especially love volcanoes.$"
+
+LavaridgeTown_Gym_B1F_Text_EliDefeat: @ 81FF05F
+	.string "Well, it seems to me I lost without\n"
+	.string "ever being in control.$"
+
+LavaridgeTown_Gym_B1F_Text_EliPostBattle: @ 81FF09A
+	.string "I stay here because I became a fan\n"
+	.string "of Flannery's power.\p"
+	.string "Hehehehe.$"
+
+LavaridgeTown_Gym_1F_Text_FlanneryIntro: @ 81FF0DC
+	.string "Welcome… No, wait.\p"
+	.string "Puny Trainer, how good to see you've\n"
+	.string "made it here!\p"
+	.string "I have been entrusted with the…\n"
+	.string "No, wait.\p"
+	.string "I am Flannery, and I'm the Gym\n"
+	.string "Leader here!\p"
+	.string "Uh…\n"
+	.string "Dare not underestimate me, though\l"
+	.string "I have been Leader only a short time!\p"
+	.string "With skills inherited from my grand-\n"
+	.string "father, I shall, uh…demonstrate the\l"
+	.string "hot moves we have honed on this land!$"
+
+LavaridgeTown_Gym_1F_Text_FlanneryDefeat: @ 81FF233
+	.string "Oh…\n"
+	.string "I guess I was trying too hard…\p"
+	.string "I… I've only recently become\n"
+	.string "a Gym Leader.\p"
+	.string "I tried too hard to be someone\n"
+	.string "I'm not.\p"
+	.string "I have to do things my natural way. If\n"
+	.string "I don't, my Pokémon will be confused.\p"
+	.string "Thanks for teaching me that.\n"
+	.string "For that, you deserve this.$"
+
+LavaridgeTown_Gym_1F_Text_ReceivedHeatBadge: @ 81FF32F
+	.string "{PLAYER} received the Heat Badge\n"
+	.string "from Flannery.$"
+
+LavaridgeTown_Gym_1F_Text_ExplainHeatBadgeTakeThis: @ 81FF359
+	.string "This is a token of my appreciation.\n"
+	.string "Don't be shy about taking it!$"
+
+LavaridgeTown_Gym_1F_Text_ExplainOverheat: @ 81FF45C
+	.string "That TM50 contains Overheat.\p"
+	.string "That move inflicts serious damage on\n"
+	.string "the opponent.\p"
+	.string "But it also sharply cuts the Special. Attack\n"
+	.string "of the Pokémon using it. It might not\l"
+	.string "be suitable for longer battles.$"
+
+LavaridgeTown_Gym_1F_Text_RegisteredFlannery: @ 81FF517
+	.string "Registered Gym Leader Flannery\n"
+	.string "in the Pokénav.$"
+
+LavaridgeTown_Gym_1F_Text_FlanneryPostBattle: @ 81FF546
+	.string "Your power reminds me of someone…\p"
+	.string "Oh! I know! You battle like Norman,\n"
+	.string "the Gym Leader of Petalburg.$"
+
+LavaridgeTown_Gym_1F_Text_GymStatue: @ 81FF5A9
+	.string "Lavaridge Town Pokémon Gym$"
+
+LavaridgeTown_Gym_1F_Text_GymStatueCertified: @ 81FF5C4
+	.string "Lavaridge Town Pokémon Gym\p"
+	.string "Flannery'S Certified Trainers:\n"
+	.string "{PLAYER}$"
+
+LavaridgeTown_Gym_1F_Text_FlanneryPreRematch: @ 81FF601
+	.string "Flannery: Losing a battle isn't going\n"
+	.string "to deflate me.\p"
+	.string "I love Pokémon.\n"
+	.string "I love to battle.\l"
+	.string "And… I love this Gym!\p"
+	.string "Let's exchange superhot moves\n"
+	.string "in another battle!$"
+
+LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat: @ 81FF69F
+	.string "Whew!\n"
+	.string "On the verge of eruption!$"
+
+LavaridgeTown_Gym_1F_Text_FlanneryPostRematch: @ 81FF6BF
+	.string "Flannery: I lost the match,\n"
+	.string "but I'm completely satisfied.\p"
+	.string "It's not often I get to enjoy a battle\n"
+	.string "this heated.\p"
+	.string "Let's have another one like this\n"
+	.string "again sometime!$"
+
+LavaridgeTown_Gym_1F_Text_FlanneryRematchNeedTwoMons: @ 81FF75E
+	.string "Flannery: Losing a battle isn't going\n"
+	.string "to deflate me.\p"
+	.string "I love Pokémon.\n"
+	.string "I love to battle.\l"
+	.string "And… I love this Gym!\p"
+	.string "Let's exchange superhot moves\n"
+	.string "in another battle!\p"
+	.string "Oh, wait. Do you only have one Pokémon\n"
+	.string "that can battle?\p"
+	.string "I hate to say this, but when you come\n"
+	.string "see me, bring at least two Pokémon.$"
+`
+
+script LavaridgeTown_Gym_1F_EventScript_Flannery_New{
+	lock
+	faceplayer
+    if (flag(FLAG_BADGE04_GET) && !flag(FLAG_FLANNERY_REMATCH)){
+		//Rematch
+		//Intro
+		msgbox(LavaridgeTown_Gym_1F_Text_FlanneryPreRematch, MSGBOX_NPC)
+		//Trainer Battle
+		call(LavaridgeTown_Gym_1F_EventScript_Flannery_Battle_New)
+
+        //Defeated Message and Reset Rematches for other Leaders
+		msgbox(LavaridgeTown_Gym_1F_Text_FlanneryPostRematch, MSGBOX_NPC)
+		call(Gym_EventScript_Reset_Rematches)
+
+		//Give TMs or Items
+		msgbox(format("Please take these items with you."), MSGBOX_NPC)
+		call(LavaridgeTown_Gym_1F_EventScript_Flannery_Give_Gifts)
+
+		msgbox(format("Flannery: Come back tomorrow so we can battle again."), MSGBOX_NPC)
+
+		//Set the Rematch Flag as False
+		setflag(FLAG_FLANNERY_REMATCH)
+    }
+	elif(flag(FLAG_BADGE04_GET) && flag(FLAG_FLANNERY_REMATCH)){
+		//You can challenge the other trainers an infinite number of times
+		msgbox(format("Flannery: My Pokémon are tired for today, but the other trainers here need training, do you want to try battling them again?"), MSGBOX_YESNO)
+		if(var(VAR_RESULT) == 1){
+			cleartrainerflag(TRAINER_COLE)
+			cleartrainerflag(TRAINER_AXLE)
+			cleartrainerflag(TRAINER_KEEGAN)
+			cleartrainerflag(TRAINER_GERALD)
+			cleartrainerflag(TRAINER_DANIELLE)
+			cleartrainerflag(TRAINER_JACE)
+			cleartrainerflag(TRAINER_JEFF)
+			cleartrainerflag(TRAINER_ELI)
+			msgbox(format("Flannery: I will tell them to get ready, so take care on your way out."), MSGBOX_NPC)
+		}
+		else{
+			setvar(VAR_0x8008, 4)
+			call(Common_EventScript_SetGymTrainers)
+			msgbox(format("Flannery: Come back tomorrow so we can battle again."), MSGBOX_NPC)
+		}
+	}
+	elif((!defeated(TRAINER_COLE) || !defeated(TRAINER_AXLE) || !defeated(TRAINER_KEEGAN) || !defeated(TRAINER_GERALD) ||
+	      !defeated(TRAINER_JEFF) || !defeated(TRAINER_JACE) || !defeated(TRAINER_DANIELLE) ||  !defeated(TRAINER_ELI))
+		  && flag(FLAG_HARD_MODE)){
+		msgbox(format("Flannery: Sorry, but you need to defeat every trainer on this Gym before battling me"), MSGBOX_NPC)
+	}
+	else{
+		//First Battle
+		//Intro
+		msgbox(LavaridgeTown_Gym_1F_Text_FlanneryIntro, MSGBOX_NPC)
+		//Trainer Battle
+		call(LavaridgeTown_Gym_1F_EventScript_Flannery_Battle_New)
+
+		//Get the Badge
+		message(format("{PLAYER} received the Heat Badge from Flannery."))
+		waitmessage
+		call(Common_EventScript_PlayGymBadgeFanfare)
+		msgbox(format("Please take these items with you, too,"), MSGBOX_NPC)
+		setflag(FLAG_DEFEATED_LAVARIDGE_GYM)
+		setflag(FLAG_BADGE04_GET)
+
+		//Give Special Key Item
+		call(Special_Gym_EventScript_Give_Item)
+
+		//Give TM
+		giveitem(ITEM_TM61_WILL_O_WISP)
+		msgbox(format("That technical machine contains the move Will-o-Wisp.\p"
+					  "This move burns the target damaging the Pokémon every turn while also lowering its Physical Attack.$"), MSGBOX_NPC)
+		waitfanfare
+		closemessage
+		setflag(FLAG_TEMP_9)
+
+		//Give TMs or Items
+		call(LavaridgeTown_Gym_1F_EventScript_Flannery_Give_Gifts)
+
+		//Set all the trainers in the Gym as Defeated
+		setvar(VAR_0x8008, 4)
+		call(Common_EventScript_SetGymTrainers)
+
+		//Register Trainer in your PokeNav
+		msgbox(LavaridgeTown_Gym_1F_Text_RegisteredFlannery, MSGBOX_DEFAULT)
+		playfanfare(MUS_REGISTER_MATCH_CALL)
+		setflag(FLAG_ENABLE_FLANNERY_MATCH_CALL)
+		waitfanfare
+		closemessage
+
+		//Defeated Message and Reset Rematches for other Leaders
+		msgbox(LavaridgeTown_Gym_1F_Text_FlanneryPostBattle, MSGBOX_NPC)
+		call(Gym_EventScript_Reset_Rematches)
+
+		//Set the Rematch Flag as False
+		setflag(FLAG_FLANNERY_REMATCH)
+	}
+    release
+    end
+}
+
+script LavaridgeTown_Gym_1F_EventScript_Flannery_Battle_New{
+	if(flag(FLAG_BADGE04_GET)){
+		if(flag(FLAG_HARD_MODE)){
+			//Hard Mode
+			switch (var(VAR_NUM_BADGES)) {
+			case 0: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+			case 1: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+			case 2: trainerbattle_no_intro(TRAINER_FLANNERY_2, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+			case 3: trainerbattle_no_intro(TRAINER_FLANNERY_2, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+			case 4: trainerbattle_no_intro(TRAINER_FLANNERY_3, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+			case 5: trainerbattle_no_intro(TRAINER_FLANNERY_3, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+			case 6: trainerbattle_no_intro(TRAINER_FLANNERY_4, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+			case 7: trainerbattle_no_intro(TRAINER_FLANNERY_4, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+			default:
+				if(flag(FLAG_SYS_GAME_CLEAR)){
+					//When you beat the game you can get a random rematch each day
+					random(5)
+					switch (var(VAR_RESULT)) {
+						case 0: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+						case 1: trainerbattle_no_intro(TRAINER_FLANNERY_2, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+						case 2: trainerbattle_no_intro(TRAINER_FLANNERY_3, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+						case 3: trainerbattle_no_intro(TRAINER_FLANNERY_4, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+						case 4: trainerbattle_no_intro(TRAINER_FLANNERY_5, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+					}
+				}
+				else{
+					//If you have 8 badges you battle its final team
+					trainerbattle_no_intro(TRAINER_FLANNERY_5, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+				}
+			}
+		}
+		elif(flag(FLAG_NORMAL_MODE)){
+			//Normal Mode
+			switch (var(VAR_NUM_BADGES)) {
+				case 0: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+				case 1: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+				case 2: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+				case 3: trainerbattle_no_intro(TRAINER_FLANNERY_2, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+				case 4: trainerbattle_no_intro(TRAINER_FLANNERY_2, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+				case 5: trainerbattle_no_intro(TRAINER_FLANNERY_3, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+				case 6: trainerbattle_no_intro(TRAINER_FLANNERY_3, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+				case 7: trainerbattle_no_intro(TRAINER_FLANNERY_4, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+				default:
+					if(flag(FLAG_SYS_GAME_CLEAR)){
+						//When you beat the game you can get a random rematch each day
+						random(5)
+						switch (var(VAR_RESULT)) {
+							case 0: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+							case 1: trainerbattle_no_intro(TRAINER_FLANNERY_2, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+							case 2: trainerbattle_no_intro(TRAINER_FLANNERY_3, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+							case 3: trainerbattle_no_intro(TRAINER_FLANNERY_4, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+							case 4: trainerbattle_no_intro(TRAINER_FLANNERY_5, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+						}
+					}
+					else{
+						//If you have 8 badges you battle its final team
+						trainerbattle_no_intro(TRAINER_FLANNERY_5, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+					}
+			}
+		}
+		else{
+			//Easy Mode
+			switch (var(VAR_NUM_BADGES)) {
+				case 0: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+				case 1: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+				case 2: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+				case 3: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+				case 4: trainerbattle_no_intro(TRAINER_FLANNERY_2, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+				case 5: trainerbattle_no_intro(TRAINER_FLANNERY_2, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+				case 6: trainerbattle_no_intro(TRAINER_FLANNERY_3, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+				case 7: trainerbattle_no_intro(TRAINER_FLANNERY_3, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+				default:
+					if(flag(FLAG_SYS_GAME_CLEAR)){
+						//When you beat the game you can get a random rematch each day
+						random(5)
+						switch (var(VAR_RESULT)) {
+							case 0: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+							case 1: trainerbattle_no_intro(TRAINER_FLANNERY_2, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+							case 2: trainerbattle_no_intro(TRAINER_FLANNERY_3, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+							case 3: trainerbattle_no_intro(TRAINER_FLANNERY_4, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+							case 4: trainerbattle_no_intro(TRAINER_FLANNERY_5, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+						}
+					}
+					else{
+						//If you have 8 badges you battle its final team
+						trainerbattle_no_intro(TRAINER_FLANNERY_4, LavaridgeTown_Gym_1F_Text_FlanneryRematchDefeat)
+					}
+			}
+		}
+	}
+	else{
+		//First Battle
+		if(flag(FLAG_HARD_MODE)){
+			//Hard Mode
+			switch (var(VAR_NUM_BADGES)) {
+			case 0: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+			case 1: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+			case 2: trainerbattle_no_intro(TRAINER_FLANNERY_2, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+			case 3: trainerbattle_no_intro(TRAINER_FLANNERY_2, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+			case 4: trainerbattle_no_intro(TRAINER_FLANNERY_3, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+			case 5: trainerbattle_no_intro(TRAINER_FLANNERY_3, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+			case 6: trainerbattle_no_intro(TRAINER_FLANNERY_4, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+			case 7: trainerbattle_no_intro(TRAINER_FLANNERY_4, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+			default:
+				if(flag(FLAG_SYS_GAME_CLEAR)){
+					//When you beat the game you can get a random rematch each day
+					random(5)
+					switch (var(VAR_RESULT)) {
+						case 0: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+						case 1: trainerbattle_no_intro(TRAINER_FLANNERY_2, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+						case 2: trainerbattle_no_intro(TRAINER_FLANNERY_3, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+						case 3: trainerbattle_no_intro(TRAINER_FLANNERY_4, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+						case 4: trainerbattle_no_intro(TRAINER_FLANNERY_5, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+					}
+				}
+				else{
+					//If you have 8 badges you battle its final team
+					trainerbattle_no_intro(TRAINER_FLANNERY_5, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+				}
+			}
+		}
+		elif(flag(FLAG_NORMAL_MODE)){
+			//Normal Mode
+			switch (var(VAR_NUM_BADGES)) {
+				case 0: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+				case 1: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+				case 2: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+				case 3: trainerbattle_no_intro(TRAINER_FLANNERY_2, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+				case 4: trainerbattle_no_intro(TRAINER_FLANNERY_2, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+				case 5: trainerbattle_no_intro(TRAINER_FLANNERY_3, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+				case 6: trainerbattle_no_intro(TRAINER_FLANNERY_3, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+				case 7: trainerbattle_no_intro(TRAINER_FLANNERY_4, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+				default:
+					if(flag(FLAG_SYS_GAME_CLEAR)){
+						//When you beat the game you can get a random rematch each day
+						random(5)
+						switch (var(VAR_RESULT)) {
+							case 0: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+							case 1: trainerbattle_no_intro(TRAINER_FLANNERY_2, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+							case 2: trainerbattle_no_intro(TRAINER_FLANNERY_3, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+							case 3: trainerbattle_no_intro(TRAINER_FLANNERY_4, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+							case 4: trainerbattle_no_intro(TRAINER_FLANNERY_5, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+						}
+					}
+					else{
+						//If you have 8 badges you battle its final team
+						trainerbattle_no_intro(TRAINER_FLANNERY_5, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+					}
+			}
+		}
+		else{
+			//Easy Mode
+			switch (var(VAR_NUM_BADGES)) {
+				case 0: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+				case 1: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+				case 2: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+				case 3: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+				case 4: trainerbattle_no_intro(TRAINER_FLANNERY_2, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+				case 5: trainerbattle_no_intro(TRAINER_FLANNERY_2, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+				case 6: trainerbattle_no_intro(TRAINER_FLANNERY_3, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+				case 7: trainerbattle_no_intro(TRAINER_FLANNERY_3, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+				default:
+					if(flag(FLAG_SYS_GAME_CLEAR)){
+						//When you beat the game you can get a random rematch each day
+						random(5)
+						switch (var(VAR_RESULT)) {
+							case 0: trainerbattle_no_intro(TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+							case 1: trainerbattle_no_intro(TRAINER_FLANNERY_2, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+							case 2: trainerbattle_no_intro(TRAINER_FLANNERY_3, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+							case 3: trainerbattle_no_intro(TRAINER_FLANNERY_4, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+							case 4: trainerbattle_no_intro(TRAINER_FLANNERY_5, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+						}
+					}
+					else{
+						//If you have 8 badges you battle its final team
+						trainerbattle_no_intro(TRAINER_FLANNERY_4, LavaridgeTown_Gym_1F_Text_FlanneryDefeat)
+					}
+			}
+		}
+	}
+	return
+}
+
+script LavaridgeTown_Gym_1F_EventScript_Flannery_Give_Gifts{
+	//Give Mystical Fire
+	checkitem(ITEM_TM120_MYSTICAL_FIRE, 1)
+	if(var(VAR_NUM_BADGES) >= 2 && var(VAR_RESULT) == FALSE){
+		giveitem(ITEM_TM120_MYSTICAL_FIRE)
+		msgbox(format("Flannery: This move inflicts damage and always lowers the enemy Special Attack."), MSGBOX_NPC)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+
+	//Give Heat Crash
+	checkitem(ITEM_TM111_HEAT_CRASH, 1)
+	if(var(VAR_NUM_BADGES) >= 4 && var(VAR_RESULT) == FALSE){
+		giveitem(ITEM_TM111_HEAT_CRASH)
+		msgbox(format("Flannery: This move inflicts damage depending on the user's weight, use it with Pokémon like my Torkoal."), MSGBOX_NPC)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+
+	//Give Blaze Kick
+	checkitem(ITEM_TM117_BLAZE_KICK, 1)
+	if(var(VAR_NUM_BADGES) >= 6 && var(VAR_RESULT) == FALSE){
+		giveitem(ITEM_TM117_BLAZE_KICK)
+		msgbox(format("Flannery: This is an Fire-type damage move made specially for Fire-type Pokémon with high Physical Attack."), MSGBOX_NPC)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+
+	//Give Wild Charge
+	checkitem(ITEM_TM50_OVERHEAT, 1)
+	if(var(VAR_NUM_BADGES) >= 8 && var(VAR_RESULT) == FALSE){
+		giveitem(ITEM_TM50_OVERHEAT)
+		msgbox(format("Flannery: This is one of the strongest Fire-type moves but it also lowers the user Special Attack after each use, use it only while you are in a pinch or with a Pokémon holding a White Herb."), MSGBOX_NPC)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+
+	//Give Megastone
+	if(var(VAR_NUM_BADGES) >= 7 && !flag(FLAG_GOT_HOUNDOOMINITE)){
+		msgbox(format("Flannery: Take this as an special gift from me, it's a Houndoomite."), MSGBOX_NPC)
+		giveitem(ITEM_HOUNDOOMINITE)
+		msgbox(format("Make a Houndoom hold it to unleash its real potential."), MSGBOX_NPC)
+		setflag(FLAG_GOT_HOUNDOOMINITE)
+		setflag(FLAG_TEMP_9) //To check if you have been given multiple items
+	}
+	elif(!flag(FLAG_TEMP_9)){
+		//Get 2 random items for beating him
+		random(7)
+		switch (var(VAR_RESULT)) {
+			case 0: giveitem(ITEM_FIRE_GEM, 2)
+			case 1: giveitem(ITEM_CHARCOAL, 2)
+			case 2: giveitem(ITEM_FLAME_ORB, 2)
+			case 3: giveitem(ITEM_HEAT_ROCK, 2)
+			case 4: giveitem(ITEM_OCCA_BERRY, 5)
+			case 5: giveitem(ITEM_FIRE_STONE, 2)
+			case 6: giveitem(ITEM_MAGMARIZER, 2)
+		}
+	}
+	return
+}
+
+script LavaridgeTown_Gym_1F_EventScript_GymGuide_New{
+	lock
+	faceplayer
+	if(flag(FLAG_DEFEATED_LAVARIDGE_GYM)){
+		if(!flag(FLAG_FLANNERY_REMATCH)){
+			msgbox(format("Guide: Hello {PLAYER}, I see you came to this Gym again, do you want me to take you to the Leader?"), MSGBOX_YESNO)
+			if(var(VAR_RESULT) == 1){
+				msgbox(format("Let me tell the leader that you are here."), MSGBOX_NPC)
+				warp(MAP_LAVARIDGE_TOWN_GYM_1F, 255, 13, 10)
+			}
+			else{
+				msgbox(format("I see, you can also go throught the Gym if you want."), MSGBOX_NPC)
+			}
+		}
+		else{
+			msgbox(LavaridgeTown_Gym_1F_Text_GymGuidePostVictory, MSGBOX_NPC)
+		}
+	}
+	else{
+		msgbox(LavaridgeTown_Gym_1F_Text_GymGuideAdvice, MSGBOX_NPC)
+	}
+	release
+	end
+}
+
+script LavaridgeTown_Gym_1F_EventScript_Gym_Torkoal{
+	lock
+	faceplayer
+	if (flag(FLAG_BADGE04_GET) && !flag(FLAG_FLANNERY_REMATCH)){
+		//Ready for a rematch
+		msgbox(format("Torkoal: koal!"), MSGBOX_NPC)
+		msgbox(format("The Pokémon seems like it wants a rematch with You, the smoke on its back its really hot."), MSGBOX_SIGN)
+		waitmessage
+	}
+	elif(flag(FLAG_BADGE04_GET) && flag(FLAG_FLANNERY_REMATCH)){
+		msgbox(format("Torkoal: koal..."), MSGBOX_NPC)
+		msgbox(format("The Pokémon seems tired after today's battle, its better to leave it rest"), MSGBOX_SIGN)
+		waitmessage
+	}
+	else{
+		msgbox(format("Torkoal: koal?"), MSGBOX_NPC)
+		msgbox(format("The Pokémon seems curious about how strong you are."), MSGBOX_SIGN)
+		waitmessage
+	}
+	release
+	end
+}

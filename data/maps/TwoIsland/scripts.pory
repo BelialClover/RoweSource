@@ -1,0 +1,373 @@
+raw `
+.set LOCALID_SAILOR, 1
+
+TwoIsland_MapScripts:: @ 8167564
+	map_script MAP_SCRIPT_ON_TRANSITION, TwoIsland_OnTransition
+	.byte 0
+
+TwoIsland_OnTransition:: @ 816756
+	call TwoIsland_EventScript_SetShopState
+	setflag FLAG_VISITED_TWO_ISLAND
+	end
+
+TwoIsland_EventScript_SetShopState:: @ 8167576
+	goto TwoIsland_EventScript_SetShopStateDefault
+	end
+
+TwoIsland_EventScript_SetShopStateAfterHoennLink:: @ 8167597
+	goto TwoIsland_EventScript_SetShopExpanded3
+	end
+
+TwoIsland_EventScript_SetShopStateAfterChampion:: @ 81675B8
+	goto TwoIsland_EventScript_SetShopExpanded2
+	end
+
+TwoIsland_EventScript_SetShopStateAfterLostelleRescue:: @ 81675D9
+	goto TwoIsland_EventScript_SetShopExpanded1
+	end
+
+TwoIsland_EventScript_SetShopStateDefault:: @ 81675E8
+	goto TwoIsland_EventScript_SetShopInitial
+	end
+
+TwoIsland_EventScript_SetShopInitial:: @ 81675EE
+	return
+
+TwoIsland_EventScript_SetShopExpanded1:: @ 81675F4
+	return
+
+TwoIsland_EventScript_SetShopExpanded2:: @ 81675FD
+	return
+
+TwoIsland_EventScript_SetShopExpanded3:: @ 8167606
+	return
+
+TwoIsland_EventScript_Clerk:: @ 816760F
+	lock
+	faceplayer
+	goto_if_set FLAG_RECEIVED_BADGE_06, TwoIsland_EventScript_ClerkShopExpanded3
+	goto_if_set FLAG_RECEIVED_BADGE_04, TwoIsland_EventScript_ClerkShopExpanded2
+	goto_if_set FLAG_RECEIVED_BADGE_02, TwoIsland_EventScript_ClerkShopExpanded1
+	goto TwoIsland_EventScript_ClerkShopInitial
+	end
+
+TwoIsland_EventScript_ClerkShopExpanded3:: @ 8167646
+	message TwoIsland_Text_BringingItemsFromDistantLands
+	waitmessage
+	goto TwoIsland_EventScript_ShopExpanded3
+	end
+
+TwoIsland_EventScript_ClerkShopExpanded2:: @ 816765E
+	message TwoIsland_Text_HopeYouGiveItYourBest
+	waitmessage
+	goto TwoIsland_EventScript_ShopExpanded2
+	end
+
+TwoIsland_EventScript_ClerkShopExpanded1:: @ 8167676
+	message TwoIsland_Text_AddedMerchandiseForLostelle
+	waitmessage
+	goto TwoIsland_EventScript_ShopExpanded1
+	end
+
+TwoIsland_EventScript_ClerkShopInitial:: @ 816768E
+	message TwoIsland_Text_WelcomeToShopMerchandiseLimited
+	waitmessage
+	goto TwoIsland_EventScript_ShopInitial
+	end
+
+TwoIsland_EventScript_ClerkShopSkipIntro:: @ 81676A6
+	message gText_HowMayIServeYou
+	waitmessage
+	goto TwoIsland_EventScript_ShopInitial
+	end
+
+TwoIsland_EventScript_ShopInitial:: @ 81676D3
+	pokemart TwoIsland_Items_ShopInitial
+	msgbox gText_PleaseComeAgain
+	release
+	end
+
+	.align 2
+TwoIsland_Items_ShopInitial:: @ 81676E4
+	.2byte ITEM_LAVA_COOKIE
+	.2byte ITEM_FRESH_WATER
+	.2byte ITEM_METAL_POWDER
+	.2byte ITEM_HEALTH_WING
+	.2byte ITEM_PRETTY_WING
+	.2byte ITEM_NONE
+	release
+	end
+
+TwoIsland_EventScript_ShopExpanded1:: @ 81676EC
+	pokemart TwoIsland_Items_ShopExpanded1
+	msgbox gText_PleaseComeAgain
+	release
+	end
+
+	.align 2
+TwoIsland_Items_ShopExpanded1:: @ 81676FC
+	.2byte ITEM_LAVA_COOKIE
+	.2byte ITEM_OLD_GATEAU
+	.2byte ITEM_SODA_POP
+	.2byte ITEM_METAL_POWDER
+	.2byte ITEM_LIGHT_BALL
+	.2byte ITEM_FRESH_WATER
+	.2byte ITEM_HEALTH_WING
+	.2byte ITEM_RESIST_WING
+	.2byte ITEM_CLEVER_WING
+	.2byte ITEM_PRETTY_WING
+	.2byte ITEM_NONE
+	release
+	end
+
+TwoIsland_EventScript_ShopExpanded2:: @ 8167708
+	pokemart TwoIsland_Items_ShopExpanded2
+	msgbox gText_PleaseComeAgain
+	release
+	end
+
+	.align 2
+TwoIsland_Items_ShopExpanded2:: @ 8167718
+	.2byte ITEM_LAVA_COOKIE
+	.2byte ITEM_OLD_GATEAU
+	.2byte ITEM_SWEET_HEART
+	.2byte ITEM_LUMINOUS_MOSS
+	.2byte ITEM_LEMONADE
+	.2byte ITEM_SODA_POP
+	.2byte ITEM_FRESH_WATER
+	.2byte ITEM_MOOMOO_MILK
+	.2byte ITEM_STICK
+	.2byte ITEM_LUCKY_PUNCH
+	.2byte ITEM_METAL_POWDER
+	.2byte ITEM_LIGHT_BALL
+	.2byte ITEM_HEALTH_WING
+	.2byte ITEM_RESIST_WING
+	.2byte ITEM_CLEVER_WING
+	.2byte ITEM_SWIFT_WING
+	.2byte ITEM_PRETTY_WING
+	.2byte ITEM_NONE
+	release
+	end
+
+TwoIsland_EventScript_ShopExpanded3:: @ 8167728
+	pokemart TwoIsland_Items_ShopExpanded3
+	msgbox gText_PleaseComeAgain
+	release
+	end
+
+	.align 2
+TwoIsland_Items_ShopExpanded3:: @ 8167738
+	.2byte ITEM_LAVA_COOKIE
+	.2byte ITEM_OLD_GATEAU
+	.2byte ITEM_SWEET_HEART
+	.2byte ITEM_LUMINOUS_MOSS
+	.2byte ITEM_BIG_MALASADA
+	.2byte ITEM_LEMONADE
+	.2byte ITEM_SODA_POP
+	.2byte ITEM_FRESH_WATER
+	.2byte ITEM_MOOMOO_MILK
+	.2byte ITEM_STICK
+	.2byte ITEM_LUCKY_PUNCH
+	.2byte ITEM_THICK_CLUB
+	.2byte ITEM_QUICK_POWDER
+	.2byte ITEM_METAL_POWDER
+	.2byte ITEM_LIGHT_BALL
+	.2byte ITEM_LAVA_COOKIE
+	.2byte ITEM_HEALTH_WING
+	.2byte ITEM_MUSCLE_WING
+	.2byte ITEM_RESIST_WING
+	.2byte ITEM_GENIUS_WING
+	.2byte ITEM_CLEVER_WING
+	.2byte ITEM_SWIFT_WING
+	.2byte ITEM_PRETTY_WING
+	.2byte ITEM_NONE
+	release
+	end
+
+TwoIsland_EventScript_Sailor_2:: @ 816774C
+	msgbox TwoIsland_Text_FellowMovedFromCeladonCity, MSGBOX_NPC
+	end
+
+TwoIsland_EventScript_Woman:: @ 8167755
+	msgbox TwoIsland_Text_ShopkeepersBrotherWorksGameCorner, MSGBOX_NPC
+	end
+
+TwoIsland_EventScript_Beauty:: @ 816775E
+	lock
+	faceplayer
+	msgbox TwoIsland_Text_BrunoCameToIslandWhileBack
+	release
+	end
+
+TwoIsland_EventScript_SuperNerd:: @ 8167777
+	msgbox TwoIsland_Text_BuyRareItemsHere, MSGBOX_NPC
+	end
+
+TwoIsland_EventScript_Boy:: @ 8167780
+	msgbox TwoIsland_Text_OldWomanLivesOutOnCape, MSGBOX_NPC
+	end
+
+TwoIsland_EventScript_LittleBoy:: @ 8167789
+	msgbox TwoIsland_Text_HaveYouTriedJumpingGame, MSGBOX_NPC
+	end
+
+TwoIsland_EventScript_IslandSign:: @ 8167792
+	msgbox TwoIsland_Text_IslandSign, MSGBOX_SIGN
+	end
+
+TwoIsland_EventScript_JoyfulGameCornerSign:: @ 816779B
+	msgbox TwoIsland_Text_JoyfulGameCornerSign, MSGBOX_SIGN
+	end
+	
+TwoIsland_EventScript_ClosedDoor:: @ 816779B
+	msgbox TwoIsland_Text_Island_Closed_Door, MSGBOX_SIGN
+	end
+
+TwoIsland_EventScript_FastCurrentSign:: @ 81677A4
+	msgbox TwoIsland_Text_DangerFastCurrent, MSGBOX_SIGN
+	end
+
+TwoIsland_Text_Island_Closed_Door:: @ 8181A88
+    .string "The door is closed$"
+
+TwoIsland_Text_IslandSign:: @ 8181A88
+    .string "Two Island\n"
+    .string "Boon Island for Two$"
+
+TwoIsland_Text_JoyfulGameCornerSign:: @ 8181AA7
+    .string "Skip & Chomp!\n"
+    .string "Joyful Game Corner$"
+
+TwoIsland_Text_DangerFastCurrent:: @ 8181AC8
+    .string "Danger! Fast Current!\n"
+    .string "Fishing and surfing prohibited!$"
+
+TwoIsland_Text_WelcomeToShopMerchandiseLimited:: @ 8181AFE
+    .string "Oh!\n"
+    .string "Hello, welcome to my shop!\p"
+    .string "We've only opened up recently.\p"
+    .string "Our merchandise is limited, but I\n"
+    .string "hope we can serve your needs.$"
+
+TwoIsland_Text_AddedMerchandiseForLostelle:: @ 8181B7C
+    .string "I can't tell you how grateful I am\n"
+    .string "for your rescue of Lostelle.\p"
+    .string "Thanks to your feat, the people of\n"
+    .string "Three Island have changed their\l"
+    .string "attitudes about Kanto people.\p"
+    .string "And, I'm from Kanto, you see.\p"
+    .string "The people of Three Island\n"
+    .string "helped me add to my merchandise.$"
+
+TwoIsland_Text_HopeYouGiveItYourBest:: @ 8181C77
+    .string "Hi! I'm giving it my best here.\n"
+    .string "I hope you do too, {PLAYER}.$"
+
+TwoIsland_Text_BringingItemsFromDistantLands:: @ 8181CAE
+    .string "Oh, hello, {PLAYER}!\n"
+    .string "Welcome!\p"
+    .string "I've started bringing in items from\n"
+    .string "distant lands.\p"
+    .string "I've got some rare items in, too.\n"
+    .string "Please have a look!$"
+
+TwoIsland_Text_FellowMovedFromCeladonCity:: @ 8181D2F
+    .string "That fellow there, he moved here\n"
+    .string "from Celadon City.\p"
+    .string "He started up a shop with his\n"
+    .string "younger brother.\p"
+    .string "You have to wonder if he knew what\n"
+    .string "he was getting into.$"
+
+TwoIsland_Text_ShopkeepersBrotherWorksGameCorner:: @ 8181DCA
+    .string "The shopkeeper's brother took\n"
+    .string "a job at the Game Corner.\p"
+    .string "He's trying to pull together money\n"
+    .string "so they can buy more merchandise.$"
+
+TwoIsland_Text_BrunoCameToIslandWhileBack:: @ 8181E47
+    .string "Listen, listen.\n"
+    .string "Did you know?\p"
+    .string "A famous Trainer came to the\n"
+    .string "Island a little while back.\p"
+    .string "He's one of the Elite Four.\n"
+    .string "His name is Bruno.\p"
+    .string "He went away disappointed when he\n"
+    .string "found out that they were all sold\l"
+    .string "out of Rage Candy Bars.$"
+
+TwoIsland_Text_BuyRareItemsHere:: @ 8181F28
+    .string "The discerning Trainer knows to\n"
+    .string "buy rare items here!$"
+
+TwoIsland_Text_OldWomanLivesOutOnCape:: @ 8181F5D
+    .string "There's an old woman who lives in\n"
+    .string "a cottage out on the cape.\p"
+    .string "She gives the eye to Pokémon.\n"
+    .string "It's a bit unnerving.$"
+
+TwoIsland_Text_HaveYouTriedJumpingGame:: @ 8181FCE
+    .string "Boing! Boing!\n"
+    .string "Have you tried the jumping game?\p"
+    .string "The Pokémon you can enter…\n"
+    .string "Boing!\p"
+    .string "Some go boing!\p"
+    .string "And some go boooooooing!\p"
+    .string "Did you know that?\n"
+    .string "Boing!$"
+
+// Sailor -------------------------------------------------------------------------------------------
+TwoIsland_EventScript_Sailor:: @ 8267CA2
+	lock
+	faceplayer
+	goto_if_set FLAG_SAILED_FROM_SLATEPORT, TwoIsland_EventScript_Sailor_Slateport
+	msgbox TwoIsland_Text_Text_SailorReturn_Lilycove, MSGBOX_YESNO
+	compare VAR_RESULT, NO
+	goto_if_eq TwoIsland_EventScript_AsYouLike
+	msgbox EventTicket_Text_SailHome, MSGBOX_DEFAULT
+	closemessage
+	applymovement VAR_LAST_TALKED, Common_Movement_WalkInPlaceFastestDown
+	waitmovement 0
+	delay 30
+	hideobjectat LOCALID_SAILOR, MAP_TWO_ISLAND
+	special HideFollower
+	setvar VAR_0x8004, LOCALID_SS_TIDAL
+	call Common_EventScript_FerryDepartIsland
+	warp MAP_LILYCOVE_CITY_HARBOR, 255, 8, 11
+	waitstate
+	release
+	end
+	
+TwoIsland_EventScript_Sailor_Slateport:
+	msgbox TwoIsland_Text_Text_SailorReturn_Slateport, MSGBOX_YESNO
+	compare VAR_RESULT, NO
+	goto_if_eq TwoIsland_EventScript_AsYouLike
+	msgbox EventTicket_Text_SailHome, MSGBOX_DEFAULT
+	closemessage
+	applymovement VAR_LAST_TALKED, Common_Movement_WalkInPlaceFastestDown
+	waitmovement 0
+	delay 30
+	hideobjectat LOCALID_SAILOR, MAP_TWO_ISLAND
+	special HideFollower
+	setvar VAR_0x8004, LOCALID_SS_TIDAL
+	call Common_EventScript_FerryDepartIsland
+	warp MAP_SLATEPORT_CITY_HARBOR, 255, 8, 11
+	waitstate
+	release
+	end
+
+TwoIsland_EventScript_AsYouLike:: @ 8267CE7
+	msgbox EventTicket_Text_AsYouLike, MSGBOX_DEFAULT
+	release
+	end
+	
+TwoIsland_Text_Text_SailorReturn_Lilycove: @ 82C6B90
+    .string "This Island has some nice items, eh?\n"
+	.string "Do you want to return to Lilycove?$"
+	
+TwoIsland_Text_Text_SailorReturn_Slateport: @ 82C6B90
+    .string "This Island has some nice items, eh?\n"
+	.string "Do you want to return to Slateport?$"
+	
+// -------------------------------------------------------------------------------------------
+`

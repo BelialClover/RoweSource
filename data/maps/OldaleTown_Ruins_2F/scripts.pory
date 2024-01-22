@@ -1,0 +1,67 @@
+raw `
+.equ LOCALID_TERRAKION, 1
+
+OldaleTown_Ruins_2F_MapScripts::
+	map_script MAP_SCRIPT_ON_LOAD, OldaleTown_Ruins_MapScripts_OnLoad
+	.byte 0
+
+OldaleTown_Ruins_MapScripts_OnLoad: @ 8236F16
+	goto_if_unset FLAG_SYS_GAME_CLEAR, OldaleTown_Ruins_MapScripts_RemoveTerrakion
+	end
+	
+OldaleTown_Ruins_MapScripts_RemoveTerrakion: @ 8236F16
+	removeobject LOCALID_TERRAKION
+	setobjectxyperm LOCALID_TERRAKION, 1, 1
+	end
+
+OldaleTown_Ruins_EventScript_Terrakion::
+	lock
+	faceplayer
+	waitse
+	playmoncry SPECIES_TERRAKION, 2
+	delay 40
+	waitmoncry
+	setflag FLAG_TOTEM_BATTLE
+	setvar VAR_NUM_WILD_POKEMON_STAT_BOOST, 3
+	setwildbattlewithcustommoves SPECIES_TERRAKION, 70, ITEM_NONE, MOVE_SACRED_SWORD, MOVE_ROCK_SLIDE, MOVE_EARTHQUAKE, MOVE_POISON_JAB, 0, NATURE_MODEST
+	setflag FLAG_SYS_CTRL_OBJ_DELETE
+	dowildbattle
+	clearflag FLAG_SYS_CTRL_OBJ_DELETE
+	specialvar VAR_RESULT, GetBattleOutcome
+	compare VAR_RESULT, B_OUTCOME_CAUGHT
+	goto_if_eq OldaleTown_Ruins_EventScript_CaughtTerrakion
+	compare VAR_RESULT, B_OUTCOME_WON
+	goto_if_eq OldaleTown_Ruins_EventScript_RanFromTerrakion
+	compare VAR_RESULT, B_OUTCOME_RAN
+	goto_if_eq OldaleTown_Ruins_EventScript_RanFromTerrakion
+	compare VAR_RESULT, B_OUTCOME_PLAYER_TELEPORTED
+	goto_if_eq OldaleTown_Ruins_EventScript_RanFromTerrakion
+	setflag FLAG_DEFEATED_TERRAKION
+	release
+	end
+	
+OldaleTown_Ruins_EventScript_CaughtTerrakion::
+	setflag FLAG_DEFEATED_TERRAKION
+	fadescreenswapbuffers FADE_TO_BLACK
+	removeobject VAR_LAST_TALKED
+	fadescreenswapbuffers FADE_FROM_BLACK
+	release
+	end
+
+OldaleTown_Ruins_EventScript_DefeatedTerrakion::
+	fadescreenswapbuffers FADE_TO_BLACK
+	removeobject VAR_LAST_TALKED
+	fadescreenswapbuffers FADE_FROM_BLACK
+	release
+	end
+
+OldaleTown_Ruins_EventScript_RanFromTerrakion::
+	setvar VAR_0x8004, SPECIES_TERRAKION
+	fadescreenswapbuffers FADE_TO_BLACK
+	removeobject VAR_LAST_TALKED
+	fadescreenswapbuffers FADE_FROM_BLACK
+	bufferspeciesname 0, VAR_0x8004
+	msgbox gText_LegendaryFlewAway, MSGBOX_DEFAULT
+	release
+	end
+`
