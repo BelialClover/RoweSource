@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 Nothing, yet.
 
+## [3.3.0] - 2024-01-15
+- Add ability to configure number of lines used by `format()`. For example, this is useful if the text is intended to render in, a 3-line textbox (instead of the usual 2).
+    - Additionally, `format()` now accepts named parameters, and `numLines` has been included in `font_config.json`.
+
+## [3.2.0] - 2023-12-02
+### Added
+- Add `-lm` option for [C Preprocessor line markers](https://gcc.gnu.org/onlinedocs/gcc-3.0.2/cpp_9.html) to improve error messages.
+    - `-lm` is enabled by default. You can specify `-lm=false` to disable line markers in the compiled output.
+
+## [3.1.0] - 2023-11-11
+### Added
+- Add support for configuration of the textbox's cursor width to improve `format()`'s ability to fit text on a line.
+    - This is achieved with a new `cursorOverlapWidth` field in `font_config.json`
+    - Note, this change also changed the `maxLineLength` of the `1_latin_frlg` font, so existing uses of `format()` could be affected--especially when used in combination with explicit line breaks inside the `format()` text content.
+- Add automatic line break (`\N`) support to `format()`
+
+## [3.0.3] - 2023-09-04
+### Fixed
+- Fix bug where specifying a non-default font id with `format()` would apply the wrong maximum line width configuration.
+
+## [3.0.2] - 2023-05-20
+### Fixed
+- Fix bug where a `switch` statement with all empty `case` bodies would produce invalid output.
+
 ## [3.0.1] - 2023-01-08
 ### Fixed
 - Fix bug where `end` and `return` commands could cause labels to not render.
@@ -133,7 +157,12 @@ Nothing, yet.
 ## [1.0.0] - 2019-08-27
 Initial Release
 
-[Unreleased]: https://github.com/huderlem/poryscript/compare/3.0.1...HEAD
+[Unreleased]: https://github.com/huderlem/poryscript/compare/3.3.0...HEAD
+[3.3.0]: https://github.com/huderlem/poryscript/compare/3.2.0...3.3.0
+[3.2.0]: https://github.com/huderlem/poryscript/compare/3.1.0...3.2.0
+[3.1.0]: https://github.com/huderlem/poryscript/compare/3.0.3...3.1.0
+[3.0.3]: https://github.com/huderlem/poryscript/compare/3.0.2...3.0.3
+[3.0.2]: https://github.com/huderlem/poryscript/compare/3.0.1...3.0.2
 [3.0.1]: https://github.com/huderlem/poryscript/compare/3.0.0...3.0.1
 [3.0.0]: https://github.com/huderlem/poryscript/compare/2.14.0...3.0.0
 [2.14.0]: https://github.com/huderlem/poryscript/compare/2.13.0...2.14.0

@@ -37,6 +37,7 @@ View the [Changelog](https://github.com/huderlem/poryscript/blob/master/CHANGELO
   * [Scope Modifiers](#scope-modifiers)
   * [Compile-Time Switches](#compile-time-switches)
   * [Optimization](#optimization)
+  * [Line Markers](#line-markers)
 - [Local Development](#local-development)
   * [Building from Source](#building-from-source)
   * [Running the tests](#running-the-tests)
@@ -60,6 +61,8 @@ Usage of poryscript:
         input poryscript file (leave empty to read from standard input)
   -l int
         set default line length in pixels for formatted text (uses font config file for default)
+  -lm
+        include line markers in output (enables more helpful error messages when compiling the ROM). (To disable, use '-lm=false') (default true)
   -o string
         output script file (leave empty to write to standard output)
   -optimize
@@ -85,14 +88,16 @@ It's also a good idea to add `tools/poryscript` to your `.gitignore` before your
 
 2. Update the Makefile with these changes (Note, don't add the `+` symbol at the start of the lines. That's just to show the line is being added.):
 ```diff
+FIX := tools/gbafix/gbafix$(EXE)
+MAPJSON := tools/mapjson/mapjson$(EXE)
+JSONPROC := tools/jsonproc/jsonproc$(EXE)
 + SCRIPT := tools/poryscript/poryscript$(EXE)
 ```
 ```diff
-mostlyclean: tidy
-	rm -f sound/direct_sound_samples/*.bin
-	rm -f $(MID_SUBDIR)/*.s
-	find . \( -iname '*.1bpp' -o -iname '*.4bpp' -o -iname '*.8bpp' -o -iname '*.gbapal' -o -iname '*.lz' -o -iname '*.latfont' -o -iname '*.hwjpnfont' -o -iname '*.fwjpnfont' \) -exec rm {} +
+mostlyclean: tidynonmodern tidymodern
+	...
 	rm -f $(AUTO_GEN_TARGETS)
+	@$(MAKE) clean -C libagbsyscall
 +	rm -f $(patsubst %.pory,%.inc,$(shell find data/ -type f -name '*.pory'))
 ```
 ```diff
@@ -105,16 +110,6 @@ mostlyclean: tidy
 ```diff
 sound/%.bin: sound/%.aif ; $(AIF) $< $@
 + data/%.inc: data/%.pory; $(SCRIPT) -i $< -o $@ -fc tools/poryscript/font_config.json
-```
-```diff
--TOOLDIRS := $(filter-out tools/agbcc tools/binutils,$(wildcard tools/*))
-+TOOLDIRS := $(filter-out tools/agbcc tools/binutils tools/poryscript,$(wildcard tools/*))
-```
-
-3. Update `make_tools.mk` with the same change:
-```diff
--TOOLDIRS := $(filter-out tools/agbcc tools/binutils,$(wildcard tools/*))
-+TOOLDIRS := $(filter-out tools/agbcc tools/binutils tools/poryscript,$(wildcard tools/*))
 ```
 
 ## Convert Existing Scripts
@@ -414,6 +409,14 @@ Becomes:
 .string "Amazing!\p"
 .string "So glad to meet you!$"
 ```
+
+Additionally, `format()` supports a special line break `\N`, which will automatically insert the appropriate `\n` or `\l` line break. While this is an uncommon use case, it's useful in situations where a line break is desired for dramatic/stylistic purposes. In the following example, we want explicit line breaks for the `"..."` texts, but we don't know if the first one should use `\n` or `\l`. Using `\N` makes it easy:
+```
+text MyText {
+    format("You are my favorite trainer!\N...\N...\N...\NBut I'm better!")
+}
+```
+
 The font id can optionally be specified as the second parameter to `format()`.
 ```
 text MyText {
@@ -428,6 +431,10 @@ Becomes:
 .string "So glad to meet you!$"
 ```
 The font configuration JSON file informs Poryscript how many pixels wide each character in the message is, as well as setting a default maximum line length. Fonts have different character widths, and games have different text box sizes. For convenience, Poryscript comes with `font_config.json`, which contains the configuration for pokeemerald's `1_latin` font as `1_latin_rse`, as well as pokefirered's equivalent as `1_latin_frlg`. More fonts can be added to this file by simply creating anothing font id node under the `fonts` key in `font_config.json`.
+
+`cursorOverlapWidth` can be used to ensure there is always enough room for the cursor icon to be displayed in the text box. (This "cursor icon" is the small icon that's shown when the player needs to press A to advance the text box.)
+
+`numLines` is the number of lines displayed within a single message box. If editing text for a taller space, this can be adjusted in `font_config.json`.
 
 The length of a line can optionally be specified as the third parameter to `format()` if a font id was specified as the second parameter.
 
@@ -447,6 +454,17 @@ Becomes:
 .string "Amazing!\p"
 .string "So glad to meet\n"
 .string "you!$"
+```
+
+Finally, `format()` takes the following optional named parameters, which override settings from the font config:
+- `fontId`
+- `maxLineLength`
+- `numLines`
+- `cursorOverlapWidth`
+```
+text MyText {
+    format("This is an example of named parameters!", numLines=3, maxLineLength=100)
+}
 ```
 
 ### Custom Text Encoding
@@ -770,6 +788,9 @@ Note, `poryswitch` can also be embedded inside inlined `mapscripts` scripts.
 
 ## Optimization
 By default, Poryscript produces optimized output. It attempts to minimize the number of `goto` commands and unnecessary script labels. To disable optimizations, pass the `-optimize=false` option to `poryscript`.
+
+## Line Markers
+By default, Poryscript includes [C Preprocessor line markers](https://gcc.gnu.org/onlinedocs/gcc-3.0.2/cpp_9.html) in the compiled output.  This improves error messages.  To disable line markers, specify `-lm=false` when invoking Poryscript.
 
 # Local Development
 
