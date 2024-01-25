@@ -34,11 +34,7 @@ jobs:
         working-directory: agbcc
         
       - name: Poryscript permission
-        run: cd poryscript
-        run: cd tools
-        run: chmod -R 755 ./
-        run: cd ..
-        run: cd ..
+        run: cd poryscript && cd tools && chmod -R 755 ./ && cd .. && cd ..
 
       - name: Agbcc
         run: make -j${nproc} all
