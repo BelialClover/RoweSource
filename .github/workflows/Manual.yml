@@ -30,28 +30,6 @@ jobs:
         run: cd tools && wget https://github.com/huderlem/poryscript/releases/download/3.3.0/poryscript-linux.zip && unzip poryscript-linux.zip -d ./ && rm ./poryscript-linux.zip && mv ./poryscript-linux ./poryscript && ls && cd ..
         # Downloads poryscript and unzips it
 
-      # - name: Download pokeemerald repo
-      #   run: cd tools && mkdir pokeemerald && git clone https://github.com/pret/pokeemerald
-        # Clones pokeemerald repo
-
-      # - name: Install agbcc to vanilla emerald
-      #   run: |
-      #     ./build.sh
-      #     ./install.sh ../
-      #   working-directory: agbcc
-        # installs agbcc to pokeemerald repo
-
-      # - name: Build pokeemerald repo
-      #   run: make -j${nproc} all
-        # builds agbcc to pokeemerald repo
-
-      # - name: Check if you uploaded a the correct emerald gba file
-      #   run: sha1sum -c pokemon_emerald.sha1
-
-      # - name: Check the vanilla pokeemerald folder and go back to the main repo
-      #   run: ls && cd .. && cd ..
-        # Check if it built correctly and go to the main repo
-
       - name: Install agbcc
         run: |
           ./build.sh
@@ -61,14 +39,22 @@ jobs:
       - name: Agbcc
         run: make -j${nproc} all
 
-      # - name: Upload gba
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: pokeemerald_built
-      #     path: pokeemerald.gba
-          
-      # - name: Upload map
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: pokeemerald_map
-      #     path: pokeemerald.map
+      - name: Download pokeemerald repo
+        run: pwd && cd tools && git clone https://github.com/pret/pokeemerald
+        # Clones pokeemerald repo
+
+      - name: Install agbcc to vanilla emerald
+        run: pwd && cd tools && ls && cp -r agbcc pokeemerald/tools/ && cd pokeemerald && pwd
+
+      - name: Build pokeemerald repo
+        run: pwd && cd tools && cd pokeemerald && pwd && ls && make -j${nproc}
+        # builds agbcc to pokeemerald repo
+
+      - name: Build the patch
+        run: chmod -R 755 ./flips-linux && ls && ./flips-linux --create tools/pokeemerald/pokeemerald.gba pokeemerald.gba ROWE_Source.bps
+
+      - name: Upload bps file
+        uses: actions/upload-artifact@v2
+        with:
+          name: pokeemerald_patch
+          path: ROWE_Source.bps
