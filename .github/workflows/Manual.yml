@@ -1,9 +1,6 @@
 name: ManualBuild
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
+on: workflow_dispatch
 
 jobs:
   build:
@@ -15,9 +12,6 @@ jobs:
       MODERN: 0
       COMPARE: 0
     steps:
-      - name: Check if you uploaded a the correct emerald gba file
-        run: sha1sum -c pokemon_emerald.sha1
-        
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -32,27 +26,49 @@ jobs:
         # build-essential, git, and libpng-dev are already installed
         # gcc-arm-none-eabi is only needed for the modern build
         # as an alternative to dkP
+      - name: Download poryscript
+        run: cd tools && wget https://github.com/huderlem/poryscript/releases/download/3.3.0/poryscript-linux.zip && unzip poryscript-linux.zip -d ./ && rm ./poryscript-linux.zip && mv ./poryscript-linux ./poryscript && ls && cd ..
+        # Downloads poryscript and unzips it
+
+      # - name: Download pokeemerald repo
+      #   run: cd tools && mkdir pokeemerald && git clone https://github.com/pret/pokeemerald
+        # Clones pokeemerald repo
+
+      # - name: Install agbcc to vanilla emerald
+      #   run: |
+      #     ./build.sh
+      #     ./install.sh ../
+      #   working-directory: agbcc
+        # installs agbcc to pokeemerald repo
+
+      # - name: Build pokeemerald repo
+      #   run: make -j${nproc} all
+        # builds agbcc to pokeemerald repo
+
+      # - name: Check if you uploaded a the correct emerald gba file
+      #   run: sha1sum -c pokemon_emerald.sha1
+
+      # - name: Check the vanilla pokeemerald folder and go back to the main repo
+      #   run: ls && cd .. && cd ..
+        # Check if it built correctly and go to the main repo
 
       - name: Install agbcc
         run: |
           ./build.sh
           ./install.sh ../
         working-directory: agbcc
-        
-      - name: Poryscript permission
-        run:  cd tools && cd poryscript && chmod -R 755 ./ && cd .. && cd ..
 
       - name: Agbcc
         run: make -j${nproc} all
 
-      - name: Upload gba
-        uses: actions/upload-artifact@v2
-        with:
-          name: pokeemerald_built
-          path: pokeemerald.gba
+      # - name: Upload gba
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: pokeemerald_built
+      #     path: pokeemerald.gba
           
-      - name: Upload map
-        uses: actions/upload-artifact@v2
-        with:
-          name: pokeemerald_map
-          path: pokeemerald.map
+      # - name: Upload map
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: pokeemerald_map
+      #     path: pokeemerald.map
