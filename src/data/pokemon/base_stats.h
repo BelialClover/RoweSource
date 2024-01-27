@@ -6083,14 +6083,14 @@ const struct BaseStats gBaseStats[] =
         .noFlip = FALSE,
     },
 
-    [SPECIES_SLUGMA] =
+       [SPECIES_SLUGMA] =
     {
         .baseHP        = 50,
         .baseAttack    = 40,
-        .baseDefense   = 60,
-        .baseSpeed     = 45,
-        .baseSpAttack  = 70,
-        .baseSpDefense = 50,
+        .baseDefense   = 70,//60 -> 70
+        .baseSpeed     = 20,//45 -> 20
+        .baseSpAttack  = 75,//70 -> 75
+        .baseSpDefense = 60,//50 -> 60
         .type1 = TYPE_FIRE,
         .type2 = TYPE_FIRE,
         .catchRate = 190,
@@ -6102,7 +6102,7 @@ const struct BaseStats gBaseStats[] =
         .growthRate = GROWTH_MEDIUM_FAST,
         .eggGroup1 = EGG_GROUP_AMORPHOUS,
         .eggGroup2 = EGG_GROUP_AMORPHOUS,
-        .abilities = {ABILITY_MAGMA_ARMOR, ABILITY_FLAME_BODY},
+        .abilities = {ABILITY_DESOLATE_LAND, ABILITY_DESOLATE_LAND},//Magma Armor -> Desolate Land
         #ifdef BATTLE_ENGINE
             .abilityHidden = ABILITY_WEAK_ARMOR,
         #endif
@@ -6112,12 +6112,12 @@ const struct BaseStats gBaseStats[] =
 
     [SPECIES_MAGCARGO] =
     {
-        .baseHP        = 80,//60 -> 80
-		.baseAttack    = 40,//50 -> 40
+        .baseHP        = 110,// J 60 -> 80 -> 110
+	.baseAttack    = 40,//50 -> 40
         .baseDefense   = 110,//110 -> 120
-        .baseSpAttack  = 90,
-		.baseSpDefense = 100,//90 -> 100
-        .baseSpeed     = 60,//30 -> 60
+        .baseSpAttack  = 100,// J 90 -> 100
+	.baseSpDefense = 100,//90 -> 100
+        .baseSpeed     = 20,// J 30 -> 60 -> 20
         .type1 = TYPE_FIRE,
         .type2 = TYPE_ROCK,
         .catchRate = 75,
@@ -6129,7 +6129,7 @@ const struct BaseStats gBaseStats[] =
         .growthRate = GROWTH_MEDIUM_FAST,
         .eggGroup1 = EGG_GROUP_AMORPHOUS,
         .eggGroup2 = EGG_GROUP_AMORPHOUS,
-        .abilities = {ABILITY_SOLID_ROCK, ABILITY_FLAME_BODY},
+        .abilities = {ABILITY_DESOLATE_LAND, ABILITY_DESOLATE_LAND},
         #ifdef BATTLE_ENGINE
             .abilityHidden = ABILITY_SIMPLE,
         #endif
